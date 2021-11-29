@@ -1,7 +1,7 @@
 {
   "public": {
-    "title": "National Directory",
-    "fhirVersion": "R4",
+    "title": "National Care Coordination Directory",
+    "fhirVersion": "4.0.1",
     "smartOnFhir": [{
       "vendor": "SmartHealth IT",
       "client_id": "my-client-id",
@@ -27,7 +27,7 @@
         "errorColor": "rgb(128,20,60) !important",
         "errorText": "#ffffff !important",
       
-        "appBarColor": "#005B94",
+        "appBarColor": "#005b94",
         "appBarTextColor": "#ffffff !important",
       
         "paperColor": "#ffffff !important",
@@ -39,19 +39,10 @@
         "nivoTheme": "red_grey"
       }
     },
-    "projectPage": {
-      "carouselImages": [
-        "https://raw.githubusercontent.com/symptomatic/node-on-fhir/development/docs/assets/ScreenShot-BulkDataQuery.png",
-        "https://raw.githubusercontent.com/symptomatic/node-on-fhir/development/docs/assets/ScreenShot-ChicagoHospital-HeatMap.png",
-        "https://raw.githubusercontent.com/symptomatic/node-on-fhir/development/docs/assets/Screenshot-PatientChart.png",
-        "https://raw.githubusercontent.com/symptomatic/node-on-fhir/development/docs/assets/ScreenShot-ExportDataModule.png",
-        "https://raw.githubusercontent.com/symptomatic/node-on-fhir/development/docs/assets/ScreenShot-Geomapping.png"
-      ]
-    },
-    "loggingThreshold": "debug",
+    "loggingThreshold": "trace",
     "fhirAutoSubscribe": true,
     "capabilityStatement": {
-      "resourceTypes": ["CareTeam", "CodeSystem", "Endpoint", "HealthcareService", "InsurancePlan", "Location", "Network", "Organization", "OrganizationAffiliation", "Practitioner", "PractitionerRole", "Restriction", "SearchParameter", "StructureDefinition", "ValueSet", "VerificationResult"]
+      "resourceTypes": ["CareTeam", "CodeSystem", "Communication", "CommunicationRequest", "Endpoint", "HealthcareService", "InsurancePlan", "Organization", "OrganizationAffiliation", "Practitioner", "PractitionerRole", "Provenance", "SearchParameter", "Task", "StructureDefinition", "ValueSet", "VerificationResult"]
     },
     "defaults": {
       "route": "/project-page",
@@ -60,24 +51,49 @@
       "prominantHeader": false,
       "useDateRangeInQueries": false,
       "showPatientNameInHeader": false,
+      "displayUserNameInHeader": true,
       "displayNavbars": true,
       "disableHeader": false,
       "disableFooter": false,
       "initialScale": 1.0,
       "paginationLimit": 100,
       "subscriptionLimit": 1000,
+      "registration": {
+        "displayPatientId": false,
+        "displayFullLegalName": true,
+        "displayNickname": true,
+        "displayGivenAndFamily": false,
+        "displayFirstAndLast": false,
+        "displayEmail": true,
+        "displayPassword": true,
+        "displayUsername": false,
+        "displayInventationCode": true
+      },
       "sidebar": {
         "menuItems": {
-          "HomePage": true,
-          "Privacy": true,
-          "TermsAndConditions": true,
+          "HomePage": false,
           "FhirResources": false,
           "DynamicModules": true,
           "SidebarWorkflows": true,
-          "Theme": true,
+          "Theme": false,
+          "About": true,
           "ConstructionZone": false,
+          "Navbars": false,
           "DataImport": true,
-          "DataExport": true
+          "DataExport": true,
+          "SmartLauncher": false,
+          "HealthRecords": false,
+          "Profile": false,
+          "Login": {
+            "availability": "web"
+          },
+          "Logout": true,
+          "Registration": true,
+          "Documentation": false,
+          "Marketing": false,
+          "TermsAndConditions": true,
+          "Privacy": true,
+          "QrScanner": false
         },
         "hidden": [
           "/allergies",
@@ -88,8 +104,6 @@
           "/bundles",
           "/careplans",
           "/conditions",
-          "/communications",
-          "/communication-requests",
           "/consents",
           "/contracts",
           "/devices",
@@ -105,20 +119,21 @@
           "/goals",
           "/lists",
           "/measures",
-          "/message-headers",
           "/measure-reports",
+          "/message-headers",
           "/medications",
           "/medication-orders",
           "/medication-statements",
           "/observations",
-          "/questionnaires",
-          "/questionnaire-responses",
+          "/patients",
           "/persons",
           "/procedures",
-          "/provenances",
-          "/service-requests",
-          "/related-persons",
+          "/questionnaires",
+          "/questionnaire-responses",
+          "/related-person",
           "/risk-assessments",
+          "/service-requests",
+          "/subscriptions",
           "/vitals-tracking"
         ],
         "hiddenWorkflow": [
@@ -127,60 +142,31 @@
       }
     },
     "interfaces": {
-      "default": {
-        "status": "active",
-        "channel": {
-          "endpoint": "https://covid19-under-fhir.smilecdr.com/baseR4"
-        },
-        "auth": {
-          "username": "foo",
-          "password": "bar"
-        }
-      },
       "fhirRelay": {
         "name": "FHIR Relay",
         "status": "inactive",
         "channel": {
           "endpoint": "http://localhost:3000/baseR4"
         }
-      }
-    },
-    "accountsServer": {      
-      "database": "meteor",
-      "host": "http://localhost",
-      "port": 3000
-    },
-    "modules": {
-      "apps": {},
-      "fhir": {
-        "AllergyIntolerances": true,
-        "AuditEvents": true,
-        "BodySites": true,
-        "CarePlans": true,
-        "Conditions": true,
-        "Devices": true,
-        "DiagnosticReports": true,
-        "Goals": true,
-        "ImagingStudies": true,
-        "Immunizations": true,
-        "Locations": true,
-        "Lists": true,
-        "Medications": true,
-        "MedicationOrders": true,
-        "MedicationStatements": true,
-        "Organizations": true,
-        "Observations": true,
-        "Patients": true,
-        "Practitioners": true,
-        "Procedures": true,
-        "Questionnaires": true,
-        "RiskAssessments": true
+      },
+      "symptomaticFhirServer": {
+        "name": "FHIR Server",
+        "status": "active",
+        "channel": {
+          "endpoint": "http://localhost:3000/baseR4"
+        }
+      },
+      "accountsServer": {      
+        "name": "Accounts Server",
+        "database": "meteor",
+        "host": "http://localhost",
+        "port": 3000
       }
     }
   },
   "private": {
-    "debug": true,
-    "trace": true,
+    "invitationCode": "MITRE",
+    "clinicianInvitationCode": "MitreClinician",
     "fhir": {
       "disableOauth": true,
       "schemaValidation": {
@@ -196,6 +182,16 @@
           "publication": true
         },
         "CodeSystem": {
+          "interactions": ["read", "create", "update", "delete"],
+          "search": true,
+          "publication": true
+        },
+        "Communication": {
+          "interactions": ["read", "create", "update", "delete"],
+          "search": true,
+          "publication": true
+        },
+        "CommunicationRequest": {
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true
@@ -220,11 +216,6 @@
           "search": true,
           "publication": true
         },
-        "Network": {
-          "interactions": ["read", "create", "update", "delete"],
-          "search": true,
-          "publication": true
-        },
         "Organization": {
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
@@ -245,12 +236,17 @@
           "search": true,
           "publication": true
         },
-        "Restriction": {
+        "Provenance": {
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true
         },
         "SearchParameter": {
+          "interactions": ["read", "create", "update", "delete"],
+          "search": true,
+          "publication": true
+        },
+        "Task": {
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true
@@ -270,7 +266,18 @@
           "search": true,
           "publication": true
         }
-
+      },
+      "experimentalRest": {
+        "Network": {
+          "interactions": ["read", "create", "update", "delete"],
+          "search": true,
+          "publication": true
+        },
+        "Restriction": {
+          "interactions": ["read", "create", "update", "delete"],
+          "search": true,
+          "publication": true
+        }
       }
     }
   }
