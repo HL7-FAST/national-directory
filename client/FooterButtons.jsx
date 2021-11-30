@@ -15,8 +15,7 @@ import JSON5 from 'json5';
 import { 
     useTracker, 
     LayoutHelpers, 
-    Locations, 
-    CodeSystemDetail
+    Locations
 } from 'meteor/clinical:hl7-fhir-data-infrastructure';
 
 import moment from 'moment';
@@ -103,38 +102,37 @@ export function VhDirFooterButtons(props){
   console.log('VhDirFooterButtons')
 
 
-  function clearData(){
-    if(confirm("Are you sure you want to delete all the data?")){
-      console.log('VhDirFooterButtons.clearData()');
+//   function clearData(){
+//     if(confirm("Are you sure you want to delete all the data?")){
+//       console.log('VhDirFooterButtons.clearData()');
   
-      Meteor.call('clearAllHealthflowData');
+//       Meteor.call('clearAllHealthflowData');
 
-      Patients.find().forEach(function(record){
-        Patients.remove({_id: record._id});
-      });
-      Persons.find().forEach(function(record){
-        Persons.remove({_id: record._id});
-      });
-      Medications.find().forEach(function(record){
-        Medications.remove({_id: record._id});
-      });
-      CareTeams.find().forEach(function(record){
-        CareTeams.remove({_id: record._id});
-      });
-      Organizations.find().forEach(function(record){
-        Organizations.remove({_id: record._id});
-      });
-    }
-  }
+//       Patients.find().forEach(function(record){
+//         Patients.remove({_id: record._id});
+//       });
+//       Persons.find().forEach(function(record){
+//         Persons.remove({_id: record._id});
+//       });
+//       Medications.find().forEach(function(record){
+//         Medications.remove({_id: record._id});
+//       });
+//       CareTeams.find().forEach(function(record){
+//         CareTeams.remove({_id: record._id});
+//       });
+//       Organizations.find().forEach(function(record){
+//         Organizations.remove({_id: record._id});
+//       });
+//     }
+//   }
   return (
     <MuiThemeProvider theme={muiTheme}  >
-      <Button onClick={ clearData.bind(this) } style={buttonStyles.east_button}>
+      {/* <Button onClick={ clearData.bind(this) } style={buttonStyles.east_button}>
         Clear
-      </Button>      
+      </Button>       */}
     </MuiThemeProvider>
   );
 }
-
 
 
 //============================================================================================================================
@@ -163,14 +161,17 @@ export function DefaultPostDialogActions(props){
         ...otherProps 
     } = props;
 
-    function handleSendCodeSystem(){
-        console.log('handleSendCodeSystem', props);
+    function handleSendRecord(){
+        console.log('handleSendRecord', props);
 
         let relayUrl = get(Meteor, 'settings.public.interfaces.fhirRelay.channel.endpoint', 'http://localhost:3000/baseR4')
         if(relayUrl){
             let currentCodeSystem = Session.get('CodeSystem.Current')
+            let assembledUrl = relayUrl;
             if(has(currentCodeSystem, 'id')){
-                HTTP.put(relayUrl + '/' + resourceType + '/' + get(currentCodeSystem, 'id'), {data: currentCodeSystem}, function(error, result){
+                assembledUrl = relayUrl + '/' + resourceType + '/' + get(currentCodeSystem, 'id');
+                console.log('PUT ' + assembledUrl)
+                HTTP.put(assembledUrl, {data: currentCodeSystem}, function(error, result){
                     if(error){
                         alert(JSON.stringify(error.message));
                     }
@@ -179,7 +180,9 @@ export function DefaultPostDialogActions(props){
                     }
                 })
             } else {
-                HTTP.post(relayUrl + '/' + resourceType, {data: currentCodeSystem}, function(error, result){
+                assembledUrl = relayUrl + '/' + resourceType;
+                console.log('POST ' + assembledUrl)
+                HTTP.post(assembledUrl, {data: currentCodeSystem}, function(error, result){
                     if(error){
                         alert(JSON.stringify(error.message));
                     }
@@ -190,17 +193,61 @@ export function DefaultPostDialogActions(props){
             }    
         }
     }
-    let actionsToRender = <DialogActions >
-        <Button onClick={handleClose} color="primary">
-            Close
-        </Button>
-        <Button onClick={handleSendCodeSystem.bind(this)} color="primary" variant="contained">
-            Send
-        </Button>
-    </DialogActions>
+
+    let actionsToRender;
+    if(Meteor.currentUserId()){
+        actionsToRender = <DialogActions >
+            <Button onClick={handleClose} color="primary">
+                Close
+            </Button>
+            <Button onClick={handleSendRecord.bind(this)} color="primary" variant="contained">
+                Send
+            </Button>
+        </DialogActions>
+    } else {
+        actionsToRender = <DialogActions ></DialogActions>
+    }
+    
+    
 
     return actionsToRender;
 }
+
+//============================================================================================================================
+// Care Teams
+
+export function CareTeamsFooterButtons(props){
+
+    function openDialog(){
+        Session.toggle('mainAppDialogOpen');
+        Session.set('mainAppDialogComponent', "CareTeamDetail");
+        Session.set('mainAppDialogTitle', "New Team");
+        Session.set('mainAppDialogMaxWidth', "sm");
+        // Session.set('mainAppDialogJson', {});        
+    }
+
+    let buttonArray = [];
+
+    let componentToRender;
+    if(Meteor.currentUserId()){
+        componentToRender = <MuiThemeProvider theme={muiTheme} >
+            <Button onClick={ openDialog.bind(this) } style={ buttonStyles.west_button }>
+                New Team
+            </Button>
+            <Button onClick={ toggleSelect.bind(this, "CareTeam") } style={ buttonStyles.west_button }>
+                Toggle Select
+            </Button>
+            <Button onClick={ toggleLayout.bind(this, "CareTeam") } style={ buttonStyles.west_button }>
+                Layout
+            </Button>
+        </MuiThemeProvider>     
+    } else {
+        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+    }
+
+  return (componentToRender);
+}
+
 
 //============================================================================================================================
 // Code Systems
@@ -210,7 +257,7 @@ export function CodeSystemsFooterButtons(props){
     function openDialog(){
         Session.toggle('mainAppDialogOpen');
         Session.set('mainAppDialogComponent', "CodeSystemDetail");
-        Session.set('mainAppDialogTitle', "Edit Code System");
+        Session.set('mainAppDialogTitle', "New Code System");
         Session.set('mainAppDialogMaxWidth', "sm");
         // Session.set('mainAppDialogJson', {});        
     }
@@ -238,6 +285,79 @@ export function CodeSystemsFooterButtons(props){
 }
 
 
+//============================================================================================================================
+// Care Teams
+
+export function CommunicationsFooterButtons(props){
+
+    function openDialog(){
+        Session.toggle('mainAppDialogOpen');
+        Session.set('mainAppDialogComponent', "CommunicationDetail");
+        Session.set('mainAppDialogTitle', "New Communication");
+        Session.set('mainAppDialogMaxWidth', "sm");
+        // Session.set('mainAppDialogJson', {});        
+    }
+
+    let buttonArray = [];
+
+    let componentToRender;
+    if(Meteor.currentUserId()){
+        componentToRender = <MuiThemeProvider theme={muiTheme} >
+            <Button onClick={ openDialog.bind(this) } style={ buttonStyles.west_button }>
+                New Communication
+            </Button>
+            <Button onClick={ toggleSelect.bind(this, "Communication") } style={ buttonStyles.west_button }>
+                Toggle Select
+            </Button>
+            <Button onClick={ toggleLayout.bind(this, "Communication") } style={ buttonStyles.west_button }>
+                Layout
+            </Button>
+        </MuiThemeProvider>     
+    } else {
+        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+    }
+
+  return (componentToRender);
+}
+
+
+
+//============================================================================================================================
+// Care Teams
+
+export function CommunicationRequestsFooterButtons(props){
+
+    function openDialog(){
+        Session.toggle('mainAppDialogOpen');
+        Session.set('mainAppDialogComponent', "CommunicationRequestDetail");
+        Session.set('mainAppDialogTitle', "New Communication Request");
+        Session.set('mainAppDialogMaxWidth', "sm");
+        // Session.set('mainAppDialogJson', {});        
+    }
+
+    let buttonArray = [];
+
+    let componentToRender;
+    if(Meteor.currentUserId()){
+        componentToRender = <MuiThemeProvider theme={muiTheme} >
+            <Button onClick={ openDialog.bind(this) } style={ buttonStyles.west_button }>
+                New Communication Request
+            </Button>
+            <Button onClick={ toggleSelect.bind(this, "CommunicationRequest") } style={ buttonStyles.west_button }>
+                Toggle Select
+            </Button>
+            <Button onClick={ toggleLayout.bind(this, "CommunicationRequest") } style={ buttonStyles.west_button }>
+                Layout
+            </Button>
+        </MuiThemeProvider>     
+    } else {
+        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+    }
+
+  return (componentToRender);
+}
+
+
 
 //============================================================================================================================
 // Endpoints
@@ -247,7 +367,7 @@ export function EndpointsFooterButtons(props){
     function openDialog(){
         Session.toggle('mainAppDialogOpen');
         Session.set('mainAppDialogComponent', "EndpointDetail");
-        Session.set('mainAppDialogTitle', "Edit Endpoint");
+        Session.set('mainAppDialogTitle', "New Endpoint");
         Session.set('mainAppDialogMaxWidth', "sm");
         // Session.set('mainAppDialogJson', {});        
     }
@@ -281,7 +401,7 @@ export function HealthcareServicesFooterButtons(props){
     function openDialog(){
         Session.toggle('mainAppDialogOpen');
         Session.set('mainAppDialogComponent', "HealthcareServiceDetail");
-        Session.set('mainAppDialogTitle', "Edit Service");
+        Session.set('mainAppDialogTitle', "New Service");
         Session.set('mainAppDialogMaxWidth', "sm");
         // Session.set('mainAppDialogJson', {});        
     }
@@ -290,7 +410,7 @@ export function HealthcareServicesFooterButtons(props){
     if(Meteor.currentUserId()){
         componentToRender = <MuiThemeProvider theme={muiTheme} >
             <Button onClick={ openDialog.bind(this) } style={ buttonStyles.west_button }>
-            New Service
+                New Service
             </Button>
             <Button onClick={ toggleSelect.bind(this, "HealthcareService") } style={ buttonStyles.west_button }>
                 Toggle Select
@@ -315,7 +435,7 @@ export function InsurancePlansFooterButtons(props){
     function openDialog(){
         Session.toggle('mainAppDialogOpen');
         Session.set('mainAppDialogComponent', "InsurancePlanDetail");
-        Session.set('mainAppDialogTitle', "Edit Insurance Plan");
+        Session.set('mainAppDialogTitle', "New Insurance Plan");
         Session.set('mainAppDialogMaxWidth', "sm");
         // Session.set('mainAppDialogJson', {});        
     }
@@ -348,7 +468,7 @@ export function LocationsFooterButtons(props){
     function openDialog(){
         Session.toggle('mainAppDialogOpen');
         Session.set('mainAppDialogComponent', "LocationDetail");
-        Session.set('mainAppDialogTitle', "Edit Location");
+        Session.set('mainAppDialogTitle', "New Location");
         Session.set('mainAppDialogMaxWidth', "sm");
         // Session.set('mainAppDialogJson', {});        
     }
@@ -373,6 +493,40 @@ export function LocationsFooterButtons(props){
     return (componentToRender);
 }
 
+
+//============================================================================================================================
+// Networks
+
+export function NetworksFooterButtons(props){
+
+    function openDialog(){
+        Session.toggle('mainAppDialogOpen');
+        Session.set('mainAppDialogComponent', "NetworkDetail");
+        Session.set('mainAppDialogTitle', "New Network");
+        Session.set('mainAppDialogMaxWidth', "md");
+        // Session.set('mainAppDialogJson', {});        
+    }
+
+    let componentToRender;
+    if(Meteor.currentUserId()){
+        componentToRender = <MuiThemeProvider theme={muiTheme} >
+            <Button onClick={ openDialog.bind(this) } style={ buttonStyles.west_button }>
+                New Network
+            </Button>
+            <Button onClick={ toggleSelect.bind(this, "Network") } style={ buttonStyles.west_button }>
+                Toggle Select
+            </Button>
+            <Button onClick={ toggleLayout.bind(this, "Network") } style={ buttonStyles.west_button }>
+                Layout
+            </Button>
+        </MuiThemeProvider>
+    } else {
+        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+    }
+  
+    return (componentToRender);
+}
+
 //============================================================================================================================
 // Organizations
 
@@ -382,8 +536,8 @@ export function OrganizationsFooterButtons(props){
     function openDialog(){
         Session.toggle('mainAppDialogOpen');
         Session.set('mainAppDialogComponent', "OrganizationDetail");
-        Session.set('mainAppDialogTitle', "Edit Organization");
-        Session.set('mainAppDialogMaxWidth', "sm");
+        Session.set('mainAppDialogTitle', "New Organization");
+        Session.set('mainAppDialogMaxWidth', "md");
         // Session.set('mainAppDialogJson', {});        
     }
   
@@ -416,7 +570,7 @@ export function OrganizationAffiliationsFooterButtons(props){
     function openDialog(){
         Session.toggle('mainAppDialogOpen');
         Session.set('mainAppDialogComponent', "OrganizationAffiliationDetail");
-        Session.set('mainAppDialogTitle', "Edit Affiliation");
+        Session.set('mainAppDialogTitle', "New Affiliation");
         Session.set('mainAppDialogMaxWidth', "sm");
         // Session.set('mainAppDialogJson', {});        
     }
@@ -452,7 +606,7 @@ export function PractitionersFooterButtons(props){
     function openDialog(){
         Session.toggle('mainAppDialogOpen');
         Session.set('mainAppDialogComponent', "PractitionerDetail");
-        Session.set('mainAppDialogTitle', "Edit Practitioner");
+        Session.set('mainAppDialogTitle', "New Practitioner");
         Session.set('mainAppDialogMaxWidth', "sm");
         // Session.set('mainAppDialogJson', {});        
     }
@@ -488,7 +642,7 @@ export function PractitionerRolesFooterButtons(props){
     function openDialog(){
         Session.toggle('mainAppDialogOpen');
         Session.set('mainAppDialogComponent', "PractitionerRoleDetail");
-        Session.set('mainAppDialogTitle', "Edit Role");
+        Session.set('mainAppDialogTitle', "New Role");
         Session.set('mainAppDialogMaxWidth', "sm");
         // Session.set('mainAppDialogJson', {});        
     }
@@ -513,6 +667,108 @@ export function PractitionerRolesFooterButtons(props){
     return (componentToRender);
 }
 
+
+//============================================================================================================================
+// Provenances
+
+export function ProvenancesFooterButtons(props){
+
+    function openDialog(){
+        Session.toggle('mainAppDialogOpen');
+        Session.set('mainAppDialogComponent', "ProvenanceDetail");
+        Session.set('mainAppDialogTitle', "New Provenance");
+        Session.set('mainAppDialogMaxWidth', "md");
+        // Session.set('mainAppDialogJson', {});        
+    }
+  
+    let componentToRender;
+    if(Meteor.currentUserId()){
+        componentToRender = <MuiThemeProvider theme={muiTheme} >
+            <Button onClick={ openDialog.bind(this) } style={ buttonStyles.west_button }>
+            New Provenance
+            </Button>
+            <Button onClick={ toggleSelect.bind(this, "Provenance") } style={ buttonStyles.west_button }>
+                Toggle Select
+            </Button>
+            <Button onClick={ toggleLayout.bind(this, "Provenance") } style={ buttonStyles.west_button }>
+                Layout
+            </Button>
+        </MuiThemeProvider>
+    } else {
+        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+    }
+
+    return (componentToRender);
+}
+
+
+//============================================================================================================================
+// Related Persons
+
+export function RelatedPersonsFooterButtons(props){
+
+    function openDialog(){
+        Session.toggle('mainAppDialogOpen');
+        Session.set('mainAppDialogComponent', "RelatedPersonDetail");
+        Session.set('mainAppDialogTitle', "New Person");
+        Session.set('mainAppDialogMaxWidth', "md");
+        // Session.set('mainAppDialogJson', {});        
+    }
+  
+    let componentToRender;
+    if(Meteor.currentUserId()){
+        componentToRender = <MuiThemeProvider theme={muiTheme} >
+            <Button onClick={ openDialog.bind(this) } style={ buttonStyles.west_button }>
+            New RelatedPerson
+            </Button>
+            <Button onClick={ toggleSelect.bind(this, "RelatedPerson") } style={ buttonStyles.west_button }>
+                Toggle Select
+            </Button>
+            <Button onClick={ toggleLayout.bind(this, "RelatedPerson") } style={ buttonStyles.west_button }>
+                Layout
+            </Button>
+        </MuiThemeProvider>
+    } else {
+        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+    }
+
+    return (componentToRender);
+}
+
+
+//============================================================================================================================
+// Restrictions
+
+export function RestrictionsFooterButtons(props){
+
+    function openDialog(){
+        Session.toggle('mainAppDialogOpen');
+        Session.set('mainAppDialogComponent', "RestrictionDetail");
+        Session.set('mainAppDialogTitle', "New Restriction");
+        Session.set('mainAppDialogMaxWidth', "sm");
+        // Session.set('mainAppDialogJson', {});        
+    }
+  
+    let componentToRender;
+    if(Meteor.currentUserId()){
+        componentToRender = <MuiThemeProvider theme={muiTheme} >
+            <Button onClick={ openDialog.bind(this) } style={ buttonStyles.west_button }>
+            New Restriction
+            </Button>
+            <Button onClick={ toggleSelect.bind(this, "Restriction") } style={ buttonStyles.west_button }>
+                Toggle Select
+            </Button>
+            <Button onClick={ toggleLayout.bind(this, "Restriction") } style={ buttonStyles.west_button }>
+                Layout
+            </Button>
+        </MuiThemeProvider>
+    } else {
+        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+    }
+
+    return (componentToRender);
+}
+
 //============================================================================================================================
 // Search Parameters
 
@@ -522,7 +778,7 @@ export function SearchParametersFooterButtons(props){
     function openDialog(){
         Session.toggle('mainAppDialogOpen');
         Session.set('mainAppDialogComponent', "SearchParameterDetail");
-        Session.set('mainAppDialogTitle', "Edit Parameters");
+        Session.set('mainAppDialogTitle', "New Parameters");
         Session.set('mainAppDialogMaxWidth', "sm");
         // Session.set('mainAppDialogJson', {});        
     }
@@ -558,7 +814,7 @@ export function StructureDefinitionsFooterButtons(props){
     function openDialog(){
         Session.toggle('mainAppDialogOpen');
         Session.set('mainAppDialogComponent', "StructureDefinitionDetail");
-        Session.set('mainAppDialogTitle', "Edit Definitions");
+        Session.set('mainAppDialogTitle', "New Definitions");
         Session.set('mainAppDialogMaxWidth', "sm");
         // Session.set('mainAppDialogJson', {});        
     }
@@ -585,6 +841,40 @@ export function StructureDefinitionsFooterButtons(props){
 
 
 //============================================================================================================================
+// Tasks
+
+export function TasksFooterButtons(props){
+
+    function openDialog(){
+        Session.toggle('mainAppDialogOpen');
+        Session.set('mainAppDialogComponent', "TaskDetail");
+        Session.set('mainAppDialogTitle', "New Task");
+        Session.set('mainAppDialogMaxWidth', "sm");
+        // Session.set('mainAppDialogJson', {});        
+    }
+  
+    let componentToRender;
+    if(Meteor.currentUserId()){
+        componentToRender = <MuiThemeProvider theme={muiTheme} >
+            <Button onClick={ openDialog.bind(this) } style={ buttonStyles.west_button }>
+            New Task
+            </Button>
+            <Button onClick={ toggleSelect.bind(this, "Task") } style={ buttonStyles.west_button }>
+                Toggle Select
+            </Button>
+            <Button onClick={ toggleLayout.bind(this, "Task") } style={ buttonStyles.west_button }>
+                Layout
+            </Button>
+        </MuiThemeProvider>
+    } else {
+        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+    }
+
+    return (componentToRender);
+}
+
+
+//============================================================================================================================
 // Value Sets
 
 
@@ -594,7 +884,7 @@ export function ValueSetsFooterButtons(props){
     function openDialog(){
         Session.toggle('mainAppDialogOpen');
         Session.set('mainAppDialogComponent', "ValueSetDetail");
-        Session.set('mainAppDialogTitle', "Edit Value Set");
+        Session.set('mainAppDialogTitle', "New Value Set");
         Session.set('mainAppDialogMaxWidth', "sm");
         // Session.set('mainAppDialogJson', {});        
     }
@@ -618,5 +908,42 @@ export function ValueSetsFooterButtons(props){
 
     return (componentToRender);
 }
+
+
+//============================================================================================================================
+// Verification Results
+
+export function VerificationResultsFooterButtons(props){
+
+    function openDialog(){
+        Session.toggle('mainAppDialogOpen');
+        Session.set('mainAppDialogComponent', "VerificationResultDetail");
+        Session.set('mainAppDialogTitle', "New Verification Result");
+        Session.set('mainAppDialogMaxWidth', "sm");
+        // Session.set('mainAppDialogJson', {});        
+    }
+  
+    let componentToRender;
+    if(Meteor.currentUserId()){
+        componentToRender = <MuiThemeProvider theme={muiTheme} >
+            <Button onClick={ openDialog.bind(this) } style={ buttonStyles.west_button }>
+                New Verification Result
+            </Button>
+            <Button onClick={ toggleSelect.bind(this, "VerificationResult") } style={ buttonStyles.west_button }>
+                Toggle Select
+            </Button>
+            <Button onClick={ toggleLayout.bind(this, "VerificationResult") } style={ buttonStyles.west_button }>
+                Layout
+            </Button>
+        </MuiThemeProvider>
+    } else {
+        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+    }
+
+    return (componentToRender);
+}
+
+
+
 //============================================================================================================================
 

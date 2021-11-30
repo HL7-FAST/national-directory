@@ -39,7 +39,7 @@
         "nivoTheme": "red_grey"
       }
     },
-    "loggingThreshold": "trace",
+    "loggingThreshold": "debug",
     "fhirAutoSubscribe": true,
     "capabilityStatement": {
       "resourceTypes": ["CareTeam", "CodeSystem", "Communication", "CommunicationRequest", "Endpoint", "HealthcareService", "InsurancePlan", "Organization", "OrganizationAffiliation", "Practitioner", "PractitionerRole", "Provenance", "SearchParameter", "Task", "StructureDefinition", "ValueSet", "VerificationResult"]
