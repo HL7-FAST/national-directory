@@ -41,9 +41,6 @@
     },
     "loggingThreshold": "debug",
     "fhirAutoSubscribe": true,
-    "capabilityStatement": {
-      "resourceTypes": ["CareTeam", "CodeSystem", "Communication", "CommunicationRequest", "Endpoint", "HealthcareService", "InsurancePlan", "Organization", "OrganizationAffiliation", "Practitioner", "PractitionerRole", "Provenance", "SearchParameter", "Task", "StructureDefinition", "ValueSet", "VerificationResult"]
-    },
     "defaults": {
       "route": "/project-page",
       "landingPage": "/project-page",
@@ -84,9 +81,7 @@
           "SmartLauncher": false,
           "HealthRecords": false,
           "Profile": false,
-          "Login": {
-            "availability": "web"
-          },
+          "Login": false,
           "Logout": true,
           "Registration": true,
           "Documentation": false,
@@ -156,6 +151,13 @@
           "endpoint": "https://vhdir.meteorapp.com/baseR4"
         }
       },
+      "oauthServer": {
+        "name": "OAuth Server",
+        "status": "active",
+        "channel": {
+          "endpoint": "http://localhost:3000"
+        }
+      },
       "accountsServer": {      
         "name": "Accounts Server",
         "database": "meteor",
@@ -164,11 +166,13 @@
       }
     }
   },
-  "private": {
+  "private": {    
     "invitationCode": "MITRE",
     "clinicianInvitationCode": "MitreClinician",
+    "enableCronAutomation": true,
+    "enableServerStats": true,
     "fhir": {
-      "disableOauth": true,
+      "disableOauth": false,
       "schemaValidation": {
         "filter": false,
         "validate": false
@@ -176,95 +180,141 @@
       "fhirPath": "baseR4",
       "autopublishSubscriptions": true,
       "rest": {
-        "CareTeam": {
+        "AuditEvent": {
+          "disableOauth": true,
+          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
+          "search": true,
+          "publication": true,
+          "versioning": "versioned"
+        },
+        "Bundle": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true
+        },
+        "CareTeam": {
+          "disableOauth": true,
+          "interactions": ["read", "create", "update", "delete"],
+          "search": true,
+          "publication": true,
+          "versioning": "versioned"
         },
         "CodeSystem": {
-          "interactions": ["read", "create", "update", "delete"],
+          "disableOauth": true,
+          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "Communication": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "CommunicationRequest": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true
         },
         "Endpoint": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "HealthcareService": {
-          "interactions": ["read", "create", "update", "delete"],
+          "disableOauth": true,
+          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "InsurancePlan": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "Location": {
-          "interactions": ["read", "create", "update", "delete"],
+          "disableOauth": true,
+          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "Organization": {
-          "interactions": ["read", "create", "update", "delete"],
+          "disableOauth": true,
+          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "OrganizationAffiliation": {
-          "interactions": ["read", "create", "update", "delete"],
+          "disableOauth": true,
+          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "Practitioner": {
-          "interactions": ["read", "create", "update", "delete"],
+          "disableOauth": true,
+          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "PractitionerRole": {
-          "interactions": ["read", "create", "update", "delete"],
+          "disableOauth": true,
+          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "Provenance": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true
         },
         "SearchParameter": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "Task": {
-          "interactions": ["read", "create", "update", "delete"],
+          "disableOauth": true,
+          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "StructureDefinition": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "ValueSet": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true
         },
         "VerificationResult": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         }
       },
       "experimentalRest": {

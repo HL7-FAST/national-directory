@@ -41,9 +41,6 @@
     },
     "loggingThreshold": "debug",
     "fhirAutoSubscribe": true,
-    "capabilityStatement": {
-      "resourceTypes": ["CareTeam", "CodeSystem", "Communication", "CommunicationRequest", "Endpoint", "HealthcareService", "InsurancePlan", "Organization", "OrganizationAffiliation", "Practitioner", "PractitionerRole", "Provenance", "SearchParameter", "Task", "StructureDefinition", "ValueSet", "VerificationResult"]
-    },
     "defaults": {
       "route": "/project-page",
       "landingPage": "/project-page",
@@ -84,9 +81,7 @@
           "SmartLauncher": false,
           "HealthRecords": false,
           "Profile": false,
-          "Login": {
-            "availability": "web"
-          },
+          "Login": false,
           "Logout": true,
           "Registration": true,
           "Documentation": false,
@@ -156,6 +151,13 @@
           "endpoint": "http://localhost:3000/baseR4"
         }
       },
+      "oauthServer": {
+        "name": "OAuth Server",
+        "status": "active",
+        "channel": {
+          "endpoint": "http://localhost:3000"
+        }
+      },
       "accountsServer": {      
         "name": "Accounts Server",
         "database": "meteor",
@@ -165,10 +167,18 @@
     }
   },
   "private": {
+    "debug": true,
+    "trace": true,
     "invitationCode": "MITRE",
     "clinicianInvitationCode": "MitreClinician",
+    "enableCronAutomation": true,
+    "enableServerStats": false,
+    "x509": {
+      "publicKey": "-----BEGIN PUBLIC KEY-----\r\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAi0IlmAWwsjhg9fMJfQgy\r\nvGrAGP4CRWbBFkIS+rJObUMcjkPnWQYIJxq7wKnc/po8S0Dro/7R8T8anNOtuki6\r\nsc7VSXFmhDpUhGq2kQbJfg+D8Tl6ZzZozSxW19YxWVaOpOKkEFl1I7hK2UcP3Qml\r\nt0/Yxkf+G2xZjwJZADGbU5ER5XwYslpezTfBeKV8tc6DITR1I5UaFIftw/ZXj1kB\r\ngI5QyPowhm+IngWRagHtOc/JBEN11G+vlHAdCrfKNLGRWlj/AGbK7I8vPVxHrp+z\r\nZRpHx9UR3QVTQLSJFn0YjQzQSIxChQ8/iW0cmJsu802MXi3ovo+OPoFMOHf12D6/\r\ntQIDAQAB\r\n-----END PUBLIC KEY-----\r\n",
+      "privateKey": "-----BEGIN RSA PRIVATE KEY-----\r\nMIIEpAIBAAKCAQEAi0IlmAWwsjhg9fMJfQgyvGrAGP4CRWbBFkIS+rJObUMcjkPn\r\nWQYIJxq7wKnc/po8S0Dro/7R8T8anNOtuki6sc7VSXFmhDpUhGq2kQbJfg+D8Tl6\r\nZzZozSxW19YxWVaOpOKkEFl1I7hK2UcP3Qmlt0/Yxkf+G2xZjwJZADGbU5ER5XwY\r\nslpezTfBeKV8tc6DITR1I5UaFIftw/ZXj1kBgI5QyPowhm+IngWRagHtOc/JBEN1\r\n1G+vlHAdCrfKNLGRWlj/AGbK7I8vPVxHrp+zZRpHx9UR3QVTQLSJFn0YjQzQSIxC\r\nhQ8/iW0cmJsu802MXi3ovo+OPoFMOHf12D6/tQIDAQABAoIBAHRMjbDkL6jnRLKi\r\nge4VhqmsTTmSCLuFEQRRsiAEAVNmlNaLBw5l5zEhNmO0eId4r5n5YdHX4eUj2knW\r\nzmOgkaolHiLzvbX4MNVVeZqsnGHW+03dvservOJ8gRpIG3aMvxwc2v98dkOaiYfj\r\nvO/QOsFYwaT2QtUMK88vGrz6sMmcRizrr5AOwlzXmbrez6QEPxxAmBZQbYJMds3M\r\naEi73xyCmpqLjD2jwh4PLWs8opVroXGRekShKzBRzLwxONEhctEiNfWKF1JTViGc\r\nfsnM+r5klvWfFrQzWhgHae+uJ5ba2E7vdSwk48rdmgOmuflBnKUFxHYEBMunht9p\r\nUTMq/RECgYEAxbrBrjx/Vs6g033xg0d6Y+XbQie2ET14BxJ75lCErxlZyCIw04Cl\r\nVAnpbWg7owdrqQ/hw72lA0aPD3sM9IEETIsEQDTZ6Xg4259zOGfLnJou+jQw7bRS\r\nrkH3Qq5BPgFXXNEOXbHSHuwPOxlD8T0WKEallPVZWgSi1Ek07Z0tXzsCgYEAtEwr\r\n+rXsm1BST3ZQKrxPR8XMimryOyyXjrYaao+UBMHwAW8FzNyN8Zcw34AvHBsplq2z\r\n58GcVLM5GB9m7w+MPz265w8Nq/suh5sN5YG1N0/7r6QKKWtsqSuPVZp3zUatul3q\r\nzOqdpjNaYMo7GDfkjkmzIJklKlSQ1OM7GLYeTc8CgYBx2uT1mD5W1OpEfcvYpQrz\r\nhQKo6EbtTHDV2a3gY9LTJIzPMejdkMEiUAbKie91I6u5kLyWQphG95Ue++Ls03GP\r\nRakv837a8fADfqARBat3xExypCTcay4Ey1U+XyqQMqOEfZiBGQh9572pcRXvThZ5\r\nIJzt1g0aSXsdM/43KH9cywKBgQCEE5zQDz8h06hIb6pwc/w73qlk6M1EDfmEYOBf\r\nGYjcJ1nzIuqD1TniNdhmkddw5nED4YF+D/W+koALrM1R6PjbRxRIuV1RlDLUwgBf\r\nFTK0L1J3q1qKVxiFoNRiaELEzLbtZGlh7ajJHKtjZiH+LsuudEzVX3q7VLG4UjFz\r\ne84dPwKBgQC/jvI8eKfeAmx9B9okgu8/0gyl13m8b6pGZrlL1kw/45azDOaemepZ\r\ncr40t6GNqKSW9/9EmfkfpP2Es0DsB5S7FLZ7G7l9QKHGcWJkcdgvTGX1TW5+wOAo\r\n8tcchy7yKw+2BjFmI8MDdyv6V2dimpcz2vveuipN4JLo+XkLnWZiUg==\r\n-----END RSA PRIVATE KEY-----\r\n"
+    },
     "fhir": {
-      "disableOauth": true,
+      "disableOauth": false,
       "schemaValidation": {
         "filter": false,
         "validate": false
@@ -176,95 +186,130 @@
       "fhirPath": "baseR4",
       "autopublishSubscriptions": true,
       "rest": {
-        "CareTeam": {
+        "Bundle": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true
         },
+        "CareTeam": {
+          "disableOauth": true,
+          "interactions": ["read", "create", "update", "delete"],
+          "search": true,
+          "publication": true,
+          "versioning": "versioned"
+        },
         "CodeSystem": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true
         },
         "Communication": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true
         },
         "CommunicationRequest": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true
         },
         "Endpoint": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "HealthcareService": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "InsurancePlan": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "Location": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "Organization": {
-          "interactions": ["read", "create", "update", "delete"],
+          "disableOauth": true,
+          "interactions": ["read", "vread", "create", "update", "delete", "history-type", "history-instance"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "OrganizationAffiliation": {
-          "interactions": ["read", "create", "update", "delete"],
+          "disableOauth": true,
+          "interactions": ["read", "vread", "create", "update", "delete"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "Practitioner": {
-          "interactions": ["read", "create", "update", "delete"],
+          "disableOauth": true,
+          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "PractitionerRole": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "Provenance": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true
         },
         "SearchParameter": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true
         },
         "Task": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "StructureDefinition": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true
         },
         "ValueSet": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true
         },
         "VerificationResult": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         }
       },
       "experimentalRest": {

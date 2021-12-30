@@ -1,6 +1,10 @@
 import React from 'react';
 
 import MainPage from './client/MainPage';
+import UdapRegistrationPage from './client/UdapRegistrationPage';
+import ServerConfigurationPage from './client/ServerConfigurationPage';
+
+
 
 
 import { 
@@ -31,6 +35,19 @@ import {
   ValueSetDetail,
   VerificationResultDetail
 } from 'meteor/clinical:hl7-fhir-data-infrastructure';
+
+
+let DynamicRoutes = [{
+  name: 'UdapRegistrationPage',
+  path: '/udap-registration',
+  component: UdapRegistrationPage,
+  requireAuth: true
+}, {
+  name: 'ServerConfigurationPage',
+  path: '/server-configuration',
+  component: ServerConfigurationPage,
+  requireAuth: true
+}]
 
 
 import { 
@@ -218,5 +235,6 @@ let DialogComponents = [{
 export {
   FooterButtons,
   DialogComponents,
+  DynamicRoutes,
   MainPage
 };

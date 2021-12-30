@@ -22,7 +22,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 
 import { get } from 'lodash';
-import { DynamicSpacer, PageCanvas, StyledCard } from 'fhir-starter';
+import { PageCanvas, StyledCard } from 'fhir-starter';
 
 import { Icon } from 'react-icons-kit';
 import { github } from 'react-icons-kit/fa/github';
@@ -102,13 +102,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-// function DynamicSpacer(props){
-//   return(<div style={{height: props.height}}></div>)
-// }
+function DynamicSpacer(props){
+  return(<div style={{height: props.height}}></div>)
+}
 
 
 
-function MainPage(props){
+function ServerStatsPage(props){
   const classes = useStyles();
 
   let orgCount = 0;
@@ -182,12 +182,9 @@ function MainPage(props){
 
 
   function openExternalPage(url){
-    logger.debug('client.app.layout.MainPage.openExternalPage', url);
+    logger.debug('client.app.layout.ServerStatsPage.openExternalPage', url);
     window.open(url);
     // props.history.replace(url)
-  }
-  function openPage(url){
-    props.history.replace(url)
   }
 
   //----------------------------------------------------------------------
@@ -237,19 +234,13 @@ function MainPage(props){
   function openPage(url){
     props.history.replace(url)
   }
-  function handleSyncLantern(){
-    console.log("Syncing lantern...")
-  }
-  function handleSyncProviderDirectory(){
-    console.log("Syncing provider directory...")
-  }
 
   let headerHeight = LayoutHelpers.calcHeaderHeight();
   let formFactor = LayoutHelpers.determineFormFactor();
   let paddingWidth = LayoutHelpers.calcCanvasPaddingWidth();
 
   return (
-    <PageCanvas id='MainPage' headerHeight={headerHeight} paddingLeft={10} paddingRight={10}>
+    <PageCanvas id='ServerStatsPage' headerHeight={headerHeight} paddingLeft={10} paddingRight={10}>
       <Container maxWidth="lg">
         <CardHeader title="Server Stats" style={{paddingBottom: '0px', marginBottom: '0px', marginTop: '20px'}} />
         <Grid container spacing={1} justify="center" style={{marginBottom: '20px'}}>
@@ -285,6 +276,8 @@ function MainPage(props){
           </Grid>
         </Grid>
 
+        <CardHeader title="Local Stats" style={{marginBottom: '0px', paddingBottom: '0px', marginTop: '40px'}} />
+
         <Grid container justify="center" style={{marginBottom: '0px'}}>
           <Grid item xs={12}>
             <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} >
@@ -301,159 +294,42 @@ function MainPage(props){
             </StyledCard>
           </Grid>
         </Grid>
-
-        <Grid container spacing={1} justify="center" style={{marginBottom: '20px'}}>
-          <Grid item xs={12} sm={6} style={{marginTop: '20px'}} >
-            <StyledCard margin={20} style={{marginBottom: '20px', width: '100%'}}>
-              <CardHeader title="Getting Started" />
-              <CardContent style={{marginLeft: '20px', marginRight: '20px'}}>
-                <h4>About</h4>
-                <p>
-                  This server implements the <a href="https://build.fhir.org/ig/HL7/davinci-pdex-plan-net/StructureDefinition-plannet-Location.html" target="_blank">HL7 DaVinci PDEX Plan Net Implementation Guide</a>.
-                </p>
-                <h4>API Connectivity</h4>
-                <p>
-                  To access the directory via API, you will want to use a tool like <a href="https://www.postman.com/" target="_blank">Postman</a>, and then connect to the following URLs:  
-                </p>
-                <code>
-                  GET <a href="https://vhdir.meteorapp.com/baseR4/metadata" target="_blank">https://vhdir.meteorapp.com/baseR4/metadata</a>  <br />
-                  GET <a href="https://vhdir.meteorapp.com/baseR4/Organization" target="_blank">https://vhdir.meteorapp.com/baseR4/Organization</a> <br />
-                  GET <a href="https://vhdir.meteorapp.com/baseR4/Endpoint" target="_blank">https://vhdir.meteorapp.com/baseR4/Endpoint</a> <br />
-                  GET <a href="https://vhdir.meteorapp.com/baseR4/HealthcareService" target="_blank">https://vhdir.meteorapp.com/baseR4/HealthcareService</a> <br />
-                </code>
-                <h4>Contact Us</h4>
-                <p>
-                  To request an account to the system, email: <a href="mailto://awatson@mitre.org">awatson@mitre.org</a>
-                </p>
-              </CardContent>
+        <Grid container spacing={1} justify="center" style={{marginTop: '0px', marginBottom: '20px'}}>
+          <Grid item xs={12} sm={2}>
+            <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/organizations')} >
+              <CardHeader title={orgCount} subheader="Organizations"  />
             </StyledCard>
           </Grid>
-          <Grid item xs={12} sm={6} style={{marginTop: '20px'}}>
-            <StyledCard margin={20} style={{marginBottom: '20px', width: '100%'}}>
-              <CardContent>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={ openPage.bind(this, '/server-configuration')}
-                >Configure Server</Button>
-                <DynamicSpacer />
-                <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={ openPage.bind(this, '/udap-registration')}
-                >Register App</Button>
-                <DynamicSpacer />
-                <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={ openPage.bind(this, '/verification-results')}
-                >Validation Queue</Button>
-              </CardContent>
+          <Grid item xs={12} sm={2}>
+            <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/practitioners')} >
+              <CardHeader title={practitionerCount} subheader="Practitioners"  />
             </StyledCard>
-            {/* <StyledCard margin={20} style={{marginBottom: '20px', width: '100%'}}>
-              <CardContent>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={ handleSyncLantern.bind(this) }
-                >Sync Lantern</Button>
-                <DynamicSpacer />
-                <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={ handleSyncProviderDirectory.bind(this) }
-                >Sync Provider Directory</Button>
-
-              </CardContent>
-            </StyledCard> */}
+          </Grid>
+          <Grid item xs={12} sm={2}>
+            <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/healthcare-services')} >
+              <CardHeader title={healthServicesCount} subheader="Healthcare Services"  />
+            </StyledCard>
+          </Grid>
+          <Grid item xs={12} sm={2}>
+            <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/insurance-plans')} >
+              <CardHeader title={insurancePlansCount} subheader="Insurance Plans"  />
+            </StyledCard>
+          </Grid>
+          <Grid item xs={12} sm={2}>
+            <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/endpoints')} >
+              <CardHeader title={endpointsCount} subheader="Endpoints"  />
+            </StyledCard>
+          </Grid>
+          <Grid item xs={12} sm={2}>
+            <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/locations')} >
+              <CardHeader title={locationsCount} subheader="Locations"  />
+            </StyledCard>
           </Grid>
         </Grid>
-        
-        {/* <Grid container justify="center" style={{paddingBottom: '80px'}}>
-          
-
-          <StyledCard margin={20} style={{marginBottom: '20px'}}>
-            <CardHeader title="Open Source Infrastructure" />
-            <CardContent>
-              <Table size="small" >
-                <TableHead>
-                  <TableRow >
-                    <TableCell style={{fontWeight: 'bold'}} >Feature</TableCell>
-                    <TableCell style={{fontWeight: 'bold'}} >Library</TableCell>
-                    <TableCell style={{fontWeight: 'bold'}} >Vendor</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <TableRow>
-                  <TableCell>FHIR Client with ES6 classes, cross-version support, testing, etc.  </TableCell>
-                    <TableCell>fhir-kit-client</TableCell>
-                    <TableCell>Vermonster</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>FHIR Client from the developers of the SMART specification.</TableCell>
-                    <TableCell>fhirclient</TableCell>
-                    <TableCell>smarthealthit</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>FHIR Client with good Angular and jQuery support.</TableCell>
-                    <TableCell>fhir.js</TableCell>
-                    <TableCell>Aidbox</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Node FHIR Server</TableCell>
-                    <TableCell>node-fhir-server-core</TableCell>
-                    <TableCell>Asymmetrik</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Typescript definitions</TableCell>
-                    <TableCell>ts-fhir-types</TableCell>
-                    <TableCell>Ahryman40k</TableCell>
-                  </TableRow>
-                  <TableRow>
-                  <TableCell>Blue Button to FHIR DSTU2 converter</TableCell>
-                    <TableCell>blue-button-fhir</TableCell>
-                    <TableCell>Amida Technology</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>FHIRPath parser</TableCell>
-                    <TableCell>fhirpath</TableCell>
-                    <TableCell>HL7</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>FHIR validator for R4</TableCell>
-                    <TableCell>json-schema-resource-validation</TableCell>
-                    <TableCell>VictorGus</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Utilities to check SMART on FHIR scope access</TableCell>
-                    <TableCell>sof-scope-checker</TableCell>
-                    <TableCell>Asymmetrik</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Utilities for extracting addresses</TableCell>
-                    <TableCell>fhir-list-addresses</TableCell>
-                    <TableCell>careMESH</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Utilities to hydrate argonaut form data into FHIR objects</TableCell>
-                    <TableCell>fhir-helpers</TableCell>
-                    <TableCell>jackruss</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Utilities to hydrate argonaut form data into FHIR objects</TableCell>
-                    <TableCell>fhir-helpers</TableCell>
-                    <TableCell>jackruss</TableCell>
-                  </TableRow>
-                  
-                </TableBody>
-              </Table>
-              </CardContent>
-            </StyledCard>
-        </Grid> */}
       </Container>
 
     </PageCanvas>
   );
 }
 
-export default MainPage;
+export default ServerStatsPage;

@@ -101,35 +101,20 @@ export function VhDirFooterButtons(props){
 
   console.log('VhDirFooterButtons')
 
+  function togglePreferences(){
+    Session.toggle('mainAppDialogOpen');
 
-//   function clearData(){
-//     if(confirm("Are you sure you want to delete all the data?")){
-//       console.log('VhDirFooterButtons.clearData()');
+    Session.set('mainAppDialogComponent', "Preferences");
+    Session.set('mainAppDialogTitle', "Preferences");
+    Session.set('mainAppDialogMaxWidth', "sm");
+  }
+
   
-//       Meteor.call('clearAllHealthflowData');
-
-//       Patients.find().forEach(function(record){
-//         Patients.remove({_id: record._id});
-//       });
-//       Persons.find().forEach(function(record){
-//         Persons.remove({_id: record._id});
-//       });
-//       Medications.find().forEach(function(record){
-//         Medications.remove({_id: record._id});
-//       });
-//       CareTeams.find().forEach(function(record){
-//         CareTeams.remove({_id: record._id});
-//       });
-//       Organizations.find().forEach(function(record){
-//         Organizations.remove({_id: record._id});
-//       });
-//     }
-//   }
   return (
     <MuiThemeProvider theme={muiTheme}  >
-      {/* <Button onClick={ clearData.bind(this) } style={buttonStyles.east_button}>
-        Clear
-      </Button>       */}
+      <Button onClick={ togglePreferences.bind(this) } style={buttonStyles.west_button}>
+        Preferences
+      </Button>      
     </MuiThemeProvider>
   );
 }
