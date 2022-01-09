@@ -23,8 +23,16 @@ Package.onUse(function(api) {
   api.use('clinical:hl7-fhir-data-infrastructure');
   api.use('clinical:vault-server@7.2.0');
 
-  api.addFiles('server/methods.js', 'server')
+  api.addFiles('server/methods.js', 'server');
+  api.addFiles('server/https.js', 'server');
+
+  api.addAssets('data/nppes/parsed-npi-records-100k.ndjson', 'server');
+  api.addAssets('data/lantern/lantern_out.ndjson', 'server');
 
   api.mainModule('index.jsx', 'client');
 });
 
+
+Npm.depends({
+  "ndjson-parse": "1.0.4"
+})
