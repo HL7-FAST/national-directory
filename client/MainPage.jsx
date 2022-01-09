@@ -1,4 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+
+import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
+import { Session } from 'meteor/session';
+
 
 import { 
   Button,
@@ -111,51 +116,75 @@ const useStyles = makeStyles(theme => ({
 function MainPage(props){
   const classes = useStyles();
 
-  let orgCount = 0;
-  let practitionerCount = 0;
-  let healthServicesCount = 0;
-  let insurancePlansCount = 0;
-  let endpointsCount = 0;
-  let networksCount = 0;
-  let locationsCount = 0;
+  let [ serverStats, setServerStats ] = useState({
+    Organizations: 0,
+    Practitioners: 0,
+    HealthcareServices: 0,
+    InsurancePlans: 0,
+    Endpoints: 0,
+    Networks: 0,
+    Locations: 0  
+  }) 
 
-  let serverStats = {
-    orgCount: 0,
-    practitionerCount: 0,
-    healthServicesCount: 0,
-    insurancePlansCount: 0,
-    endpointsCount: 0,
-    networksCount: 0,
-    locationsCount: 0  
-  }
+  // let orgCount = 0;
+  // let practitionerCount = 0;
+  // let healthServicesCount = 0;
+  // let insurancePlansCount = 0;
+  // let endpointsCount = 0;
+  // let networksCount = 0;
+  // let locationsCount = 0;
+
+  //----------------------------------------------------------------------
+  // Startup / End
+  
+  useEffect(function(){
+    HTTP.get('/stats', function(error, result){
+      if(result){
+        let parsedContent = JSON.parse(result.content);
+        console.log(parsedContent);
+
+        setServerStats({
+          Organizations: get(parsedContent, 'collections.organizations'),
+          Practitioners: get(parsedContent, 'collections.practitioners'),
+          HealthcareServices: get(parsedContent, 'collections.healthcareServices'),
+          InsurancePlans: get(parsedContent, 'collections.insurancePlans'),
+          Endpoints: get(parsedContent, 'collections.endpoints'),
+          Networks: get(parsedContent, 'collections.networks'),
+          Locations: get(parsedContent, 'collections.locations')
+        })
+      }
+    })
+  }, []);
 
   //----------------------------------------------------------------------
   // Trackers
-  serverStats = useTracker(function(){
-    return ServerStats.findOne();
+  
+  useTracker(function(){
+    setServerStats(ServerStats.findOne())
+    return;
   }, [])
   
-  orgCount = useTracker(function(){
-    return Organizations.find().count();
-  }, [])
-  practitionerCount = useTracker(function(){
-    return Practitioners.find().count();
-  }, [])
-  healthServicesCount = useTracker(function(){
-    return HealthcareServices.find().count();
-  }, [])
-  insurancePlansCount = useTracker(function(){
-    return InsurancePlans.find().count();
-  }, [])
-  endpointsCount = useTracker(function(){
-    return Endpoints.find().count();
-  }, [])
-  networksCount = useTracker(function(){
-    return Networks.find().count();
-  }, [])
-  locationsCount = useTracker(function(){
-    return Locations.find().count();
-  }, [])
+  // orgCount = useTracker(function(){
+  //   return Organizations.find().count();
+  // }, [])
+  // practitionerCount = useTracker(function(){
+  //   return Practitioners.find().count();
+  // }, [])
+  // healthServicesCount = useTracker(function(){
+  //   return HealthcareServices.find().count();
+  // }, [])
+  // insurancePlansCount = useTracker(function(){
+  //   return InsurancePlans.find().count();
+  // }, [])
+  // endpointsCount = useTracker(function(){
+  //   return Endpoints.find().count();
+  // }, [])
+  // networksCount = useTracker(function(){
+  //   return Networks.find().count();
+  // }, [])
+  // locationsCount = useTracker(function(){
+  //   return Locations.find().count();
+  // }, [])
 
 
 
