@@ -320,9 +320,9 @@ function UdapRegistrationPage(props){
     console.log('postUrl', postUrl);
 
     let payload = {
+      "udap" : "1",
       "software_statement" : token,
-      "certifications" : [certificate],
-      "udap" : "1"
+      "certifications" : [certificate]
     }
 
     console.log('payload', payload)
@@ -335,6 +335,9 @@ function UdapRegistrationPage(props){
       }
       if(result){
         console.log('/oauth/registration', result)
+        if(get(result, 'statusCode') === 201){
+          alert('Created!  Client id: ' + get(result, 'data.client_id'))
+        }
       }
     })
   }
@@ -595,7 +598,7 @@ function UdapRegistrationPage(props){
                     color="primary"
                     type="submit"
                     disabled={formik.isSubmitting}
-                  >Register</Button>
+                  >Sign Software Statement</Button>
 
                 </CardContent>
               </form>
