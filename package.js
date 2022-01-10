@@ -21,7 +21,7 @@ Package.onUse(function(api) {
 
   api.use('clinical:hl7-resource-datatypes');
   api.use('clinical:hl7-fhir-data-infrastructure');
-  api.use('clinical:vault-server@7.2.0');
+  api.use('clinical:vault-server@8.0.1');
 
   api.addFiles('server/methods.js');
   api.addFiles('server/https.js', 'server');
