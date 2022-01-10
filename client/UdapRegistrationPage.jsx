@@ -172,8 +172,11 @@ function UdapRegistrationPage(props){
       console.log('jwtHeader', jwtHeader)
       console.log('jwtPayload', jwtPayload);
 
-
-      Meteor.call('generateAndSignCertificate', jwtPayload, function(error, signResult){
+      let postUrl = Meteor.absoluteUrl() + 'generateAndSignCertificate';
+      HTTP.post(postUrl, {
+        headers: {},
+        data: jwtPayload
+      }, function(error, signResult){
         if(error){
           console.log('error', error);
         }
@@ -182,11 +185,26 @@ function UdapRegistrationPage(props){
 
           // if we have a certificate from the server, we can begin constructing the JWT header
           // note:  may want to move this server side
-          if(get(signResult, 'token')){
-            setToken(get(signResult, 'token'));
+          if(get(signResult, 'data.token')){
+            setToken(get(signResult, 'data.token'));
           }            
         }
       })
+
+      // Meteor.call('generateAndSignCertificate', jwtPayload, function(error, signResult){
+      //   if(error){
+      //     console.log('error', error);
+      //   }
+      //   if(signResult){
+      //     console.log('signResult', signResult);
+
+      //     // if we have a certificate from the server, we can begin constructing the JWT header
+      //     // note:  may want to move this server side
+      //     if(get(signResult, 'token')){
+      //       setToken(get(signResult, 'token'));
+      //     }            
+      //   }
+      // })
     }
   });
 
