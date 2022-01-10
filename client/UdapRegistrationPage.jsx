@@ -321,7 +321,7 @@ function UdapRegistrationPage(props){
 
   }
   function handleClickSend(){
-    console.log("Sending...", token);
+    console.log("Sending JWT token...", token);
     let postUrl = get(Meteor, 'settings.public.interfaces.oauthServer.channel.endpoint', "http://localhost:3000/") + "oauth/registration";
     console.log('postUrl', postUrl);
 
@@ -338,6 +338,7 @@ function UdapRegistrationPage(props){
     }, function(error, result){
       if(error){
         console.log('/oauth/registration error', error)
+        alert('Error!  Message: ' + get(error, 'message'))
       }
       if(result){
         console.log('/oauth/registration', result)

@@ -1,6 +1,6 @@
 {
   "public": {
-    "title": "National Care Coordination Directory",
+    "title": "National Care Directory",
     "fhirVersion": "4.0.1",
     "smartOnFhir": [{
       "vendor": "SmartHealth IT",

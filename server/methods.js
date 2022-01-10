@@ -7,6 +7,8 @@ import forge from 'node-forge';
 let pki = forge.pki;
 import jwt from 'jsonwebtoken';
 
+import ndjsonParser from 'ndjson-parse';
+
 Meteor.methods({
     generateAndSignCertificate: function(jwtPayload){
         console.log("Signing certificate...")
@@ -103,5 +105,53 @@ Meteor.methods({
         }
 
         return result;
+    },
+    syncLantern: function(){
+        console.log("Scanning lantern file...");
+
+        let fileContents = Assets.getText('data/lantern/lantern_out.ndjson');
+        console.log('data/lantern/lantern_out.ndjson')
+        console.log(fileContents);
+
+        const parsedNdjson = ndjsonParser(fileContents);
+
+        if(Array.isArray(parsedNdjson)){
+            parsedNdjson.forEach(function(fhirResource){
+                // console.log(get(fhirResource, 'resourceType'));
+                if(get(fhirResource, 'resourceType') === "Endpoint"){
+                    Endpoints.insert(fhirResource)
+                }
+            });
+        }
+        console.log('Upload completed!')
+        console.log("Endpoints count: " + Endpoints.find().count())
+        
+    },
+    syncProviderDirectory: function(){
+        console.log("Scanning provider directory file...")
+
+        let fileContents = Assets.getText('data/nppes/parsed-npi-records-100k.ndjson');
+        console.log('data/nppes/parsed-npi-records-100k.ndjson')
+        console.log(fileContents);
+
+        const parsedNdjson = ndjsonParser(fileContents);
+
+        if(Array.isArray(parsedNdjson)){
+            parsedNdjson.forEach(function(fhirResource){
+                //console.log(get(fhirResource, 'resourceType'));
+                if(get(fhirResource, 'resourceType') === "Organization"){
+                    if(!Organizations.findOne({"name": get(fhirResource, "name")})){
+                        Organizations.insert(fhirResource)
+                    }
+                } else if(get(fhirResource, 'resourceType') === "Practitioner"){
+                    let name = get(fhirResource, 'name[0].text');
+                    //console.log(name);
+                    if(!Practitioners.findOne({"name.0.text": name})){
+                        Practitioners.insert(fhirResource, {filter: false, validate: false})
+                    }
+
+                }
+            });
+        }
     }
 })

@@ -85,14 +85,20 @@ function ServerConfigurationPage(props){
   let [ privateKeyPem, setPrivateKeyPem ] = useState("");
 
   useEffect(function(){
-    Meteor.call('hasServerKeys', function(error, result){
-      if(result){
-        console.log('.ServerConfigurationPage.useEffect', result);
-        setServerHasPublicKey(get(result, 'x509.publicKey'))
-        setServerHasPrivateKey(get(result, 'x509.privateKey'))
-      }
-    })
+    if(Meteor.isClient){
+      Meteor.call('hasServerKeys', function(error, result){
+        if(result){
+          console.log('.ServerConfigurationPage.useEffect', result);
+          setServerHasPublicKey(get(result, 'x509.publicKey'));
+          setServerHasPrivateKey(get(result, 'x509.privateKey'));
+        }
+      })  
+    }
   }, [])
+
+  let currentUser = useTracker(function(){
+    return Session.get('currentUser');
+  }, []);
 
   // const formik = useFormik({
   //   initialValues: {
@@ -317,9 +323,27 @@ function ServerConfigurationPage(props){
   }
   function handleSyncLantern(){
     console.log("Syncing lantern...")
+
+    Meteor.call('syncLantern', function(error, result){
+      if(error){
+        console.log('error', error)
+      }
+      if(result){
+        console.log('result', result)
+      }
+    })
   }
   function handleSyncProviderDirectory(){
     console.log("Syncing provider directory...")
+
+    Meteor.call('syncProviderDirectory', function(error, result){
+      if(error){
+        console.log('error', error)
+      }
+      if(result){
+        console.log('result', result)
+      }
+    })
   }
   
 
@@ -385,32 +409,53 @@ function ServerConfigurationPage(props){
     </StyledCard>
   }
 
+  let initSampleDataElements;
+  let upstreamServerElements;
+  if(currentUser){
+    initSampleDataElements = <StyledCard margin={20} style={{marginBottom: '20px', width: '100%'}}>
+      <CardContent>
+        <Button
+          variant="contained"
+          fullWidth
+          onClick={ handleSyncLantern.bind(this) }
+        >Sync Lantern</Button>
+        <DynamicSpacer />
+        <Button
+          variant="contained"
+          fullWidth
+          onClick={ handleSyncProviderDirectory.bind(this) }
+        >Sync Provider Directory</Button>
+
+      </CardContent>
+    </StyledCard>
+
+    let upstreamServer = get(Meteor, 'settings.public.interfaces.oauthServer.channel.endpoint', '')
+
+    upstreamServerElements = <StyledCard margin={20} style={{width: '100%'}}  >
+      <CardContent>
+        <TextField
+          label="Upstream Directory"
+          fullWidth={true}
+          id="wellknownUdap"
+          type="wellknownUdap"
+          value={upstreamServer}
+          style={{marginBottom: '10px'}}
+        />
+      </CardContent>
+    </StyledCard>
+  }
+
   return (
     <PageCanvas id='ServerConfigurationPage' headerHeight={headerHeight} paddingLeft={10} paddingRight={10}>
       
-
       <Container maxWidth="lg" style={{paddingBottom: '80px'}}>
         <Grid container spacing={3} justify="center" style={{marginBottom: '20px'}}>
           <Grid item xs={6} sm={6}>
             { serverPublicKeyElems }
             { serverPrivateKeyElems }
             { generateKeyElems }
-            <StyledCard margin={20} style={{marginBottom: '20px', width: '100%'}}>
-              <CardContent>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={ handleSyncLantern.bind(this) }
-                >Sync Lantern</Button>
-                <DynamicSpacer />
-                <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={ handleSyncProviderDirectory.bind(this) }
-                >Sync Provider Directory</Button>
-
-              </CardContent>
-            </StyledCard>
+            { upstreamServerElements }
+            { initSampleDataElements }
           </Grid>
         </Grid>
       </Container>
