@@ -74,7 +74,7 @@ const useStyles = makeStyles(theme => ({
 function ServerConfigurationPage(props){
   const classes = useStyles();
 
-  let [ wellKnownUdapUrl, setWellKnownUdapUrl ] = useState("http://localhost:3000/.well-known/udap");
+  let [ wellKnownUdapUrl, setWellKnownUdapUrl ] = useState(Meteor.absoluteUrl() + ".well-known/udap");
   let [ certificate, setCertificate ] = useState([]);
   let [ publicKey, setPublicKey ] = useState("");
   let [ privateKey, setPrivateKey ] = useState("");

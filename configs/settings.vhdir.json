@@ -285,6 +285,12 @@
           "search": true,
           "publication": true
         },
+        "Subscription": {
+          "disableOauth": true,
+          "interactions": ["read", "create", "update", "delete"],
+          "search": true,
+          "publication": true
+        },
         "Task": {
           "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],

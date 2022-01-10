@@ -73,7 +73,7 @@ function DynamicSpacer(props){
 function UdapRegistrationPage(props){
   const classes = useStyles();
 
-  let [ wellKnownUdapUrl, setWellKnownUdapUrl ] = useState("http://localhost:3000/.well-known/udap");
+  let [ wellKnownUdapUrl, setWellKnownUdapUrl ] = useState(Meteor.absoluteUrl() + ".well-known/udap");
   let [ certificate, setCertificate ] = useState([]);
   let [ udapConfig, setUdapConfig ] = useState("");
   let [ publicKey, setPublicKey ] = useState("");
@@ -82,7 +82,7 @@ function UdapRegistrationPage(props){
   let [ publicKeyPem, setPublicKeyPem ] = useState("");
   let [ privateKeyPem, setPrivateKeyPem ] = useState("");
 
-  let [ registrationEndpoint, setRegistrationEndpoint ] = useState("https://localhost:3000/oauth/registration")
+  let [ registrationEndpoint, setRegistrationEndpoint ] = useState(Meteor.absoluteUrl() + "oauth/registration")
 
   let [ token, setToken ] = useState("");
   let [ decodedJwt, setDecodedJwt ] = useState("");
@@ -316,15 +316,19 @@ function UdapRegistrationPage(props){
   }
   function handleClickSend(){
     console.log("Sending...", token);
-    let postUrl = get(Meteor, 'settings.public.interfaces.oauthServer.channel.endpoint', "http://localhost:3000") + "/oauth/registration";
+    let postUrl = get(Meteor, 'settings.public.interfaces.oauthServer.channel.endpoint', "http://localhost:3000/") + "oauth/registration";
     console.log('postUrl', postUrl);
 
-    // let payload = JSON.stringify(base64.encode(token));
-    // console.log('payload', payload)
+    let payload = {
+      "software_statement" : token,
+      "certifications" : [certificate],
+      "udap" : "1"
+    }
+
+    console.log('payload', payload)
+
     HTTP.post(postUrl, {
-      data: {
-        token: token
-      }
+      data: payload
     }, function(error, result){
       if(error){
         console.log('/oauth/registration error', error)
