@@ -173,32 +173,20 @@ function UdapRegistrationPage(props){
       console.log('jwtPayload', jwtPayload);
 
 
-      try {
-        // HMAC SHA256
-        // var hmacSha256Token = jwt.sign(jwtPayload, 'shhhhh');
-        // console.log('hmacSha256Token', hmacSha256Token);
+      Meteor.call('generateAndSignCertificate', jwtPayload, function(error, signResult){
+        if(error){
+          console.log('error', error);
+        }
+        if(signResult){
+          console.log('signResult', signResult);
 
-        // var rs256Token = jwt.sign(jwtPayload, jwtHeader.x5c, {algorithm: jwtHeader.alg});
-        // console.log('rs256Token', rs256Token);
-
-        Meteor.call('generateAndSignCertificate', jwtPayload, function(error, signResult){
-          if(error){
-            console.log('error', error);
-          }
-          if(signResult){
-            console.log('signResult', signResult);
-
-            // if we have a certificate from the server, we can begin constructing the JWT header
-            // note:  may want to move this server side
-            if(get(signResult, 'token')){
-              setToken(get(signResult, 'token'));
-            }            
-          }
-        })
-
-      } catch (err) {
-        console.log('err', err)
-      }
+          // if we have a certificate from the server, we can begin constructing the JWT header
+          // note:  may want to move this server side
+          if(get(signResult, 'token')){
+            setToken(get(signResult, 'token'));
+          }            
+        }
+      })
     }
   });
 

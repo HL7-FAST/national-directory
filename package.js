@@ -1,6 +1,6 @@
 Package.describe({
   name: 'mitre:vhdir-core',
-  version: '0.12.1',
+  version: '0.12.3',
   summary: 'Validated Care Coordination Directory',
   // git: 'http://github.com/mitre/vhdir-core',
   documentation: 'README.md'
@@ -24,7 +24,7 @@ Package.onUse(function(api) {
   api.use('clinical:hl7-fhir-data-infrastructure');
   api.use('clinical:vault-server@8.0.1');
 
-  api.addFiles('server/methods.js');
+  api.addFiles('server/methods.js', 'server');
   api.addFiles('server/https.js', 'server');
 
   api.addAssets('data/nppes/parsed-npi-records-100k.ndjson', 'server');
