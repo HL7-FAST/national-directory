@@ -345,6 +345,10 @@ function ServerConfigurationPage(props){
       }
     })
   }
+  function handleSyncUpstreamDirectory(){
+    console.log("Syncing upstream directory...");
+
+  }
   
 
   let headerHeight = LayoutHelpers.calcHeaderHeight();
@@ -410,7 +414,7 @@ function ServerConfigurationPage(props){
   }
 
   let initSampleDataElements;
-  let upstreamServerElements;
+  let upstreamServerSyncButton;
   if(currentUser){
     initSampleDataElements = <StyledCard margin={20} style={{marginBottom: '20px', width: '100%'}}>
       <CardContent>
@@ -429,21 +433,28 @@ function ServerConfigurationPage(props){
       </CardContent>
     </StyledCard>
 
-    let upstreamServer = get(Meteor, 'settings.public.interfaces.oauthServer.channel.endpoint', '')
 
-    upstreamServerElements = <StyledCard margin={20} style={{width: '100%'}}  >
+    upstreamServerSyncButton = <Button
+      variant="contained"
+      fullWidth
+      onClick={ handleSyncUpstreamDirectory.bind(this) }
+    >Sync Upstream Directory</Button>
+  }
+
+  let upstreamServer = get(Meteor, 'settings.public.interfaces.oauthServer.channel.endpoint', '')
+  let upstreamServerElements = <StyledCard margin={20} style={{width: '100%'}}  >
       <CardContent>
         <TextField
           label="Upstream Directory"
           fullWidth={true}
-          id="wellknownUdap"
-          type="wellknownUdap"
+          id="upstreamDirectory"
+          type="upstreamDirectory"
           value={upstreamServer}
           style={{marginBottom: '10px'}}
         />
+        { upstreamServerSyncButton }
       </CardContent>
     </StyledCard>
-  }
 
   return (
     <PageCanvas id='ServerConfigurationPage' headerHeight={headerHeight} paddingLeft={10} paddingRight={10}>

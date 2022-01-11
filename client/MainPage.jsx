@@ -67,7 +67,7 @@ import Carousel from 'react-multi-carousel';
 
 import { useTracker } from 'meteor/react-meteor-data';
 
-// import { LayoutHelpers } from 'clinical:hl7-fhir-data-infrastructure';
+import { EndpointsTable, OrganizationsTable, PractitionersTable } from 'meteor/clinical:hl7-fhir-data-infrastructure';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -111,10 +111,18 @@ const useStyles = makeStyles(theme => ({
 //   return(<div style={{height: props.height}}></div>)
 // }
 
-
-
 function MainPage(props){
   const classes = useStyles();
+
+  let [ showSearchResults, setShowSearchResults ] = useState(false);
+  let [ searchTerm, setSearchTerm ] = useState('');
+  let [ matchedEndpoints, setMatchedEndpoints ] = useState([]);
+  let [ matchedOrganizations, setMatchedOrganizations ] = useState([]);
+  let [ matchedPractitioners, setMatchedPractitioners ] = useState([]);
+
+  let [ endpointPageIndex, setEndpointPageIndex ] = useState(0);
+  let [ organizationPageIndex, setOrganizationPageIndex ] = useState(0);
+  let [ practitionerPageIndex, setPractitionerPageIndex ] = useState(0);
 
   let [ serverStats, setServerStats ] = useState({
     Organizations: 0,
@@ -125,6 +133,7 @@ function MainPage(props){
     Networks: 0,
     Locations: 0  
   }) 
+
 
   // let orgCount = 0;
   // let practitionerCount = 0;
@@ -176,9 +185,10 @@ function MainPage(props){
   // insurancePlansCount = useTracker(function(){
   //   return InsurancePlans.find().count();
   // }, [])
-  // endpointsCount = useTracker(function(){
-  //   return Endpoints.find().count();
+  // let matchedEndpoints = useTracker(function(){
+  //   return Endpoints.find({name: searchTerm}).fetch();
   // }, [])
+  console.log('matchedEndpoints', matchedEndpoints)
   // networksCount = useTracker(function(){
   //   return Networks.find().count();
   // }, [])
@@ -233,16 +243,6 @@ function MainPage(props){
   //----------------------------------------------------------------------
   // Main Render Method  
 
-  let carouselImages = get(Meteor, 'settings.public.projectPage.carouselImages', []);
-
-  let imageItems = [];
-  carouselImages.forEach(function(url, index){
-    imageItems.push(<img                    
-      style={{ width: "100%", height: "100%" }}
-      key={"image-" + index}
-      src={url}
-    />);
-  });
 
   let tagLineStyle = {
     fontWeight: 'normal',
@@ -266,16 +266,185 @@ function MainPage(props){
   function openPage(url){
     props.history.replace(url)
   }
-  function handleSyncLantern(){
-    console.log("Syncing lantern...")
+  
+  function handleExactMatchSearch(){
+    console.log('Conducting exact match search...');
+    if(searchTerm.length > 0){
+      setShowSearchResults(true);
+    } else {
+      setShowSearchResults(false);
+    }
+    setMatchedEndpoints(Endpoints.find({name: searchTerm}).fetch());
+    setMatchedOrganizations(Organizations.find({name: searchTerm}).fetch());
+    setMatchedPractitioners(Practitioners.find({'name.text': searchTerm}).fetch());
+
+    setEndpointPageIndex(0);
+    setOrganizationPageIndex(0);
+    setPractitionerPageIndex(0);
   }
-  function handleSyncProviderDirectory(){
-    console.log("Syncing provider directory...")
+  function handleFuzzySearch(){
+    console.log('Conducting fuzzy search...');
+
+    if(searchTerm.length > 0){
+      setShowSearchResults(true);
+    } else {
+      setShowSearchResults(false);
+    }
+    setMatchedEndpoints(Endpoints.find({name: {$regex: searchTerm, $options:"i"}}).fetch());
+    setMatchedOrganizations(Organizations.find({name: {$regex: searchTerm, $options:"i"}}).fetch());
+    setMatchedPractitioners(Practitioners.find({'name.text': {$regex: searchTerm, $options:"i"}}).fetch());
+
+    setEndpointPageIndex(0);
+    setOrganizationPageIndex(0);
+    setPractitionerPageIndex(0);
+  }
+  function handleChangeSearchTerm(event){
+    setSearchTerm(event.currentTarget.value);    
   }
 
   let headerHeight = LayoutHelpers.calcHeaderHeight();
   let formFactor = LayoutHelpers.determineFormFactor();
   let paddingWidth = LayoutHelpers.calcCanvasPaddingWidth();
+
+  let mainContent;
+  if(showSearchResults){
+
+    let endpointResultsCard;
+    let organizationResultsCard;
+    let practitionerResultsCard;
+
+    
+
+    if(matchedEndpoints.length > 0){
+      let hideEndpointPagination = true;
+      if(matchedEndpoints.length > 5){
+        hideEndpointPagination = false;
+      }
+      endpointResultsCard = <StyledCard margin={20} style={{marginTop: '0px', paddingTop: '0px', marginBottom: '20px', width: '100%'}}>    
+        <CardHeader title={matchedEndpoints.length + " Endpoints"} style={{marginBottom: '0px', paddingBottom: '0px'}} />
+        <CardContent style={{marginTop: '0px', marginLeft: '20px', marginRight: '20px'}}>
+          <EndpointsTable 
+            endpoints={matchedEndpoints}
+            disablePagination={hideEndpointPagination}
+            rowsPerPage={5}
+            count={matchedEndpoints.length}
+            page={endpointPageIndex}
+            onSetPage={function(index){
+              setEndpointPageIndex(index)
+            }}
+          />
+        </CardContent>
+      </StyledCard>
+    }
+
+    if(matchedOrganizations.length > 0){
+      let hideOrgPagination = true;
+      if(matchedEndpoints.length > 5){
+        hideOrgPagination = false;
+      }
+      organizationResultsCard = <StyledCard margin={20} style={{marginTop: '0px', paddingTop: '0px', marginBottom: '20px', width: '100%'}}>    
+        <CardHeader title={matchedOrganizations.length + " Organizations"} style={{marginBottom: '0px', paddingBottom: '0px'}} />
+        <CardContent style={{marginTop: '0px', marginLeft: '20px', marginRight: '20px'}}>
+          <OrganizationsTable 
+            organizations={matchedOrganizations}
+            disablePagination={hideOrgPagination}
+            rowsPerPage={5}
+            hideActionIcons={true}
+            hideIdentifier={true}
+            count={matchedOrganizations.length}
+            page={organizationPageIndex}
+            onSetPage={function(index){
+              setOrganizationPageIndex(index)
+            }}
+          />
+        </CardContent>
+      </StyledCard>
+    }
+
+    if(matchedPractitioners.length > 0){
+      let hidePractitionerPagination = true;
+      if(matchedEndpoints.length > 5){
+        hidePractitionerPagination = false;
+      }
+      practitionerResultsCard = <StyledCard margin={20} style={{marginTop: '0px', paddingTop: '0px', marginBottom: '20px', width: '100%'}}>    
+        <CardHeader title={matchedPractitioners.length + " Practitioners"} style={{marginBottom: '0px', paddingBottom: '0px'}} />
+        <CardContent style={{marginTop: '0px', marginLeft: '20px', marginRight: '20px'}}>
+          <PractitionersTable 
+            practitioners={matchedPractitioners}
+            disablePagination={hidePractitionerPagination}
+            rowsPerPage={5}
+            hideActionIcons={true}
+            count={matchedPractitioners.length}
+            page={practitionerPageIndex}
+            onSetPage={function(index){
+              setPractitionerPageIndex(index)
+            }}
+          />
+        </CardContent>
+      </StyledCard>
+    }
+
+    mainContent = <Grid container spacing={1} justify="center" style={{marginBottom: '20px'}}>
+      <Grid item xs={12} sm={12} style={{marginTop: '20px', marginBottom: '80px'}} >
+        
+        { endpointResultsCard }
+        { organizationResultsCard }
+        { practitionerResultsCard }
+        
+      </Grid>
+    </Grid>
+  } else {
+    mainContent = <Grid container spacing={1} justify="center" style={{marginBottom: '20px'}}>
+      <Grid item xs={12} sm={6} style={{marginTop: '20px'}} >
+        <StyledCard margin={20} style={{marginBottom: '20px', width: '100%'}}>
+          <CardHeader title="Getting Started" />
+          <CardContent style={{marginLeft: '20px', marginRight: '20px'}}>
+            <h4>About</h4>
+            <p>
+              This server implements the <a href="https://build.fhir.org/ig/HL7/davinci-pdex-plan-net/StructureDefinition-plannet-Location.html" target="_blank">HL7 DaVinci PDEX Plan Net Implementation Guide</a>.
+            </p>
+            <h4>API Connectivity</h4>
+            <p>
+              To access the directory via API, you will want to use a tool like <a href="https://www.postman.com/" target="_blank">Postman</a>, and then connect to the following URLs:  
+            </p>
+            <code>
+              GET <a href="https://vhdir.meteorapp.com/baseR4/metadata" target="_blank">https://vhdir.meteorapp.com/baseR4/metadata</a>  <br />
+              GET <a href="https://vhdir.meteorapp.com/baseR4/Organization" target="_blank">https://vhdir.meteorapp.com/baseR4/Organization</a> <br />
+              GET <a href="https://vhdir.meteorapp.com/baseR4/Endpoint" target="_blank">https://vhdir.meteorapp.com/baseR4/Endpoint</a> <br />
+              GET <a href="https://vhdir.meteorapp.com/baseR4/HealthcareService" target="_blank">https://vhdir.meteorapp.com/baseR4/HealthcareService</a> <br />
+            </code>
+            <h4>Contact Us</h4>
+            <p>
+              To request an account to the system, email: <a href="mailto://awatson@mitre.org">awatson@mitre.org</a>
+            </p>
+          </CardContent>
+        </StyledCard>
+      </Grid>
+      <Grid item xs={12} sm={6} style={{marginTop: '20px'}}>
+        <StyledCard margin={20} style={{marginBottom: '20px', width: '100%'}}>
+          <CardContent>
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={ openPage.bind(this, '/server-configuration')}
+            >Configure Server</Button>
+            <DynamicSpacer />
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={ openPage.bind(this, '/udap-registration')}
+            >Register App</Button>
+            <DynamicSpacer />
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={ openPage.bind(this, '/verification-results')}
+            >Validation Queue</Button>
+          </CardContent>
+        </StyledCard>
+      </Grid>
+    </Grid>
+  }
 
   return (
     <PageCanvas id='MainPage' headerHeight={headerHeight} paddingLeft={10} paddingRight={10}>
@@ -321,166 +490,30 @@ function MainPage(props){
                 <TextField 
                   label="Search"
                   placeholder="Dr. House | Chicago | CurrentLocation"
+                  onChange={handleChangeSearchTerm.bind(this)}
+                  value={searchTerm}
                   InputLabelProps={{
                     shrink: true
                   }}
                   fullWidth
                 />
               </CardContent>
+              <CardActions>
+                <Button
+                  variant="contained"
+                  onClick={ handleExactMatchSearch.bind(this) }
+                >Exact Match</Button>
+                <Button
+                  variant="contained"
+                  onClick={ handleFuzzySearch.bind(this) }
+                >Fuzzy Search</Button>
+              </CardActions>
             </StyledCard>
           </Grid>
         </Grid>
 
-        <Grid container spacing={1} justify="center" style={{marginBottom: '20px'}}>
-          <Grid item xs={12} sm={6} style={{marginTop: '20px'}} >
-            <StyledCard margin={20} style={{marginBottom: '20px', width: '100%'}}>
-              <CardHeader title="Getting Started" />
-              <CardContent style={{marginLeft: '20px', marginRight: '20px'}}>
-                <h4>About</h4>
-                <p>
-                  This server implements the <a href="https://build.fhir.org/ig/HL7/davinci-pdex-plan-net/StructureDefinition-plannet-Location.html" target="_blank">HL7 DaVinci PDEX Plan Net Implementation Guide</a>.
-                </p>
-                <h4>API Connectivity</h4>
-                <p>
-                  To access the directory via API, you will want to use a tool like <a href="https://www.postman.com/" target="_blank">Postman</a>, and then connect to the following URLs:  
-                </p>
-                <code>
-                  GET <a href="https://vhdir.meteorapp.com/baseR4/metadata" target="_blank">https://vhdir.meteorapp.com/baseR4/metadata</a>  <br />
-                  GET <a href="https://vhdir.meteorapp.com/baseR4/Organization" target="_blank">https://vhdir.meteorapp.com/baseR4/Organization</a> <br />
-                  GET <a href="https://vhdir.meteorapp.com/baseR4/Endpoint" target="_blank">https://vhdir.meteorapp.com/baseR4/Endpoint</a> <br />
-                  GET <a href="https://vhdir.meteorapp.com/baseR4/HealthcareService" target="_blank">https://vhdir.meteorapp.com/baseR4/HealthcareService</a> <br />
-                </code>
-                <h4>Contact Us</h4>
-                <p>
-                  To request an account to the system, email: <a href="mailto://awatson@mitre.org">awatson@mitre.org</a>
-                </p>
-              </CardContent>
-            </StyledCard>
-          </Grid>
-          <Grid item xs={12} sm={6} style={{marginTop: '20px'}}>
-            <StyledCard margin={20} style={{marginBottom: '20px', width: '100%'}}>
-              <CardContent>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={ openPage.bind(this, '/server-configuration')}
-                >Configure Server</Button>
-                <DynamicSpacer />
-                <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={ openPage.bind(this, '/udap-registration')}
-                >Register App</Button>
-                <DynamicSpacer />
-                <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={ openPage.bind(this, '/verification-results')}
-                >Validation Queue</Button>
-              </CardContent>
-            </StyledCard>
-            {/* <StyledCard margin={20} style={{marginBottom: '20px', width: '100%'}}>
-              <CardContent>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={ handleSyncLantern.bind(this) }
-                >Sync Lantern</Button>
-                <DynamicSpacer />
-                <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={ handleSyncProviderDirectory.bind(this) }
-                >Sync Provider Directory</Button>
-
-              </CardContent>
-            </StyledCard> */}
-          </Grid>
-        </Grid>
-        
-        {/* <Grid container justify="center" style={{paddingBottom: '80px'}}>
-          
-
-          <StyledCard margin={20} style={{marginBottom: '20px'}}>
-            <CardHeader title="Open Source Infrastructure" />
-            <CardContent>
-              <Table size="small" >
-                <TableHead>
-                  <TableRow >
-                    <TableCell style={{fontWeight: 'bold'}} >Feature</TableCell>
-                    <TableCell style={{fontWeight: 'bold'}} >Library</TableCell>
-                    <TableCell style={{fontWeight: 'bold'}} >Vendor</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <TableRow>
-                  <TableCell>FHIR Client with ES6 classes, cross-version support, testing, etc.  </TableCell>
-                    <TableCell>fhir-kit-client</TableCell>
-                    <TableCell>Vermonster</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>FHIR Client from the developers of the SMART specification.</TableCell>
-                    <TableCell>fhirclient</TableCell>
-                    <TableCell>smarthealthit</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>FHIR Client with good Angular and jQuery support.</TableCell>
-                    <TableCell>fhir.js</TableCell>
-                    <TableCell>Aidbox</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Node FHIR Server</TableCell>
-                    <TableCell>node-fhir-server-core</TableCell>
-                    <TableCell>Asymmetrik</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Typescript definitions</TableCell>
-                    <TableCell>ts-fhir-types</TableCell>
-                    <TableCell>Ahryman40k</TableCell>
-                  </TableRow>
-                  <TableRow>
-                  <TableCell>Blue Button to FHIR DSTU2 converter</TableCell>
-                    <TableCell>blue-button-fhir</TableCell>
-                    <TableCell>Amida Technology</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>FHIRPath parser</TableCell>
-                    <TableCell>fhirpath</TableCell>
-                    <TableCell>HL7</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>FHIR validator for R4</TableCell>
-                    <TableCell>json-schema-resource-validation</TableCell>
-                    <TableCell>VictorGus</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Utilities to check SMART on FHIR scope access</TableCell>
-                    <TableCell>sof-scope-checker</TableCell>
-                    <TableCell>Asymmetrik</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Utilities for extracting addresses</TableCell>
-                    <TableCell>fhir-list-addresses</TableCell>
-                    <TableCell>careMESH</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Utilities to hydrate argonaut form data into FHIR objects</TableCell>
-                    <TableCell>fhir-helpers</TableCell>
-                    <TableCell>jackruss</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Utilities to hydrate argonaut form data into FHIR objects</TableCell>
-                    <TableCell>fhir-helpers</TableCell>
-                    <TableCell>jackruss</TableCell>
-                  </TableRow>
-                  
-                </TableBody>
-              </Table>
-              </CardContent>
-            </StyledCard>
-        </Grid> */}
+        { mainContent }
       </Container>
-
     </PageCanvas>
   );
 }
