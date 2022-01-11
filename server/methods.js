@@ -67,63 +67,64 @@ Meteor.methods({
         console.log("Signing certificate...")
         console.log('jwtPayload', jwtPayload);
 
-        let privateKeyPem = get(Meteor, 'settings.private.x509.privateKey');
-        let publicKeyPem = get(Meteor, 'settings.private.x509.publicKey');
+        // let privateKeyPem = get(Meteor, 'settings.private.x509.privateKey');
+        // let publicKeyPem = get(Meteor, 'settings.private.x509.publicKey');
 
-        let privateKey = pki.privateKeyFromPem(privateKeyPem)
-        let publicKey = pki.publicKeyFromPem(publicKeyPem)
+        // let privateKey = pki.privateKeyFromPem(privateKeyPem)
+        // let publicKey = pki.publicKeyFromPem(publicKeyPem)
 
         let result = {};
 
-        if(privateKey){
-            console.log('privateKey', privateKey)
-            console.log('publicKey', publicKey)
+        // if(privateKey){
+        //     console.log('privateKey', privateKey)
+        //     console.log('publicKey', publicKey)
 
-            // var hmacSha256Token = jwt.sign(jwtPayload, 'shhhhh');
-            // console.log('hmacSha256Token', hmacSha256Token);
+        //     // var hmacSha256Token = jwt.sign(jwtPayload, 'shhhhh');
+        //     // console.log('hmacSha256Token', hmacSha256Token);
 
-            let cert = pki.createCertificate();
+        //     let cert = pki.createCertificate();
 
-            cert.publicKey = publicKey;
-            cert.serialNumber = '01';
-            cert.validity.notBefore = new Date();
-            // cert.validity.notAfter = new Date();
-            cert.validity.notAfter.setFullYear(cert.validity.notBefore.getFullYear() + 1);
+        //     cert.publicKey = publicKey;
+        //     cert.serialNumber = '01';
+        //     cert.validity.notBefore = new Date();
+        //     // cert.validity.notAfter = new Date();
+        //     cert.validity.notAfter.setFullYear(cert.validity.notBefore.getFullYear() + 1);
 
-            var attrs = [{
-                name: 'commonName',
-                value: 'mitre.org'
-                }, {
-                name: 'countryName',
-                value: 'US'
-                }, {
-                shortName: 'ST',
-                value: 'Illinois'
-                }, {
-                name: 'localityName',
-                value: 'Chicago'
-                }, {
-                name: 'organizationName',
-                value: 'MITRE'
-                }, {
-                shortName: 'OU',
-                value: 'MITRE'
-            }];
-            // cert.setSubject(attrs);
-            cert.setIssuer(attrs);
-            cert.sign(privateKey);
+        //     var attrs = [{
+        //         name: 'commonName',
+        //         value: 'mitre.org'
+        //         }, {
+        //         name: 'countryName',
+        //         value: 'US'
+        //         }, {
+        //         shortName: 'ST',
+        //         value: 'Illinois'
+        //         }, {
+        //         name: 'localityName',
+        //         value: 'Chicago'
+        //         }, {
+        //         name: 'organizationName',
+        //         value: 'MITRE'
+        //         }, {
+        //         shortName: 'OU',
+        //         value: 'MITRE'
+        //     }];
+        //     // cert.setSubject(attrs);
+        //     cert.setIssuer(attrs);
+        //     cert.sign(privateKey);
 
-            console.log('cert', cert);
+        //     console.log('cert', cert);
 
-            var certificatePem = pki.certificateToPem(cert);
-            console.log('certificatePem', certificatePem)
+        //     var certificatePem = pki.certificateToPem(cert);
+        //     console.log('certificatePem', certificatePem)
 
-            result.cert = cert;
-            result.certificatePem = certificatePem;
-            // var rs256Token = jwt.sign(jwtPayload, privateKey, {algorithm: "RS256"});
-            // console.log('rs256Token', rs256Token);
+        //     result.cert = cert;
+        //     result.certificatePem = certificatePem;
+        //     // var rs256Token = jwt.sign(jwtPayload, privateKey, {algorithm: "RS256"});
+        //     // console.log('rs256Token', rs256Token);
 
 
+            let privateKeyPem = get(Meteor, 'settings.private.x509.publicCertPem');
             console.log('privateKeyPem', privateKeyPem)            
 
             jwt.sign(jwtPayload, privateKeyPem.trim(), {
