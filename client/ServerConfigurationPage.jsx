@@ -91,6 +91,7 @@ function ServerConfigurationPage(props){
           console.log('.ServerConfigurationPage.useEffect', result);
           setServerHasPublicKey(get(result, 'x509.publicKey'));
           setServerHasPrivateKey(get(result, 'x509.privateKey'));
+          setPublicKeyPem(get(result, 'x509.publicKey'))
         }
       })  
     }
@@ -359,6 +360,25 @@ function ServerConfigurationPage(props){
   if(serverHasPublicKey){
     serverPublicKeyElems = <StyledCard margin={20} style={{width: '100%', fontSize: '80%'}}  >      
       <CardHeader avatar={<Icon icon={key} size={32} />} title="Public Key Configured!" />    
+      <CardContent>
+        <TextField
+          fullWidth={true}
+          id="publicKey"
+          type="publicKey"
+          value={publicKeyPem}
+          style={{marginBottom: '10px'}}
+          multiline
+          InputProps={{
+            style: {
+              fontSize: '120%',
+              fontFamily: 'monospace'
+            },
+            disableUnderline: true
+          }}
+          disabled
+        />
+      </CardContent>
+
     </StyledCard>
   }
 
