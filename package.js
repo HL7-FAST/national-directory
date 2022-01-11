@@ -22,7 +22,7 @@ Package.onUse(function(api) {
 
   api.use('clinical:hl7-resource-datatypes');
   api.use('clinical:hl7-fhir-data-infrastructure');
-  api.use('clinical:vault-server@8.0.1');
+  api.use('clinical:vault-server');
 
   api.addFiles('server/methods.js', 'server');
   api.addFiles('server/https.js', 'server');

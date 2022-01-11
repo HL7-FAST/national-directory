@@ -31,8 +31,8 @@ JsonRoutes.add("get", "/stats", function (req, res, next) {
 });
 
 
-JsonRoutes.add("post", "/generateAndSignCertificate", function (req, res, next) {
-  console.log('POST ' + '/generateAndSignCertificate');
+JsonRoutes.add("post", "/generateAndSignJwt", function (req, res, next) {
+  console.log('POST ' + '/generateAndSignJwt');
 
   res.setHeader('Content-type', 'application/json');
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -41,7 +41,7 @@ JsonRoutes.add("post", "/generateAndSignCertificate", function (req, res, next) 
   console.log(req.body);
   console.log("");
 
-  Meteor.call('generateAndSignCertificate', req.body, function(error, signResult){
+  Meteor.call('generateAndSignJwt', req.body, function(error, signResult){
     if(error){
       console.log('error', error);
     }

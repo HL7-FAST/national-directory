@@ -73,7 +73,6 @@ function DynamicSpacer(props){
 function UdapRegistrationPage(props){
   const classes = useStyles();
 
-  let [ wellKnownUdapUrl, setWellKnownUdapUrl ] = useState(Meteor.absoluteUrl() + ".well-known/udap");
   let [ certificate, setCertificate ] = useState([]);
   let [ udapConfig, setUdapConfig ] = useState("");
   let [ publicKey, setPublicKey ] = useState("");
@@ -82,7 +81,9 @@ function UdapRegistrationPage(props){
   let [ publicKeyPem, setPublicKeyPem ] = useState("");
   let [ privateKeyPem, setPrivateKeyPem ] = useState("");
 
+  let [ wellKnownUdapUrl, setWellKnownUdapUrl ] = useState(Meteor.absoluteUrl() + ".well-known/udap");
   let [ registrationEndpoint, setRegistrationEndpoint ] = useState(Meteor.absoluteUrl() + "oauth/registration")
+  
 
   let [ token, setToken ] = useState("");
   let [ decodedJwt, setDecodedJwt ] = useState("");
@@ -172,7 +173,7 @@ function UdapRegistrationPage(props){
       console.log('jwtHeader', jwtHeader)
       console.log('jwtPayload', jwtPayload);
 
-      let postUrl = Meteor.absoluteUrl() + 'generateAndSignCertificate';
+      let postUrl = Meteor.absoluteUrl() + 'generateAndSignJwt';
       HTTP.post(postUrl, {
         headers: {},
         data: jwtPayload
@@ -191,7 +192,7 @@ function UdapRegistrationPage(props){
         }
       })
 
-      // Meteor.call('generateAndSignCertificate', jwtPayload, function(error, signResult){
+      // Meteor.call('generateAndSignJwt', jwtPayload, function(error, signResult){
       //   if(error){
       //     console.log('error', error);
       //   }
@@ -271,6 +272,9 @@ function UdapRegistrationPage(props){
 
   function handelUpdateWellKnownUdapUrl(event){
     setWellKnownUdapUrl(event.currentTarget.value)
+  }
+  function handelUpdateSendRegistrationUrl(event){
+    setRegistrationEndpoint(event.currentTarget.value)
   }
   function handleFetchWellknownUdap(){
     console.log('wellKnownUdapUrl', wellKnownUdapUrl);
@@ -365,7 +369,7 @@ function UdapRegistrationPage(props){
               <CardHeader title="Fetch UDAP Info of New App"/>
               <CardContent>
                 <TextField
-                  label="wellknownUdap"
+                  label=".well-known/udap Location"
                   fullWidth={true}
                   id="wellknownUdap"
                   type="wellknownUdap"
@@ -653,12 +657,12 @@ function UdapRegistrationPage(props){
             <StyledCard margin={20} style={{width: '100%'}}  >
               <CardContent>
                 <TextField
-                  label="sendRegistration"
+                  label="Send Software Registration"
                   fullWidth={true}
                   id="sendRegistration"
                   type="sendRegistration"
                   value={registrationEndpoint}
-                  onChange={handelUpdateWellKnownUdapUrl.bind(this)}
+                  onChange={handelUpdateSendRegistrationUrl.bind(this)}
                   error={Boolean(formik.errors.iss && formik.touched.iss)}
                   helperText={formik.touched.iss && formik.errors.iss}
                   style={{marginBottom: '10px'}}
