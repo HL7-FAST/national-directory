@@ -137,6 +137,13 @@
       }
     },
     "interfaces": {
+      "upstreamDirectory": {
+        "name": "Validated Directory",
+        "status": "active",
+        "channel": {
+          "endpoint": "https://vhdir.meteorapp.com/baseR4"
+        }
+      },
       "fhirRelay": {
         "name": "FHIR Relay",
         "status": "inactive",

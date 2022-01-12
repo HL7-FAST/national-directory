@@ -23,7 +23,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { get } from 'lodash';
+import { get, has } from 'lodash';
 import { DynamicSpacer, PageCanvas, StyledCard } from 'fhir-starter';
 
 import { useTracker } from 'meteor/react-meteor-data';
@@ -39,7 +39,6 @@ import {ic_vpn_key} from 'react-icons-kit/md/ic_vpn_key';
 
 import {keyOutline} from 'react-icons-kit/typicons/keyOutline'
 import {key} from 'react-icons-kit/typicons/key'
-
 
 
 import forge from 'node-forge';
@@ -222,6 +221,15 @@ function ServerConfigurationPage(props){
   function handleSyncUpstreamDirectory(){
     console.log("Syncing upstream directory...");
 
+
+    Meteor.call('syncUpstreamDirectory', function(error, result){
+      if(error){
+        console.log('error', error)
+      }
+      if(result){
+        console.log('result', result)
+      }
+    })
   }
   
 
