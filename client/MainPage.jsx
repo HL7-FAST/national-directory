@@ -449,9 +449,9 @@ function MainPage(props){
 
   return (
     <PageCanvas id='MainPage' headerHeight={headerHeight} paddingLeft={10} paddingRight={10}>
-      <Container maxWidth="lg">
-        <CardHeader title="Server Stats" style={{paddingBottom: '0px', marginBottom: '84px', marginTop: '20px'}} />
-        <Grid container spacing={1} justify="center" style={{marginBottom: '20px'}}>
+      <Container maxWidth="lg" style={{paddingBottom: '84px'}} >
+        <CardHeader title="Server Stats" style={{paddingBottom: '0px', marginBottom: '0px', marginTop: '20px'}} />
+        <Grid container spacing={1} justify="center" >
           <Grid item xs={12} sm={2}>
             <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/organizations')} >
               <CardHeader title={get(serverStats, "Organizations", "0") } subheader="Organizations"  />
