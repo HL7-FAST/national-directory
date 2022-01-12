@@ -15,7 +15,7 @@
       "defaultVideo": "/VideoBackgrounds/GrayWaves.mp4",
       "backgroundImagePath": "/backgrounds/medical/Gradient.jpg",
       "palette": {
-        "primaryColor": "rgb(108, 183, 110)",
+        "primaryColor": "#339999",
         "primaryText": "rgba(255, 255, 255, 1) !important",
       
         "secondaryColor": "#fdb813",

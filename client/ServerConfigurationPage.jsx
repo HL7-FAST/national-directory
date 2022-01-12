@@ -92,6 +92,7 @@ function ServerConfigurationPage(props){
     setChecked(event.target.checked);
   };
 
+
   useEffect(function(){
     if(Meteor.isClient){
       Meteor.call('hasServerKeys', function(error, result){

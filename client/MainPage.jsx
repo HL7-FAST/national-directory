@@ -422,6 +422,7 @@ function MainPage(props){
       </Grid>
       <Grid item xs={12} sm={6} style={{marginTop: '20px'}}>
         <StyledCard margin={20} style={{marginBottom: '20px', width: '100%'}}>
+          <CardHeader title="Workflows" />
           <CardContent>
             <Button
               variant="contained"
@@ -449,7 +450,7 @@ function MainPage(props){
   return (
     <PageCanvas id='MainPage' headerHeight={headerHeight} paddingLeft={10} paddingRight={10}>
       <Container maxWidth="lg">
-        <CardHeader title="Server Stats" style={{paddingBottom: '0px', marginBottom: '0px', marginTop: '20px'}} />
+        <CardHeader title="Server Stats" style={{paddingBottom: '0px', marginBottom: '84px', marginTop: '20px'}} />
         <Grid container spacing={1} justify="center" style={{marginBottom: '20px'}}>
           <Grid item xs={12} sm={2}>
             <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/organizations')} >
