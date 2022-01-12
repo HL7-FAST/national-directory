@@ -19,7 +19,9 @@ import {
   TableHead,
   TableRow,
   Image,
-  Typography
+  Typography,
+  Checkbox,
+  FormControlLabel
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -84,6 +86,11 @@ function ServerConfigurationPage(props){
   let [ publicKeyText, setPublicKeyText ] = useState("");
   let [ privateKeyText, setPrivateKeyText ] = useState("");
   let [ publicCertPem, setPublicCertPem ] = useState("");
+
+  let [checked, setChecked] = React.useState(true);
+  let handleChange = (event) => {
+    setChecked(event.target.checked);
+  };
 
   useEffect(function(){
     if(Meteor.isClient){
@@ -369,7 +376,6 @@ function ServerConfigurationPage(props){
   }
 
   let initSampleDataElements;
-  let upstreamServerSyncButton;
   if(currentUser){
     initSampleDataElements = <StyledCard margin={20} style={{marginBottom: '20px', width: '100%'}}>
       <CardContent>
@@ -387,27 +393,57 @@ function ServerConfigurationPage(props){
 
       </CardContent>
     </StyledCard>
-
-
-    upstreamServerSyncButton = <Button
-      variant="contained"
-      fullWidth
-      onClick={ handleSyncUpstreamDirectory.bind(this) }
-    >Sync Upstream Directory</Button>
   }
+
+
+  let upstreamServerSyncButton = <Button
+    variant="contained"
+    fullWidth
+    onClick={ handleSyncUpstreamDirectory.bind(this) }
+  >Sync Upstream Directory</Button>
 
   let upstreamServer = get(Meteor, 'settings.public.interfaces.upstreamDirectory.channel.endpoint', '')
   let upstreamServerElements = <StyledCard margin={20} style={{width: '100%'}}  >
+      <CardHeader title="Upstream Directory" />
       <CardContent>
         <TextField
-          label="Upstream Directory"
+          // label="Upstream Directory"
           fullWidth={true}
           id="upstreamDirectory"
           type="upstreamDirectory"
           value={upstreamServer}
           style={{marginBottom: '10px'}}
+          // InputProps={{
+          //   disableUnderline: true
+          // }}
+          disabled
         />
         { upstreamServerSyncButton }
+
+        <TextField
+          label="State or Jurisdiction"
+          fullWidth={true}
+          defaultValue="Illinois"
+          id="stateOrJurisdiction"
+          type="text"
+          style={{marginBottom: '10px', marginTop: '20px'}}
+          disabled
+        />
+        <FormControlLabel
+          control={<Checkbox checked={false} onChange={handleChange} />}
+          label="Daily"
+          disabled
+        />
+        <FormControlLabel
+          control={<Checkbox checked={false} onChange={handleChange} />}
+          label="Last Updated"
+          disabled
+        />
+        <FormControlLabel
+          control={<Checkbox checked={false} onChange={handleChange} />}
+          label="Near Me"
+          disabled
+        />
       </CardContent>
     </StyledCard>
 
@@ -422,6 +458,8 @@ function ServerConfigurationPage(props){
             { serverPublicCertElems }
             { generateKeyElems }
             { generateCertElems }
+          </Grid>
+          <Grid item xs={6} sm={6}>
             { upstreamServerElements }
             { initSampleDataElements }
           </Grid>

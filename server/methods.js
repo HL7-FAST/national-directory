@@ -125,6 +125,9 @@ Meteor.methods({
             parsedNdjson.forEach(function(fhirResource){
                 // console.log(get(fhirResource, 'resourceType'));
                 if(get(fhirResource, 'resourceType') === "Endpoint"){
+                    if(!has(fhirResource, 'id')){
+                        fhirResource.id = Random.id();
+                      }
                     Endpoints.insert(fhirResource)
                 }
             });
@@ -164,11 +167,10 @@ Meteor.methods({
 
         let directoryUrl = get(Meteor, 'settings.public.interfaces.upstreamDirectory.channel.endpoint');
 
-        let validationSyncUrl = directoryUrl + '/Endpoint';
-        console.log("validationSyncUrl", validationSyncUrl);
-
+        let endpointUrl = directoryUrl + '/Endpoint';
+        console.log("endpointUrl", endpointUrl);
         
-        HTTP.get(validationSyncUrl, function(error, result){
+        HTTP.get(endpointUrl, function(error, result){
             if(error){
       
             }
