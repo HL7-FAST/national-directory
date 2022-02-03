@@ -128,7 +128,6 @@
           "/related-person",
           "/risk-assessments",
           "/service-requests",
-          "/subscriptions",
           "/vitals-tracking"
         ],
         "hiddenWorkflow": [
@@ -193,6 +192,7 @@
       },
       "fhirPath": "baseR4",
       "autopublishSubscriptions": true,
+      "autoGenerateSubscriptions": true,
       "rest": {
         "Bundle": {
           "disableOauth": true,

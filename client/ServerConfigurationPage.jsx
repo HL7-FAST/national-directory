@@ -229,7 +229,6 @@ function ServerConfigurationPage(props){
   function handleSyncUpstreamDirectory(){
     console.log("Syncing upstream directory...");
 
-
     Meteor.call('syncUpstreamDirectory', function(error, result){
       if(error){
         console.log('error', error)
@@ -239,7 +238,54 @@ function ServerConfigurationPage(props){
       }
     })
   }
-  
+  function initCodeSystems(){
+    console.log("Initializing code systems...");
+
+    Meteor.call('initCodeSystems', function(error, result){
+      if(error){
+        console.log('error', error)
+      }
+      if(result){
+        console.log('result', result)
+      }
+    })
+  }
+  function initSearchParameters(){
+    console.log("Initializing search parameters...");
+
+    Meteor.call('initSearchParameters', function(error, result){
+      if(error){
+        console.log('error', error)
+      }
+      if(result){
+        console.log('result', result)
+      }
+    })
+  }
+  function initStructureDefinitions(){
+    console.log("Initializing structure definitions...");
+
+    Meteor.call('initStructureDefinitions', function(error, result){
+      if(error){
+        console.log('error', error)
+      }
+      if(result){
+        console.log('result', result)
+      }
+    })
+  }
+  function initValueSets(){
+    console.log("Initializing value sets...");
+
+    Meteor.call('initValueSets', function(error, result){
+      if(error){
+        console.log('error', error)
+      }
+      if(result){
+        console.log('result', result)
+      }
+    })
+  }
 
   let headerHeight = LayoutHelpers.calcHeaderHeight();
   let formFactor = LayoutHelpers.determineFormFactor();
@@ -379,7 +425,31 @@ function ServerConfigurationPage(props){
   let initSampleDataElements;
   if(currentUser){
     initSampleDataElements = <StyledCard margin={20} style={{marginBottom: '20px', width: '100%'}}>
-      <CardContent>
+      <CardContent>        
+        <Button
+          variant="contained"
+          fullWidth
+          onClick={ initCodeSystems.bind(this) }
+        >Init Code Systems</Button>
+        <DynamicSpacer />
+        <Button
+          variant="contained"
+          fullWidth
+          onClick={ initSearchParameters.bind(this) }
+        >Init Search Parameters</Button>
+        <DynamicSpacer />
+        <Button
+          variant="contained"
+          fullWidth
+          onClick={ initStructureDefinitions.bind(this) }
+        >Init Structure Definitions</Button>
+        <DynamicSpacer />
+        <Button
+          variant="contained"
+          fullWidth
+          onClick={ initValueSets.bind(this) }
+        >Init Value Sets</Button>
+        <DynamicSpacer />
         <Button
           variant="contained"
           fullWidth
@@ -391,7 +461,7 @@ function ServerConfigurationPage(props){
           fullWidth
           onClick={ handleSyncProviderDirectory.bind(this) }
         >Sync Provider Directory</Button>
-
+        
       </CardContent>
     </StyledCard>
   }
