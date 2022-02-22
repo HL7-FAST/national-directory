@@ -3,6 +3,8 @@ import React from 'react';
 import MainPage from './client/MainPage';
 import UdapRegistrationPage from './client/UdapRegistrationPage';
 import ServerConfigurationPage from './client/ServerConfigurationPage';
+import CertificateStoragePage from './client/CertificateStoragePage';
+import OauthClientsPage from './client/OauthClientsPage';
 
 
 
@@ -47,6 +49,26 @@ let DynamicRoutes = [{
   path: '/server-configuration',
   component: ServerConfigurationPage,
   requireAuth: true
+}, {
+  name: 'CertificateStoragePage',
+  path: '/certificate-storage-page',
+  component: CertificateStoragePage,
+  requireAuth: true
+}, {
+  name: 'OauthClientsPage',
+  path: '/oauth-clients',
+  component: OauthClientsPage,
+  requireAuth: true
+}]
+
+let SidebarWorkflows = [{
+  'primaryText': 'Certificates',
+  'to': '/certificate-storage-page',
+  'href': '/certificate-storage-page'
+}, {
+  'primaryText': 'OAuth Clients',
+  'to': '/oauth-clients',
+  'href': '/oauth-clients'
 }]
 
 
@@ -236,5 +258,6 @@ export {
   FooterButtons,
   DialogComponents,
   DynamicRoutes,
+  SidebarWorkflows,
   MainPage
 };

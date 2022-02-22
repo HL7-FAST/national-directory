@@ -564,7 +564,7 @@ Meteor.methods({
         searchParametersArray.forEach(function(searchParameter){
             if(get(searchParameter, 'resourceType') === "SearchParameter"){
                 if(!SearchParameters.findOne({id: get(searchParameter, 'id')})){
-                    SearchParameters.insert(searchParameter)
+                    SearchParameters.insert(searchParameter, {filter: false, validate: false})
                 }
             }
         })
@@ -742,7 +742,7 @@ Meteor.methods({
         valueSetsArray.forEach(function(valueSet){
             if(get(valueSet, 'resourceType') === "ValueSet"){
                 if(!ValueSets.findOne({id: get(valueSet, 'id')})){
-                    ValueSets.insert(valueSet)
+                    ValueSets.insert(valueSet, {filter: false, validate: false})
                 }
             }
         })

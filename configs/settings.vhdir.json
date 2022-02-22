@@ -174,7 +174,7 @@
   },
   "private": {
     "debug": true,
-    "trace": true,
+    "trace": false,
     "invitationCode": "MITRE",
     "clinicianInvitationCode": "MitreClinician",
     "enableCronAutomation": true,
@@ -193,6 +193,7 @@
       "fhirPath": "baseR4",
       "autopublishSubscriptions": true,
       "autoGenerateSubscriptions": true,
+      "publicationLimit": 1000,
       "rest": {
         "Bundle": {
           "disableOauth": true,
