@@ -1,6 +1,8 @@
 
 import { Meteor } from 'meteor/meteor';
 import { Endpoints, Practitioners, Organizations, HealthcareServices, InsurancePlans, Networks, Locations, OrganizationAffiliations, PractitionerRoles } from 'meteor/clinical:hl7-fhir-data-infrastructure'
+import { UdapCertificates } from 'meteor/clinical:vault-server';
+
 
 JsonRoutes.add("get", "/stats", function (req, res, next) {
     console.log('GET ' + '/stats');
@@ -54,4 +56,25 @@ JsonRoutes.add("post", "/generateAndSignJwt", function (req, res, next) {
       JsonRoutes.sendResult(res, returnPayload);    
     }
   }) ;
+});
+
+
+JsonRoutes.add("post", "/newCertificate", function (req, res, next) {
+  console.log('POST ' + '/newCertificate');
+
+  res.setHeader('Content-type', 'application/json');
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  console.log("");
+  console.log(req.body);
+  console.log("");
+
+  if(!UdapCertificates.findOne({certificate: req.body.certificate})){
+    UdapCertificates.insert(req.body)
+  }
+
+ 
+  JsonRoutes.sendResult(res, {
+    code: 200
+  });
 });

@@ -14,7 +14,7 @@ import {
 import TableNoData from 'fhir-starter';
 
 import moment from 'moment'
-import _ from 'lodash';
+import _, { result } from 'lodash';
 let get = _.get;
 let set = _.set;
 
@@ -77,14 +77,11 @@ function CertificatesTable(props){
     hideCheckbox,
     hideActionIcons,
 
-    hideStatus,
-    hideConnectionType,
-    hideName,
-    hideVersion,
-    hideOrganization,
-    hideAddress,
+    hideOwner,
+    hideCertificate,
+    hideCreatedAt,
     hideBarcode,
-
+  
     onCellClick,
     onRowClick,
     onMetaClick,
@@ -193,6 +190,10 @@ function CertificatesTable(props){
     }
   }
 
+  function dehydrateCertificate(input){
+    return input;
+  }
+
   // ------------------------------------------------------------------------
   // Column Rendering
 
@@ -239,91 +240,52 @@ function CertificatesTable(props){
     }
   } 
 
-  function renderStatus(status){
-    if (!hideStatus) {
+  function renderOwner(owner){
+    if (!hideOwner) {
       return (
-        <TableCell className='status'>{ status }</TableCell>
+        <TableCell className='owner' style={{"whiteSpace": 'nowrap', "maxWidth": '200px', 'overflow': 'hidden', "textOverflow": "ellipsis"}}>{ owner }</TableCell>
       );
     }
   }
-  function renderStatusHeader(){
-    if (!hideStatus) {
+  function renderOwnerHeader(){
+    if (!hideOwner) {
       return (
-        <TableCell className='status'>Status</TableCell>
-      );
-    }
-  }
-  function renderName(name){
-    if (!hideName) {
-      return (
-        <TableCell className='name'>{ name }</TableCell>
-      );
-    }
-  }
-  function renderNameHeader(){
-    if (!hideName) {
-      return (
-        <TableCell className='name'>Name</TableCell>
+        <TableCell className='owner'>Owner</TableCell>
       );
     }
   }
 
-  function renderConnectionType(connectionType){
-    if (!hideConnectionType) {
+  function renderCertificate(certificate){
+    if (!hideCertificate) {
       return (
-        <TableCell className='connectionType'>{ connectionType }</TableCell>
+        <TableCell className='certificate' style={{"whiteSpace": 'nowrap', "maxWidth": '400px', 'overflow': 'hidden', "textOverflow": "ellipsis"}}>{ certificate }</TableCell>
       );
     }
   }
-  function renderConnectionTypeHeader(){
-    if (!hideConnectionType) {
+  function renderCertificateHeader(){
+    if (!hideCertificate) {
       return (
-        <TableCell className='connectionType'>Connection Type</TableCell>
+        <TableCell className='certificate'>Certificate</TableCell>
       );
     }
   }
-  function renderOrganization(organization){
-    if (!hideOrganization) {
+
+  function renderCreatedAt(createdAt){
+    if (!hideCreatedAt) {
       return (
-        <TableCell className='organization'>{ organization }</TableCell>
+        <TableCell className='createdAt' style={{"width": "160px"}}>{ moment(createdAt).format("YYYY-MM-DD") }</TableCell>
       );
     }
   }
-  function renderOrganizationHeader(){
-    if (!hideOrganization) {
+  function renderCreatedAtHeader(){
+    if (!hideCreatedAt) {
       return (
-        <TableCell className='organization'>Organization</TableCell>
+        <TableCell className='createdAt'>Created At</TableCell>
       );
     }
   }
-  function renderAddress(address){
-    if (!hideAddress) {
-      return (
-        <TableCell className='address'>{ address }</TableCell>
-      );
-    }
-  }
-  function renderAddressHeader(){
-    if (!hideAddress) {
-      return (
-        <TableCell className='address'>Address</TableCell>
-      );
-    }
-  }
-  function renderVersion(version){
-    if (!hideVersion) {
-      return (
-        <TableCell className='version'>{ version }</TableCell>
-      );
-    }
-  }
-  function renderVersionHeader(){
-    if (!hideVersion) {
-      return (
-        <TableCell className='version'>Version</TableCell>
-      );
-    }
-  }
+
+  
 
   function renderBarcode(id){
     if (!hideBarcode) {
@@ -401,7 +363,7 @@ function CertificatesTable(props){
 
       certificates.forEach(function(certificate){
         if((count >= (page * rowsPerPage)) && (count < (page + 1) * rowsPerPage)){
-          certificatesToRender.push(FhirDehydrator.dehydrateCertificate(certificate, internalDateFormat));
+          certificatesToRender.push(dehydrateCertificate(certificate, internalDateFormat));
         }
         count++;
       });  
@@ -441,14 +403,9 @@ function CertificatesTable(props){
         >
           { renderCheckbox(certificatesToRender[i]) }
           { renderActionIcons(certificatesToRender[i]) }
-
-          { renderStatus(certificatesToRender[i].status) }
-          { renderConnectionType(certificatesToRender[i].connectionType) }
-          { renderVersion(certificatesToRender[i].version) }
-          { renderName(certificatesToRender[i].name) }
-          { renderOrganization(certificatesToRender[i].managingOrganization) }
-          { renderAddress(certificatesToRender[i].address) }
-
+          { renderOwner(certificatesToRender[i].certificateOwner) }
+          { renderCertificate(certificatesToRender[i].certificate) }
+          { renderCreatedAt(certificatesToRender[i].createdAt) }
           { renderBarcode(certificatesToRender[i].id)}
         </TableRow>
       );       
@@ -462,12 +419,9 @@ function CertificatesTable(props){
           <TableRow>
             { renderCheckboxHeader() }
             { renderActionIconsHeader() }
-            { renderStatusHeader() }
-            { renderConnectionTypeHeader() }
-            { renderVersionHeader() }
-            { renderNameHeader() }
-            { renderOrganizationHeader() }
-            { renderAddressHeader() }
+            { renderOwnerHeader() }
+            { renderCertificateHeader() }
+            { renderCreatedAtHeader() }
             { renderBarcodeHeader() }
           </TableRow>
         </TableHead>
@@ -493,12 +447,10 @@ CertificatesTable.propTypes = {
   hideActionIcons: PropTypes.bool,
   hideBarcode: PropTypes.bool,
   
-  hideStatus: PropTypes.bool,
-  hideConnectionType: PropTypes.bool,
-  hideVersion: PropTypes.bool,
-  hideName: PropTypes.bool,
-  hideOrganization: PropTypes.bool,
-  hideAddress: PropTypes.bool,
+  hideOwner: PropTypes.bool,
+  hideCertificate: PropTypes.bool,
+  hideCreatedAt: PropTypes.bool,
+  hideBarcode: PropTypes.bool,
 
   onCellClick: PropTypes.func,
   onRowClick: PropTypes.func,
@@ -520,12 +472,10 @@ CertificatesTable.defaultProps = {
   hideActionIcons: true,
   hideBarcode: true,
 
-  hideStatus: false,
-  hideConnectionType: false,
-  hideVersion: false,
-  hideName: false,
-  hideOrganization: false,
-  hideAddress: false,
+  hideOwner: false,
+  hideCertificate: false,
+  hideCreatedAt: false,
+  hideBarcode: true,
 
   checklist: true,
   selectedCertificateId: '',

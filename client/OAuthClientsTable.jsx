@@ -8,7 +8,8 @@ import {
   TableHead,
   TableRow,
   TablePagination,
-  Checkbox
+  Checkbox,
+  Button
 } from '@material-ui/core';
 
 import TableNoData from 'fhir-starter';
@@ -102,6 +103,9 @@ function OAuthClientsTable(props){
     hideExp,
     hideClientName,
     hideBarcode,
+    hideValidated,
+    hideButton,
+  
 
     onCellClick,
     onRowClick,
@@ -343,6 +347,37 @@ function OAuthClientsTable(props){
   //   }
   // }
 
+  
+  function renderValidated(validated){
+    if (!hideValidated) {
+      return (
+        <TableCell className='validated'>{ validated }</TableCell>
+      );
+    }
+  }
+  function renderValidatedHeader(){
+    if (!hideValidated) {
+      return (
+        <TableCell>Validated</TableCell>
+      );
+    }
+  }
+  function renderButton(_id){
+    if (!hideButton) {
+      return (
+        <TableCell className='_id'> <Button onClick={handleActionButtonClick.bind(this, _id)}>Validate</Button></TableCell>
+      );
+    }
+  }
+  function renderButtonHeader(){
+    if (!hideButton) {
+      return (
+        <TableCell>Validate</TableCell>
+      );
+    }
+  }
+
+
   function renderClientName(clientName){
     if (!hideClientName) {
       return (
@@ -360,7 +395,7 @@ function OAuthClientsTable(props){
   function renderId(id){
     if (!hideId) {
       return (
-        <TableCell className='id'>{ id }</TableCell>
+        <TableCell className='id' className="barcode helveticas">{ id }</TableCell>
       );
     }
   }
@@ -388,7 +423,7 @@ function OAuthClientsTable(props){
   function renderExp(exp){
     if (!hideExp) {
       return (
-        <TableCell className='exp'>{ exp }</TableCell>
+        <TableCell className='exp'>{ moment(exp).format("YYYY-MM-DD hh:mm") }</TableCell>
       );
     }
   }
@@ -518,17 +553,14 @@ function OAuthClientsTable(props){
           { renderCheckbox(oauthClientsToRender[i]) }
           { renderActionIcons(oauthClientsToRender[i]) }
 
-          { renderId(oauthClientsToRender[i]._id) }
+          { renderValidated(oauthClientsToRender[i].validated) }
           { renderClientName(oauthClientsToRender[i].client_name) }
           { renderIss(oauthClientsToRender[i].iss) }
           { renderExp(oauthClientsToRender[i].exp) }
 
-          {/* { renderStatus(oauthClientsToRender[i].status) }
-          { renderConnectionType(oauthClientsToRender[i].connectionType) }
-          { renderVersion(oauthClientsToRender[i].version) }
-          { renderName(oauthClientsToRender[i].name) }
-          { renderOrganization(oauthClientsToRender[i].managingOrganization) }
-          { renderAddress(oauthClientsToRender[i].address) } */}
+          { renderButton(oauthClientsToRender[i]._id) }
+          { renderId(oauthClientsToRender[i]._id) }
+
 
           { renderBarcode(oauthClientsToRender[i].id)}
         </TableRow>
@@ -544,10 +576,13 @@ function OAuthClientsTable(props){
             { renderCheckboxHeader() }
             { renderActionIconsHeader() }
 
-            { renderIdHeader() }
+            { renderValidatedHeader() }
             { renderClientNameHeader() }
             { renderIssHeader() }
             { renderExpHeader() }
+
+            { renderButtonHeader() }
+            { renderIdHeader() }
 
             {/* { renderStatusHeader() }
             { renderConnectionTypeHeader() }
@@ -581,6 +616,8 @@ OAuthClientsTable.propTypes = {
   hideBarcode: PropTypes.bool,
   
   hideStatus: PropTypes.bool,
+  hideValidated: PropTypes.bool,
+  hideButton: PropTypes.bool,
   hideId: PropTypes.bool,
   hideIss: PropTypes.bool,
   hideExp: PropTypes.bool,
@@ -607,10 +644,13 @@ OAuthClientsTable.defaultProps = {
   hideBarcode: true,
 
   hideStatus: false,
-  hideId: false,
+  hideId: true,
   hideIss: false,
   hideExp: false,
   hideClientName: false,
+  hideValidated: false,
+  hideButton: false,
+
 
   checklist: true,
   selectedOauthClientId: '',

@@ -931,4 +931,100 @@ export function VerificationResultsFooterButtons(props){
 
 
 //============================================================================================================================
+// Certificates
 
+export function CertificatesButtons(props){
+    // const buttonClasses = buttonStyles();
+  
+    console.log('VhDirFooterButtons')
+  
+    function toggleNewCertificateDialog(){
+      Session.set('mainAppDialogOpen', true);
+  
+      Session.set('mainAppDialogTitle', "Add Certificate");
+      Session.set('mainAppDialogComponent', "NewCertificateDialog");
+      Session.set('mainAppDialogMaxWidth', "md");
+    }
+  
+    
+    return (
+      <MuiThemeProvider theme={muiTheme}  >
+        <Button onClick={ toggleNewCertificateDialog.bind(this) } style={buttonStyles.west_button}>
+          New Certificate
+        </Button>      
+      </MuiThemeProvider>
+    );
+}
+
+  
+export function AddCertificateDialogActions(props){
+
+    let { 
+        children, 
+        resourceType,
+        relayUrl,
+        ...otherProps 
+    } = props;
+
+    function handleSendRecord(){
+        console.log('handleSendRecord', props);
+
+        let newCertificateRecord = {
+            resourceType: "UdapCertificate",
+            createdAt: new Date(),
+            certificateOwner:  Session.get('newUdapCertificateOwner'),
+            certificate:  Session.get('newUdapCertificate')
+        }
+
+        
+        console.log('JSON.stringify(newCertificateRecord)', JSON.stringify(newCertificateRecord))
+
+        // let relayUrl = get(Meteor, 'settings.public.interfaces.fhirRelay.channel.endpoint', 'http://localhost:3000/baseR4')
+        // if(relayUrl){
+        //     let currentCodeSystem = Session.get('CodeSystem.Current')
+        //     let assembledUrl = relayUrl;
+        //     if(has(currentCodeSystem, 'id')){
+        //         assembledUrl = relayUrl + '/' + resourceType + '/' + get(currentCodeSystem, 'id');
+        //         console.log('PUT ' + assembledUrl)
+        //         HTTP.put(assembledUrl, {data: currentCodeSystem}, function(error, result){
+        //             if(error){
+        //                 alert(JSON.stringify(error.message));
+        //             }
+        //             if(result){
+        //                 Session.set('mainAppDialogOpen', false)
+        //             }
+        //         })
+        //     } else {
+        //         assembledUrl = relayUrl + '/' + resourceType;
+        //         console.log('POST ' + assembledUrl)
+        HTTP.post(Meteor.absoluteUrl() + "/newCertificate", {data: newCertificateRecord}, function(error, result){
+            if(error){
+                alert(JSON.stringify(error.message));
+            }
+            if(result){
+                console.log('HTTP.post', result)
+                Session.set('mainAppDialogOpen', false);
+            }
+        })
+        //     }    
+        // }
+    }
+
+    let actionsToRender;
+    if(Meteor.currentUserId()){
+        actionsToRender = <DialogActions >
+            <Button onClick={handleClose} color="primary">
+                Close
+            </Button>
+            <Button onClick={handleSendRecord.bind(this)} color="primary" variant="contained">
+                Send
+            </Button>
+        </DialogActions>
+    } else {
+        actionsToRender = <DialogActions ></DialogActions>
+    }
+    
+    
+
+    return actionsToRender;
+}

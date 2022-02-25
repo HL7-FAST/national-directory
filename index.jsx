@@ -5,8 +5,7 @@ import UdapRegistrationPage from './client/UdapRegistrationPage';
 import ServerConfigurationPage from './client/ServerConfigurationPage';
 import CertificateStoragePage from './client/CertificateStoragePage';
 import OauthClientsPage from './client/OauthClientsPage';
-
-
+import NewCertificateDialog from './client/NewCertificateDialog';
 
 
 import { 
@@ -96,6 +95,9 @@ import {
   ValueSetsFooterButtons,
   VerificationResultsFooterButtons,
 
+  CertificatesButtons,
+  AddCertificateDialogActions,
+
   DefaultPostDialogActions
 } from './client/FooterButtons';
 
@@ -165,6 +167,9 @@ let FooterButtons = [{
 }, {
   pathname: '/verification-results',
   component: <VerificationResultsFooterButtons />
+}, {
+  pathname: '/certificate-storage-page',
+  component: <CertificatesButtons />
 }];
 
 
@@ -252,7 +257,13 @@ let DialogComponents = [{
   name: "VerificationResultDetail",
   component: <DialogContent><VerificationResultDetail /></DialogContent>,
   actions: <DefaultPostDialogActions resourceType="VerificationResult" />
+}, {
+  name: "NewCertificateDialog",
+  component: <DialogContent><NewCertificateDialog /></DialogContent>,
+  actions: <AddCertificateDialogActions resourceType="VerificationResult" />
 }]
+
+
 
 export {
   FooterButtons,

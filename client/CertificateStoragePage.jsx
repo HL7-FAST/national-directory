@@ -80,19 +80,7 @@ export function CertificateStoragePage(props){
     return AuditEvents.findOne(Session.get('selectedCertificateId'));
   }, [])
   data.certificates = useTracker(function(){
-    let results = [];
-    // if(Session.get('certificateChecklistMode')){
-    //   results = Certificates.find({
-    //     'focus.display': "Patient Correction"
-    //   }, {
-    //     limit: 10,
-    //     sort: {lastModified: -1}
-    //   }).fetch();      
-    // } else {
-    //   results = Certificates.find().fetch();
-    // }
-
-    return results;
+    return UdapCertificates.find().fetch();
   }, [])
   data.certificateSearchFilter = useTracker(function(){
     return Session.get('certificateSearchFilter')
