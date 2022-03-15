@@ -7,6 +7,8 @@ import CertificateStoragePage from './client/CertificateStoragePage';
 import OauthClientsPage from './client/OauthClientsPage';
 import NewCertificateDialog from './client/NewCertificateDialog';
 
+import SearchValueSetDialog from './client/SearchValueSetDialog';
+import SearchStatesDialog from './client/SearchStatesDialog';
 
 import { 
   CardContent,
@@ -172,8 +174,17 @@ let FooterButtons = [{
   component: <CertificatesButtons />
 }];
 
+SearchStatesDialog
 
 let DialogComponents = [{
+  name: "SearchStatesDialog",
+  component: <DialogContent><SearchStatesDialog /></DialogContent>,
+  actions: <DefaultPostDialogActions resourceType="ValueSet" />
+}, {
+  name: "SearchValueSetDialog",
+  component: <DialogContent><SearchValueSetDialog /></DialogContent>,
+  actions: <DefaultPostDialogActions resourceType="ValueSet" />
+}, {
   name: "CareTeamDetail",
   component: <DialogContent><CareTeamDetail /></DialogContent>,
   actions: <DefaultPostDialogActions resourceType="CareTeam" />

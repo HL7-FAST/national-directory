@@ -11,9 +11,14 @@ import jwt from 'jsonwebtoken';
 import ndjsonParser from 'ndjson-parse';
 
 import { CodeSystems, Endpoints, Organizations, SearchParameters, StructureDefinitions, ValueSets } from 'meteor/clinical:hl7-fhir-data-infrastructure';
+import { UsCoreMethods } from 'meteor/clinical:uscore';
 
 
 Meteor.methods({
+    initUsCore: function(){
+        console.log("Initializing US Core...");
+        UsCoreMethods.initializeValueSets();
+    },
     generateCertificate: function(){
         console.log("Generate certificate...")
 
