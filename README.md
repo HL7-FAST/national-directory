@@ -3,7 +3,7 @@
 
 #### Installation  
 
-```
+```bash
 # fetch boilerplate
 git clone https://github.com/clinical-meteor/node-on-fhir
 
