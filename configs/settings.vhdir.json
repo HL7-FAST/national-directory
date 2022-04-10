@@ -187,6 +187,7 @@
     },
     "fhir": {
       "disableOauth": true,
+      "inboundQueue": true,
       "schemaValidation": {
         "filter": false,
         "validate": false

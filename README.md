@@ -26,6 +26,6 @@ curl http://localhost:3000/baseR4/metadata
 curl http://localhost:3000/baseR4/Patient
 
 # run the app with custom settings file
-meteor add mitre:vhdir-core 
+meteor add mitre:national-directory   
 meteor run --settings packages/national-directory/configs/settings.vhdir.json
 ```

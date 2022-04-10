@@ -227,7 +227,7 @@ export function CareTeamsFooterButtons(props){
             </Button>
         </MuiThemeProvider>     
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
 
   return (componentToRender);
@@ -263,7 +263,7 @@ export function CodeSystemsFooterButtons(props){
             </Button>
         </MuiThemeProvider>     
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
 
   return (componentToRender);
@@ -299,7 +299,7 @@ export function CommunicationsFooterButtons(props){
             </Button>
         </MuiThemeProvider>     
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
 
   return (componentToRender);
@@ -336,7 +336,7 @@ export function CommunicationRequestsFooterButtons(props){
             </Button>
         </MuiThemeProvider>     
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
 
   return (componentToRender);
@@ -371,7 +371,7 @@ export function EndpointsFooterButtons(props){
             </Button>
         </MuiThemeProvider>
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
   
     return (componentToRender);
@@ -405,7 +405,7 @@ export function HealthcareServicesFooterButtons(props){
             </Button>
         </MuiThemeProvider>
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
   
     return (componentToRender);
@@ -439,7 +439,7 @@ export function InsurancePlansFooterButtons(props){
             </Button>
         </MuiThemeProvider>
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
   
     return (componentToRender);
@@ -472,7 +472,7 @@ export function LocationsFooterButtons(props){
             </Button>
         </MuiThemeProvider>
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
   
     return (componentToRender);
@@ -506,7 +506,7 @@ export function NetworksFooterButtons(props){
             </Button>
         </MuiThemeProvider>
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
   
     return (componentToRender);
@@ -540,7 +540,7 @@ export function OrganizationsFooterButtons(props){
             </Button>
         </MuiThemeProvider>
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
 
     return (componentToRender);
@@ -574,7 +574,7 @@ export function OrganizationAffiliationsFooterButtons(props){
             </Button>
         </MuiThemeProvider>
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
   
     return (componentToRender);
@@ -600,7 +600,7 @@ export function PractitionersFooterButtons(props){
     if(Meteor.currentUserId()){
         componentToRender = <MuiThemeProvider theme={muiTheme} >
             <Button onClick={ openDialog.bind(this) } style={ buttonStyles.west_button }>
-            New Practitioner
+                New Practitioner
             </Button>
             <Button onClick={ toggleSelect.bind(this, "Practitioner") } style={ buttonStyles.west_button }>
                 Toggle Select
@@ -610,7 +610,7 @@ export function PractitionersFooterButtons(props){
             </Button>
         </MuiThemeProvider>
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
   
     return (componentToRender);
@@ -646,7 +646,7 @@ export function PractitionerRolesFooterButtons(props){
             </Button>
         </MuiThemeProvider>
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
 
     return (componentToRender);
@@ -680,7 +680,7 @@ export function ProvenancesFooterButtons(props){
             </Button>
         </MuiThemeProvider>
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
 
     return (componentToRender);
@@ -714,7 +714,7 @@ export function RelatedPersonsFooterButtons(props){
             </Button>
         </MuiThemeProvider>
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
 
     return (componentToRender);
@@ -748,7 +748,7 @@ export function RestrictionsFooterButtons(props){
             </Button>
         </MuiThemeProvider>
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
 
     return (componentToRender);
@@ -782,7 +782,7 @@ export function SearchParametersFooterButtons(props){
             </Button>
         </MuiThemeProvider>
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
   
     return (componentToRender);
@@ -818,7 +818,7 @@ export function StructureDefinitionsFooterButtons(props){
             </Button>
         </MuiThemeProvider>
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
   
     return (componentToRender);
@@ -852,7 +852,7 @@ export function TasksFooterButtons(props){
             </Button>
         </MuiThemeProvider>
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
 
     return (componentToRender);
@@ -888,7 +888,7 @@ export function ValueSetsFooterButtons(props){
             </Button>
         </MuiThemeProvider>
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
 
     return (componentToRender);
@@ -922,7 +922,7 @@ export function VerificationResultsFooterButtons(props){
             </Button>
         </MuiThemeProvider>
     } else {
-        componentToRender = <MuiThemeProvider theme={muiTheme}></MuiThemeProvider>;
+        componentToRender = <MuiThemeProvider theme={muiTheme}><br/></MuiThemeProvider>;
     }
 
     return (componentToRender);
@@ -952,6 +952,7 @@ export function CertificatesButtons(props){
         <Button onClick={ toggleNewCertificateDialog.bind(this) } style={buttonStyles.west_button}>
           New Certificate
         </Button>      
+        {props.children}
       </MuiThemeProvider>
     );
 }
@@ -1021,7 +1022,7 @@ export function AddCertificateDialogActions(props){
             </Button>
         </DialogActions>
     } else {
-        actionsToRender = <DialogActions ></DialogActions>
+        actionsToRender = <DialogActions >{props.children}</DialogActions>
     }
     
     

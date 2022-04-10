@@ -1,6 +1,6 @@
 Package.describe({
-  name: 'mitre:vhdir-core',
-  version: '0.12.4',
+  name: 'mitre:national-directory',
+  version: '0.13.0',
   summary: 'Validated Care Coordination Directory',
   // git: 'http://github.com/mitre/vhdir-core',
   documentation: 'README.md'

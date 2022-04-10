@@ -188,6 +188,7 @@
     },
     "fhir": {
       "disableOauth": true,
+      "inboundQueue": true,
       "schemaValidation": {
         "filter": false,
         "validate": false
@@ -197,34 +198,34 @@
       "rest": {
         "AuditEvent": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
+          "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true,
-          "versioning": "versioned"
+          "versioning": "no-version"
         },
         "Bundle": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true
         },
         "CareTeam": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "CodeSystem": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "Communication": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
@@ -244,7 +245,7 @@
         },
         "HealthcareService": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
@@ -258,35 +259,35 @@
         },
         "Location": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch",  "delete", "history-type", "history-instance"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "Organization": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "OrganizationAffiliation": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "Practitioner": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "PractitionerRole": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
@@ -299,40 +300,40 @@
         },
         "SearchParameter": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "Task": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch",  "delete", "history-type", "history-instance"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "StructureDefinition": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "Subscription": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true
         },
         "ValueSet": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true
         },
         "VerificationResult": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
