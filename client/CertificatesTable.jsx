@@ -306,7 +306,6 @@ function CertificatesTable(props){
   // Pagination
 
   let rows = [];
-  // const [page, setPage] = useState(0);
   const [rowsPerPageToRender, setRowsPerPage] = useState(rowsPerPage);
 
 

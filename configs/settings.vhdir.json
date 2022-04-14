@@ -197,6 +197,13 @@
       "autoGenerateSubscriptions": true,
       "publicationLimit": 1000,
       "rest": {
+        "AuditEvent": {
+          "disableOauth": true,
+          "interactions": ["read", "vread", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "search": true,
+          "publication": true,
+          "versioning": "no-version"
+        },
         "Bundle": {
           "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
@@ -258,7 +265,7 @@
         },
         "Organization": {
           "disableOauth": true,
-          "interactions": ["read", "vread", "create", "update", "patch", "delete", "history-type", "history-instance"],
+          "interactions": ["read", "vread", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
@@ -286,9 +293,10 @@
         },
         "Provenance": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
+          "interactions": ["read", "vread", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "no-version"
         },
         "SearchParameter": {
           "disableOauth": true,
