@@ -9,6 +9,7 @@ import NewCertificateDialog from './client/NewCertificateDialog';
 
 import SearchValueSetDialog from './client/SearchValueSetDialog';
 import SearchStatesDialog from './client/SearchStatesDialog';
+import SearchResourceTypesDialog from './client/SearchResourceTypesDialog';
 
 import { 
   CardContent,
@@ -174,9 +175,14 @@ let FooterButtons = [{
   component: <CertificatesButtons />
 }];
 
-SearchStatesDialog
+
+
 
 let DialogComponents = [{
+  name: "SearchResourceTypesDialog",
+  component: <DialogContent><SearchResourceTypesDialog /></DialogContent>,
+  actions: <DefaultPostDialogActions resourceType="ValueSet" />
+}, {
   name: "SearchStatesDialog",
   component: <DialogContent><SearchStatesDialog /></DialogContent>,
   actions: <DefaultPostDialogActions resourceType="ValueSet" />

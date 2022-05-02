@@ -168,45 +168,77 @@ Meteor.methods({
             });
         }
     },
-    syncUpstreamDirectory: function(){
+    syncUpstreamDirectory: function(options){
         console.log("Syncing upstream directory....");
 
         let directoryUrl = get(Meteor, 'settings.public.interfaces.upstreamDirectory.channel.endpoint');
 
-        let endpointUrl = directoryUrl + '/Endpoint';
-        console.log("endpointUrl", endpointUrl);
+
+        let responseUrl = Meteor.absoluteUrl() + 'baseR4/Subscription';
+        console.log("responseUrl", responseUrl);
+
+
+        let subscriptionQuery = {};
+        console.log('subscriptionQuery', subscriptionQuery);
+
+        let payload = {
+            "resourceType" : "Subscription",
+            "id" : Random.id(),
+            "status" : "active",
+            "reason" : "Back-end subscription to updates in the Organization collection for the HL7 connectathon federated directory demo.",
+            "criteria" : JSON.stringify(subscriptionQuery),
+            "channel" : {
+              "type" : "rest-hook",
+              "endpoint" : responseUrl
+            }
+        };
+
+        console.log('payload', payload);
+
+        let subscriptionUrl = directoryUrl + '/Subscription/' + get(payload, 'id');
+        console.log("subscriptionUrl", subscriptionUrl);
+
+
+        HTTP.put(subscriptionUrl , {
+            data: payload
+        }, function(error, result){
+            if(error) { console.log('error', error)}
+            if(result) { console.log('result', result)}
+        })
         
-        HTTP.get(endpointUrl, function(error, result){
-            if(error){
+        // HTTP.get(endpointUrl, function(error, result){
+        //     if(error){
       
-            }
-            if(result){
-              // console.log('result', result)
-              let parsedData = JSON.parse(result.content);
-            //   console.log('parsedData', parsedData)
-              console.log('Received ' + get(parsedData, 'total') + ' records.')
+        //     }
+        //     if(result){
+        //       // console.log('result', result)
+        //       let parsedData = JSON.parse(result.content);
+        //     //   console.log('parsedData', parsedData)
+        //       console.log('Received ' + get(parsedData, 'total') + ' records.')
       
-              if(get(parsedData, 'resourceType') === "Bundle"){
-                if(Array.isArray(parsedData.entry)){
-                  parsedData.entry.forEach(function(entry, index){
-                    if(get(entry, 'resourceType') === "Endpoint"){
-                      // console.log("Endpoint " + index)
-                      if(has(entry, 'id')){
-                        if(!Endpoints.findOne({id: entry.id})){
-                            Endpoints.insert(entry);
-                          }      
-                      } else {
-                        if(!has(entry, 'id')){
-                            entry.id = Random.id();
-                          }
-                          Endpoints.insert(entry);
-                      }
-                    }
-                  })
-                }
-              }
-            }
-          })
+        //       if(get(parsedData, 'resourceType') === "Bundle"){
+        //         if(Array.isArray(parsedData.entry)){
+        //           parsedData.entry.forEach(function(entry, index){
+        //             if(get(entry, 'resourceType') === "Endpoint"){
+        //               // console.log("Endpoint " + index)
+        //               if(has(entry, 'id')){
+        //                 if(!Endpoints.findOne({id: entry.id})){
+        //                     Endpoints.insert(entry);
+        //                   }      
+        //               } else {
+        //                 if(!has(entry, 'id')){
+        //                     entry.id = Random.id();
+        //                   }
+        //                   Endpoints.insert(entry);
+        //               }
+        //             }
+        //           })
+        //         }
+        //       }
+        //     }
+        // })
+
+
     },
     initCodeSystems: function(){
         console.log("Initializing code systems....");

@@ -129,6 +129,10 @@ function ServerConfigurationPage(props){
     return Session.get('currentUser');
   }, []);
 
+  let subscriptionChannelResourceType = useTracker(function(){
+    return Session.get('SubscriptionChannelResourceType');
+  }, []);
+
 
   function openExternalPage(url){
     logger.debug('client.app.layout.ServerConfigurationPage.openExternalPage', url);
@@ -246,7 +250,17 @@ function ServerConfigurationPage(props){
   function handleSyncUpstreamDirectory(){
     console.log("Syncing upstream directory...");
 
-    Meteor.call('syncUpstreamDirectory', function(error, result){
+    let options = {};
+
+    Session.get('SubscriptionChannelResourceType');
+
+    if(Session.get('SubscriptionChannelResourceType')){
+      options.resourceType = Session.get('SubscriptionChannelResourceType');
+    }
+
+    console.log('options', options)
+
+    Meteor.call('syncUpstreamDirectory', options, function(error, result){
       if(error){
         console.log('error', error)
       }
@@ -316,14 +330,15 @@ function ServerConfigurationPage(props){
     })
   }
 
-  function handleOpenTypes(){
-    Session.set('mainAppDialogTitle', "Search States & Territories");
-    Session.set('mainAppDialogComponent', "SearchStatesDialog");
+  
+
+  function handleOpenResourceTypes(){
+    Session.set('mainAppDialogTitle', "Select Resource Types");
+    Session.set('mainAppDialogComponent', "SearchResourceTypesDialog");
     Session.set('lastUpdated', new Date());
     Session.set('mainAppDialogMaxWidth', "md");
     Session.set('mainAppDialogOpen', true);
-  }  
-
+  }
 
   let headerHeight = LayoutHelpers.calcHeaderHeight();
   let formFactor = LayoutHelpers.determineFormFactor();
@@ -517,434 +532,90 @@ function ServerConfigurationPage(props){
     variant="contained"
     fullWidth
     onClick={ handleSyncUpstreamDirectory.bind(this) }
-  >Sync Upstream Directory</Button>
+  >Subscribe to Upstream Directory</Button>
 
   let upstreamServer = get(Meteor, 'settings.public.interfaces.upstreamDirectory.channel.endpoint', '')
   let upstreamServerElements = <StyledCard margin={20} style={{width: '100%'}}  >
       <CardHeader title="Upstream Directory" />
       <CardContent>
-        <TextField
-          label="Upstream Directory"
-          fullWidth={true}
-          id="upstreamDirectory"
-          type="upstreamDirectory"
-          value={upstreamServer}
-          style={{marginBottom: '10px'}}
-          // InputProps={{
-          //   disableUnderline: true
-          // }}
-          disabled={isDisabled}
-        />        
+            
         <Grid container spacing={3} justify="center" style={{paddingTop: '20px'}}>
           <Grid item xs={12} container spacing={3} style={{padding: '0px', margin: '0px'}}>
+            <Grid item xs={8}>
+              <TextField
+                label="Upstream Directory"
+                fullWidth={true}
+                id="upstreamDirectory"
+                type="upstreamDirectory"
+                value={upstreamServer}
+                style={{marginBottom: '10px'}}
+                disabled={isDisabled}
+              />         
+            </Grid>
             <Grid item xs={4}>
               <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>State</InputLabel>
+                <InputLabel className={classes.label}>Resource Type</InputLabel>
                 <Input
-                  id="stateOrJurisdiction"
-                  name="stateOrJurisdiction"
+                  id="resourceType"
+                  name="resourceType"
                   className={classes.input}   
+                  value={subscriptionChannelResourceType}
                   // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
                   // onChange={updateField.bind(this, 'type[0].text')}
                   fullWidth    
                   type="text"
-                  placeholder="Illinois"
+                  placeholder="Organization"
                   disabled={isDisabled}
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton
                         aria-label="toggle type select"
-                        onClick={ handleOpenTypes.bind(this) }
+                        onClick={ handleOpenResourceTypes.bind(this) }
                       >
                         <SearchIcon />
                       </IconButton>
                     </InputAdornment>
                   }           
                 />
-              </FormControl>              
-            </Grid>
-            <Grid item xs={4}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>Postal Code</InputLabel>
-                <Input
-                  id="postalCode"
-                  name="postalCode"
-                  className={classes.input}   
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="60618"
-                  disabled={isDisabled}
-                  // endAdornment={
-                  //   <InputAdornment position="end">
-                  //     <IconButton
-                  //       aria-label="toggle type select"
-                  //       onClick={ handleOpenTypes.bind(this) }
-                  //     >
-                  //       <SearchIcon />
-                  //     </IconButton>
-                  //   </InputAdornment>
-                  // }           
-                />
-              </FormControl>
-            </Grid>
-            <Grid item xs={4}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>Nation</InputLabel>
-                <Input
-                  id="nation"
-                  name="nation"
-                  className={classes.input}   
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="U.S.A."
-                  disabled={isDisabled}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle type select"
-                        onClick={ handleOpenTypes.bind(this) }
-                      >
-                        <SearchIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }           
-                />
-              </FormControl>
+              </FormControl>  
             </Grid>
           </Grid>
 
-          <Grid item xs={12} container spacing={3} style={{padding: '0px', margin: '0px'}}>
-            <Grid item xs={4}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>Longitude</InputLabel>
-                <Input
-                  id="longitude"
-                  name="longitude"
-                  className={classes.input}   
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="-130.12322"
-                  disabled={isDisabled}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle type select"
-                        onClick={ handleOpenTypes.bind(this) }
-                      >
-                        <LocationOnIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }           
-                />
-              </FormControl>              
-            </Grid>
-            <Grid item xs={4}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>Latitude</InputLabel>
-                <Input
-                  id="latitude"
-                  name="latitude"
-                  className={classes.input}   
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="83.12356"
-                  disabled={isDisabled}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle type select"
-                        onClick={ handleOpenTypes.bind(this) }
-                      >
-                        <LocationOnIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }           
-                />
-              </FormControl>
-            </Grid>
-            <Grid item xs={2}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>Distance</InputLabel>
-                <Input
-                  id="distance"
-                  name="distance"
-                  className={classes.input}   
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="50"
-                  disabled={isDisabled}
-                />
-              </FormControl>      
-            </Grid>
-            <Grid item xs={2}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>Units</InputLabel>
-                <Input
-                  id="distanceUnits"
-                  name="distanceUnits"
-                  className={classes.input}   
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="miles"
-                  disabled={isDisabled}
-                />
-              </FormControl>               
-            </Grid>
+          
+          <Grid item xs={12} style={{paddingTop: '20px', paddingBottom: '20px'}}>
+            <FormControlLabel
+              control={<Checkbox checked={true} onChange={handleChange} />}
+              label="Realtime"
+              disabled={isDisabled}
+            />
+            <FormControlLabel
+              control={<Checkbox checked={false} onChange={handleChange} />}
+              label="Daily"
+              disabled={true}
+              // disabled={isDisabled}
+            />
+            <FormControlLabel
+              control={<Checkbox checked={false} onChange={handleChange} />}
+              label="Weekly"
+              disabled={true}
+              // disabled={isDisabled}
+            />
+            <FormControlLabel
+              control={<Checkbox checked={false} onChange={handleChange} />}
+              label="Monthly"
+              disabled={true}
+              // disabled={isDisabled}
+            />
+            <FormControlLabel
+              control={<Checkbox checked={false} onChange={handleChange} />}
+              label="Last Updated"
+              disabled={true}
+              // disabled={isDisabled}
+            />
           </Grid>
-
-
-          <Grid item xs={12} container spacing={3} style={{padding: '0px', margin: '0px'}}>
-            <Grid item xs={6}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>Practitioner Specialty</InputLabel>
-                <Input
-                  id="practitionerSpecialty"
-                  name="practitionerSpecialty"
-                  className={classes.input}   
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="Cardiologist"
-                  disabled={isDisabled}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle type select"
-                        onClick={ handleOpenTypes.bind(this) }
-                      >
-                        <AssignmentIndIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }           
-                />
-              </FormControl>              
-            </Grid>
-            <Grid item xs={6}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>Practitioner Qualification</InputLabel>
-                <Input
-                  id="practitionerQualifications"
-                  name="practitionerQualifications"
-                  className={classes.input}   
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="Medical Doctor"
-                  disabled={isDisabled}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle type select"
-                        onClick={ handleOpenTypes.bind(this) }
-                      >
-                        <PersonIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }           
-                />
-              </FormControl>
-            </Grid>
-          </Grid>
-          <Grid item xs={12} container spacing={3} style={{padding: '0px', margin: '0px'}}>
-            <Grid item xs={6}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>Payor Network</InputLabel>
-                <Input
-                  id="payorNetwork"
-                  name="payorNetwork"
-                  className={classes.input}   
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="Blue Cross Blue Shield"
-                  disabled={isDisabled}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle type select"
-                        onClick={ handleOpenTypes.bind(this) }
-                      >
-                        <CollectionsBookmarkIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }           
-                />
-              </FormControl>              
-            </Grid>
-            <Grid item xs={6}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>Insurance Plan</InputLabel>
-                <Input
-                  id="insurancePlan"
-                  name="insurancePlan"
-                  className={classes.input}   
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="BCBS PPO Silver"
-                  disabled={isDisabled}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle type select"
-                        onClick={ handleOpenTypes.bind(this) }
-                      >
-                        <ClassIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }           
-                />
-              </FormControl>              
-            </Grid>
-          </Grid>
-          <Grid item xs={12} container spacing={3} style={{padding: '0px', margin: '0px'}}>
-            <Grid item xs={6}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>Healthcare Service</InputLabel>
-                <Input
-                  id="healthcareService"
-                  name="healthcareService"
-                  className={classes.input}   
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="Physical Therapy"
-                  disabled={isDisabled}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle type select"
-                        onClick={ handleOpenTypes.bind(this) }
-                      >
-                        <LocalPlayIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }           
-                />
-              </FormControl>              
-            </Grid>
-            <Grid item xs={6}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>CareTeam Specialty</InputLabel>
-                <Input
-                  id="careteamSpecialty"
-                  name="careteamSpecialty"
-                  className={classes.input}   
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="Sports Injury Specialists"
-                  disabled={isDisabled}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle type select"
-                        onClick={ handleOpenTypes.bind(this) }
-                      >
-                        <SearchIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }           
-                />
-              </FormControl>
-            </Grid>
-          </Grid>
-          <Grid item xs={12} container spacing={3} style={{padding: '0px', margin: '0px'}}>
-            <Grid item xs={6}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>Endpoint Type</InputLabel>
-                <Input
-                  id="endpointType"
-                  name="endpointType"
-                  className={classes.input}   
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="HL7 FHIR"
-                  disabled={isDisabled}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle type select"
-                        onClick={ handleOpenTypes.bind(this) }
-                      >
-                        <SearchIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }           
-                />
-              </FormControl>
-            </Grid>
-            <Grid item xs={6}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>Security</InputLabel>
-                <Input
-                  id="endpointSignature"
-                  name="endpointSignature"
-                  className={classes.input}   
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="RS256"
-                  disabled={isDisabled}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle type select"
-                        onClick={ handleOpenTypes.bind(this) }
-                      >
-                        <SearchIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }           
-                />
-              </FormControl>
-            </Grid>
-          </Grid>
+        </Grid>
         <DynamicSpacer height={40} />
-        </Grid>
-        <Grid item xs={12} style={{paddingTop: '20px', paddingBottom: '20px'}}>
-          <FormControlLabel
-            control={<Checkbox checked={false} onChange={handleChange} />}
-            label="Daily"
-            disabled={isDisabled}
-          />
-          <FormControlLabel
-            control={<Checkbox checked={false} onChange={handleChange} />}
-            label="Weekly"
-            disabled={isDisabled}
-          />
-          <FormControlLabel
-            control={<Checkbox checked={false} onChange={handleChange} />}
-            label="Monthly"
-            disabled={isDisabled}
-          />
-          <FormControlLabel
-            control={<Checkbox checked={false} onChange={handleChange} />}
-            label="Last Updated"
-            disabled={isDisabled}
-          />
-        </Grid>
+
         { upstreamServerSyncButton }
 
       </CardContent>

@@ -20,53 +20,49 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-
-
-
-import { get, has } from 'lodash';
+import { get, has, filter } from 'lodash';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 import { HTTP } from 'meteor/http';
 import JSON5 from 'json5';
 
-import { FhirUtilities, DynamicSpacer, ValueSets, ValueSetDetail } from 'meteor/clinical:hl7-fhir-data-infrastructure';
+import { FhirUtilities, DynamicSpacer, CodeSystems, ValueSetDetail, CodeSystemsConceptsTable } from 'meteor/clinical:hl7-fhir-data-infrastructure';
 
 
 
-// SearchResourceTypesDialog
 
 
-export function SearchStatesDialog(props){
+
+export function SearchResourceTypesDialog(props){
 
   const [tabIndex, setTabIndex] = useState(0);
+  const [searchText, setSearchText] = useState("");
 
-
-  let certificate = useTracker(function(){
-    return Session.get('newUdapCertificate');
+  let selectedCodeSystem = useTracker(function(){
+    return CodeSystems.findOne({id: 'resource-types'});
   }, []);
-  let certificateOwner = useTracker(function(){
-    return Session.get('newUdapCertificateOwner');
-  }, []);
-  let usStateCodes = useTracker(function(){
-    return ValueSets.findOne({id: 'us-core-usps-state'});
-  }, []);
-  console.log('usStateCodes', usStateCodes)
+  console.log('selectedCodeSystem', selectedCodeSystem)
 
   let { 
     children, 
     id,
-    // error,
+    filter,
+    codeSystem,
     errorMessage,
     jsonContent,
     ...otherProps 
   } = props;
+
+  if(codeSystem){
+    selectedCodeSystem = codeSystem;
+  }
 
   let textToRender = "";
   if(jsonContent && !errorMessage){
     errorMessage = jsonContent;
   }
 
-  // console.log('SearchStatesDialog', errorMessage)
+  // console.log('SearchResourceTypesDialog', errorMessage)
 
   if(errorMessage){
     if(typeof errorMessage === "string"){
@@ -81,14 +77,8 @@ export function SearchStatesDialog(props){
     setTabIndex(newIndex);
   }
 
-  function handleSetCertificateOwner(event){
-    
-    // setCertificateOwner(value)
-    Session.set('newUdapCertificateOwner', event.currentTarget.value)
-  }
-  function handleSetCertificate(event){
-    // setCertificate(value)
-    Session.set('newUdapCertificate',  event.currentTarget.value)
+  function handleSetSearchText(event){
+    setSearchText(event.currentTarget.value);
   }
 
   // --------------------------------------------------------------------------------------------------------------------------------
@@ -119,25 +109,49 @@ export function SearchStatesDialog(props){
     height: '2px'
   }
 
+  let conceptCount = 0;
+  if(selectedCodeSystem){
+    if(Array.isArray(selectedCodeSystem.concept)){
+      conceptCount = selectedCodeSystem.concept.length;
+    }  
+  }
+
+  console.log('searchText', searchText)
+
   return(
-    <DialogContent id={id} className="SearchStatesDialog" style={{width: '100%'}} dividers={scroll === 'paper'}>      
+    <DialogContent id={id} className="SearchResourceTypesDialog" style={{width: '100%'}} dividers={scroll === 'paper'}>      
       <TextField
         id="search"
         type="search"
-        label="Search"
+        label="Search Resource Types"
         fullWidth={true}
-        value={ certificateOwner }
-        onChange={ handleSetCertificateOwner.bind(this) }
+        value={ searchText }
+        onChange={ handleSetSearchText.bind(this) }
         // error={Boolean(formik.errors.email && formik.touched.email)}
         // helperText={formik.touched.email && formik.errors.email}
       />
       <DynamicSpacer />
-      <ValueSetDetail 
-        valueSet={usStateCodes}
+      {/* <ValueSetDetail 
+        valueSet={selectedCodeSystem}
         hideTitleElements={true}
         hideDescriptionElements={true}
         hideTable={false}
         hideConcepts={true}
+      /> */}
+      <CodeSystemsConceptsTable 
+        codeSystem={selectedCodeSystem}
+        page={tabIndex}
+        searchText={searchText}
+        onSetPage={function(index){
+          setTabIndex(index);
+        }}
+        count={conceptCount}
+        rowsPerPage={conceptCount}
+        disablePagination={true}
+        onRowClick={function(concept){
+          Session.set('SubscriptionChannelResourceType', get(concept, 'code'))
+          Session.set('mainAppDialogOpen', false);
+        }}
       />
       
 
@@ -145,10 +159,14 @@ export function SearchStatesDialog(props){
   )
 }
 
-SearchStatesDialog.propTypes = {
-  errorMessage: PropTypes.string
+SearchResourceTypesDialog.propTypes = {
+  errorMessage: PropTypes.string,
+  filter: PropTypes.string,
+  codeSystem: PropTypes.object
 }
-SearchStatesDialog.defaultProps = {}
+SearchResourceTypesDialog.defaultProps = {
+  filter: ''
+}
 
 
-export default SearchStatesDialog;
+export default SearchResourceTypesDialog;

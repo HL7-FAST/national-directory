@@ -9,7 +9,7 @@ import {
     Button
 } from '@material-ui/core';
 
-import { get, has } from 'lodash';
+import { get, has, isEqual } from 'lodash';
 import JSON5 from 'json5';
 
 import { 
@@ -525,6 +525,15 @@ export function OrganizationsFooterButtons(props){
         Session.set('mainAppDialogMaxWidth', "md");
         // Session.set('mainAppDialogJson', {});        
     }
+    function toggleFilters(){
+        let defaultQuery = Session.get('OrganizationsPage.defaultQuery');
+
+        if(isEqual(defaultQuery, {})){
+            Session.set('OrganizationsPage.defaultQuery', {name: {$not: ""}});
+        } else {
+            Session.set('OrganizationsPage.defaultQuery', {});
+        }
+    }
   
     let componentToRender;
     if(Meteor.currentUserId()){
@@ -537,6 +546,9 @@ export function OrganizationsFooterButtons(props){
             </Button>
             <Button onClick={ toggleLayout.bind(this, "Organization") } style={ buttonStyles.west_button }>
                 Layout
+            </Button>
+            <Button onClick={ toggleFilters.bind(this) } style={ buttonStyles.west_button }>
+                Filters
             </Button>
         </MuiThemeProvider>
     } else {
@@ -862,8 +874,6 @@ export function TasksFooterButtons(props){
 //============================================================================================================================
 // Value Sets
 
-
-
 export function ValueSetsFooterButtons(props){
 
     function openDialog(){
@@ -1029,3 +1039,5 @@ export function AddCertificateDialogActions(props){
 
     return actionsToRender;
 }
+
+

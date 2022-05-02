@@ -137,13 +137,6 @@
       }
     },
     "interfaces": {
-      "upstreamDirectory": {
-        "name": "National Directory",
-        "status": "inactive",
-        "channel": {
-          "endpoint": "https://vhdir.meteorapp.com/baseR4"
-        }
-      },
       "fhirRelay": {
         "name": "FHIR Relay",
         "status": "inactive",
@@ -194,7 +187,9 @@
         "validate": false
       },
       "fhirPath": "baseR4",
-      "autopublishSubscriptions": true,
+      "autopublishSubscriptions": false,
+      "autoGenerateSubscriptions": true,
+      "publicationLimit": 1000,
       "rest": {
         "AuditEvent": {
           "disableOauth": true,
@@ -321,9 +316,10 @@
         },
         "Subscription": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "interactions": ["read", "create", "update", "delete"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "no-version"
         },
         "ValueSet": {
           "disableOauth": true,

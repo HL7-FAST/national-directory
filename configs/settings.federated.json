@@ -168,8 +168,8 @@
       "accountsServer": {      
         "name": "Accounts Server",
         "database": "meteor",
-        "host": "https://vhdir.meteorapp.com",
-        "port": 443
+        "host": "http://localhost",
+        "port": 3000
       }
     }
   },
@@ -351,17 +351,6 @@
           "publication": true
         }
       }
-    }
-  },
-  "galaxy.meteor.com": {
-    "env": {
-      "ROOT_URL": "https://federated-dir.meteorapp.com",
-      "MONGO_URL": "mongodb+srv://healthadmin:GhrKAVK0Q5Tgw7U5@federateddircluster.k5gby.mongodb.net/meteor?retryWrites=true&w=majority",
-      "MONGO_OPLOG_URL": "mongodb+srv://oplog:XZ61u4vsmZo5KsdK@federateddircluster.k5gby.mongodb.net/local?retryWrites=true&w=majority&authSource=admin&ssl=true&replicaSet=federateddircluster-shard-00-01",
-      "NODE_ENV": "production",
-      "DEBUG": 1,
-      "TRACE": 0,
-      "RELAX_UDAP_REGISTRATION": 1
     }
   }
 }
