@@ -451,7 +451,7 @@ function MainPage(props){
           <CardContent style={{marginLeft: '20px', marginRight: '20px'}}>
             <h4>About</h4>
             <p>
-              This server implements the <a href="https://build.fhir.org/ig/HL7/fhir-directory-exchange/index.html" target="_blank">National Directory Implementation Guide</a>.
+              This server implements the <a href="https://build.fhir.org/ig/HL7/fhir-directory-exchange/index.html" target="_blank">National Directory Implementation Guide</a>.  It is best viewed in Chrome or Safari, and on mobile devices.  
             </p>
             <h4>API Connectivity</h4>
             <p>

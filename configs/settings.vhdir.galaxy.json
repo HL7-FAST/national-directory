@@ -128,7 +128,6 @@
           "/related-person",
           "/risk-assessments",
           "/service-requests",
-          "/subscriptions",
           "/vitals-tracking"
         ],
         "hiddenWorkflow": [
