@@ -28,6 +28,7 @@ Package.onUse(function(api) {
 
   api.addFiles('server/methods.js', 'server');
   api.addFiles('server/https.js', 'server');
+  api.addFiles('server/hooks.js', 'server');
 
   api.addAssets('data/nppes/parsed-npi-records-100k.ndjson', 'server');
   api.addAssets('data/lantern/lantern_out.ndjson', 'server');
