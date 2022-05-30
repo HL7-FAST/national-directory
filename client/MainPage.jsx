@@ -154,6 +154,7 @@ function MainPage(props){
 
   let [ showSearchResults, setShowSearchResults ] = useState(false);
   let [ searchTerm, setSearchTerm ] = useState('');
+  let [ searchLimit, setSearchLimit ] = useState(1000);
   let [ matchedEndpoints, setMatchedEndpoints ] = useState([]);
   let [ matchedOrganizations, setMatchedOrganizations ] = useState([]);
   let [ matchedPractitioners, setMatchedPractitioners ] = useState([]);
@@ -946,18 +947,38 @@ function MainPage(props){
           <Grid item xs={12}>
             <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} >
               <CardContent>
-                <TextField 
-                  label="Search"
-                  placeholder="Dr. House | Chicago | CurrentLocation"
-                  onChange={handleChangeSearchTerm.bind(this)}
-                  value={searchTerm}
-                  InputLabelProps={{
-                    shrink: true
-                  }}
-                  fullWidth
-                />
+                <Grid container spacing={1} justify="center">
+                  <Grid item xs={10}>
+                    <TextField 
+                      label="Search Term"
+                      placeholder="Dr. House | Chicago | CurrentLocation"
+                      onChange={handleChangeSearchTerm.bind(this)}
+                      value={searchTerm}
+                      InputLabelProps={{
+                        shrink: true
+                      }}
+                      fullWidth
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <TextField 
+                      label="Number of Records"
+                      placeholder="1000"
+                      onChange={handleChangeSearchTerm.bind(this)}
+                      value={searchLimit}
+                      InputLabelProps={{
+                        shrink: true
+                      }}
+                      fullWidth
+                    />
+                  </Grid>
+                </Grid>
               </CardContent>
               <CardActions style={{width: '100%'}}>
+                <Button
+                  variant="contained"
+                  onClick={ toggleDetailedSearch.bind(this) }
+                >Search Options</Button>
                 <Button
                   variant="contained"
                   onClick={ handleExactMatchSearch.bind(this) }
@@ -967,10 +988,6 @@ function MainPage(props){
                   onClick={ handleFuzzySearch.bind(this) }
                 >Fuzzy Search</Button>
 
-                <Button
-                  variant="contained"
-                  onClick={ toggleDetailedSearch.bind(this) }
-                >Search Options</Button>
               </CardActions>
             </StyledCard>
           </Grid>

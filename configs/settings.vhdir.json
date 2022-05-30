@@ -258,7 +258,7 @@
         },
         "Organization": {
           "disableOauth": true,
-          "interactions": ["read", "vread", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
