@@ -287,6 +287,6 @@ Package.onUse(function(api) {
 
 Npm.depends({
   "ndjson-parse": "1.0.4",
-  // "ipfs-daemon": "0.12.3",
-  // "ipfs-http-client": "56.0.3"
+  "ipfs-daemon": "0.12.3",
+  "ipfs-http-client": "56.0.3"
 })
