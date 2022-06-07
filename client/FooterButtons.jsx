@@ -99,19 +99,25 @@ let buttonStyles = {
 export function VhDirFooterButtons(props){
   // const buttonClasses = buttonStyles();
 
+  let { 
+    children, 
+    jsonContent,
+    ...otherProps 
+  } = props;
+
   console.log('VhDirFooterButtons')
 
   function togglePreferences(){
     Session.toggle('mainAppDialogOpen');
 
-    Session.set('mainAppDialogComponent', "Preferences");
+    Session.set('mainAppDialogComponent', "PreferencesDialog");
     Session.set('mainAppDialogTitle', "Preferences");
     Session.set('mainAppDialogMaxWidth', "sm");
   }
 
   
   return (
-    <MuiThemeProvider theme={muiTheme}  >
+    <MuiThemeProvider theme={muiTheme}>
       <Button onClick={ togglePreferences.bind(this) } style={buttonStyles.west_button}>
         Preferences
       </Button>      

@@ -167,7 +167,7 @@
   },
   "private": {
     "debug": true,
-    "trace": false,
+    "trace": true,
     "invitationCode": "MITRE",
     "clinicianInvitationCode": "MitreClinician",
     "enableCronAutomation": true,
@@ -252,6 +252,20 @@
         "Location": {
           "disableOauth": true,
           "interactions": ["read", "create", "update", "patch", "delete"],
+          "search": true,
+          "publication": true,
+          "versioning": "versioned"
+        },
+        "Measure": {
+          "disableOauth": true,
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "search": true,
+          "publication": true,
+          "versioning": "versioned"
+        },
+        "MeasureReport": {
+          "disableOauth": true,
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"

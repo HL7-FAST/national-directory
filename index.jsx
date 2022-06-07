@@ -7,9 +7,10 @@ import CertificateStoragePage from './client/CertificateStoragePage';
 import OauthClientsPage from './client/OauthClientsPage';
 import NewCertificateDialog from './client/NewCertificateDialog';
 
-import SearchValueSetDialog from './client/SearchValueSetDialog';
+import SearchValueSetsDialog from './client/SearchValueSetsDialog';
 import SearchStatesDialog from './client/SearchStatesDialog';
 import SearchResourceTypesDialog from './client/SearchResourceTypesDialog';
+import PreferencesDialog from './client/PreferencesDialog';
 
 import { 
   CardContent,
@@ -187,8 +188,13 @@ let DialogComponents = [{
   component: <DialogContent><SearchStatesDialog /></DialogContent>,
   actions: <DefaultPostDialogActions resourceType="ValueSet" />
 }, {
-  name: "SearchValueSetDialog",
-  component: <DialogContent><SearchValueSetDialog /></DialogContent>,
+  name: "PreferencesDialog",
+  component: <DialogContent><PreferencesDialog /></DialogContent>,
+  actions: <DefaultPostDialogActions resourceType="ValueSet" />
+}, 
+{
+  name: "SearchValueSetsDialog",
+  component: <DialogContent><SearchValueSetsDialog /></DialogContent>,
   actions: <DefaultPostDialogActions resourceType="ValueSet" />
 }, {
   name: "CareTeamDetail",

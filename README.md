@@ -30,6 +30,24 @@ meteor add mitre:national-directory
 meteor run --settings packages/national-directory/configs/settings.vhdir.json
 ```
 
+#### Data Load-In  
+
+```bash 
+# Download NPPES Data File
+# Use BentoBox to parse into FHIR Resources
+# Match records on NPI numbers
+# Copy id fields to _id
+# Make sure postal codes have dashes if greater than 9 chars
+# Geocode addresses
+
+# Organizations File
+# Lantern Endpoints
+# Practitioner File
+# HSA Locations
+# Sample Insurance Plans
+# Sample Healthcare Services
+# 211 Directory ?
+```
 #### References  
 
 [UDAP Ecosystem Participation Agreement](https://docs.google.com/document/d/1OHn8reHU10-9RI9UeJlGkgMFoeD0F30rmZWvS-L3gf4/edit)  

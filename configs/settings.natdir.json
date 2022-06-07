@@ -140,14 +140,14 @@
         "name": "FHIR Relay",
         "status": "inactive",
         "channel": {
-          "endpoint": "http://localhost:3000/baseR4"
+          "endpoint": "https://national-directory.meteorapp.com/baseR4"
         }
       },
       "symptomaticFhirServer": {
         "name": "FHIR Server",
         "status": "active",
         "channel": {
-          "endpoint": "http://localhost:3000/baseR4"
+          "endpoint": "https://national-directory.meteorapp.com/baseR4"
         }
       },
       "oauthServer": {
@@ -160,18 +160,18 @@
       "accountsServer": {      
         "name": "Accounts Server",
         "database": "meteor",
-        "host": "http://localhost",
-        "port": 3000
+        "host": "https://national-directory.meteorapp.com",
+        "port": 443
       }
     }
   },
-  "private": {
+  "private": { 
     "debug": true,
-    "trace": false,
+    "trace": true,   
     "invitationCode": "MITRE",
     "clinicianInvitationCode": "MitreClinician",
     "enableCronAutomation": true,
-    "enableServerStats": false,
+    "enableServerStats": true,
     "recordVersioningEnabled": true,
     "x509": {
       "publicKey": "-----BEGIN PUBLIC KEY-----\r\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAi0IlmAWwsjhg9fMJfQgy\r\nvGrAGP4CRWbBFkIS+rJObUMcjkPnWQYIJxq7wKnc/po8S0Dro/7R8T8anNOtuki6\r\nsc7VSXFmhDpUhGq2kQbJfg+D8Tl6ZzZozSxW19YxWVaOpOKkEFl1I7hK2UcP3Qml\r\nt0/Yxkf+G2xZjwJZADGbU5ER5XwYslpezTfBeKV8tc6DITR1I5UaFIftw/ZXj1kB\r\ngI5QyPowhm+IngWRagHtOc/JBEN11G+vlHAdCrfKNLGRWlj/AGbK7I8vPVxHrp+z\r\nZRpHx9UR3QVTQLSJFn0YjQzQSIxChQ8/iW0cmJsu802MXi3ovo+OPoFMOHf12D6/\r\ntQIDAQAB\r\n-----END PUBLIC KEY-----\r\n",
@@ -192,35 +192,37 @@
       "rest": {
         "AuditEvent": {
           "disableOauth": true,
-          "interactions": ["read", "vread", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true,
           "versioning": "no-version"
         },
         "Bundle": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true
         },
         "CareTeam": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "CodeSystem": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "Communication": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "CommunicationRequest": {
           "disableOauth": true,
@@ -237,7 +239,7 @@
         },
         "HealthcareService": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
@@ -251,7 +253,7 @@
         },
         "Location": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
@@ -265,66 +267,68 @@
         },
         "OrganizationAffiliation": {
           "disableOauth": true,
-          "interactions": ["read", "vread", "create", "update", "delete"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "Practitioner": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "PractitionerRole": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "Provenance": {
           "disableOauth": true,
-          "interactions": ["read", "vread", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "interactions": ["read", "create", "update", "delete"],
           "search": true,
-          "publication": true,
-          "versioning": "no-version"
+          "publication": true
         },
         "SearchParameter": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
-          "publication": true
-        },
-        "Subscription": {
-          "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
-          "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "versioned"
         },
         "Task": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "StructureDefinition": {
           "disableOauth": true,
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "search": true,
+          "publication": true,
+          "versioning": "versioned"
+        },
+        "Subscription": {
+          "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
-          "publication": true
+          "publication": true,
+          "versioning": "no-version"
         },
         "ValueSet": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true
         },
         "VerificationResult": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
+          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
@@ -342,6 +346,17 @@
           "publication": true
         }
       }
+    }
+  },
+  "galaxy.meteor.com": {
+    "env": {
+      "ROOT_URL": "https://national-directory.meteorapp.com",
+      "MONGO_URL": "mongodb+srv://healthadmin:lnpyjNdtjcvXL9iR@vhdir.egr2m.mongodb.net/meteor?retryWrites=true&w=majority",
+      "MONGO_OPLOG_URL": "mongodb+srv://oplog:LpUqxEliCZ1HXg54@vhdir.egr2m.mongodb.net/local?retryWrites=true&w=majority&authSource=admin&ssl=true&replicaSet=vhdir-shard-00-02",
+      "NODE_ENV": "production",
+      "DEBUG": 1,
+      "TRACE": 0,
+      "RELAX_UDAP_REGISTRATION": 1
     }
   }
 }

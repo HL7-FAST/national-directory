@@ -38,14 +38,15 @@ import { ValueSetSelection } from './ValueSetSelection';
 // SearchResourceTypesDialog
 
 
-export function SearchStatesDialog(props){
+export function SearchValueSetsDialog(props){
 
   const [valueSetSearchTerm, setValueSetSearchTerm] = useState("");
 
-  let usStateCodes = useTracker(function(){
-    return ValueSets.findOne({id: 'us-core-usps-state'});
+  let selectedValueSet = useTracker(function(){
+    return ValueSets.findOne({id: Session.get('selectedValueSet')});
   }, []);
-  console.log('usStateCodes', usStateCodes)
+
+  console.log('selectedValueSet', selectedValueSet)
 
   let { 
     children, 
@@ -61,7 +62,7 @@ export function SearchStatesDialog(props){
     errorMessage = jsonContent;
   }
 
-  // console.log('SearchStatesDialog', errorMessage)
+  // console.log('SearchValueSetsDialog', errorMessage)
 
   if(errorMessage){
     if(typeof errorMessage === "string"){
@@ -105,7 +106,7 @@ export function SearchStatesDialog(props){
   }
 
   return(
-    <DialogContent id={id} className="SearchStatesDialog" style={{width: '100%'}} dividers={scroll === 'paper'}>      
+    <DialogContent id={id} className="SearchValueSetsDialog" style={{width: '100%'}} dividers={scroll === 'paper'}>      
       <TextField
         id="search"
         type="search"
@@ -113,12 +114,10 @@ export function SearchStatesDialog(props){
         fullWidth={true}
         value={ valueSetSearchTerm }
         onChange={ handleSetSearchText.bind(this) }
-        // error={Boolean(formik.errors.email && formik.touched.email)}
-        // helperText={formik.touched.email && formik.errors.email}
       />
       <DynamicSpacer />
       <ValueSetSelection 
-        valueSet={usStateCodes}
+        valueSet={selectedValueSet}
         searchTerm={ valueSetSearchTerm }
         hideTitleElements={true}
         hideDescriptionElements={false}
@@ -126,9 +125,9 @@ export function SearchStatesDialog(props){
         hideConcepts={false}
         onSelection={function(selectedValue){
           // alert(JSON.stringify(selectedValue))
-          Session.set('MainSearch.state', selectedValue);
+          Session.set(Session.get('dialogReturnValue'), selectedValue);
           Session.set('mainAppDialogOpen', false);
-        }}
+        }}        
       />
       
 
@@ -136,10 +135,10 @@ export function SearchStatesDialog(props){
   )
 }
 
-SearchStatesDialog.propTypes = {
+SearchValueSetsDialog.propTypes = {
   errorMessage: PropTypes.string
 }
-SearchStatesDialog.defaultProps = {}
+SearchValueSetsDialog.defaultProps = {}
 
 
-export default SearchStatesDialog;
+export default SearchValueSetsDialog;
