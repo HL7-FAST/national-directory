@@ -101,10 +101,10 @@ export function ValueSetSelection(props){
 
 
 
-  // inefficient, because the tracker is still running; but hey...
-  if(valueSet){
-    activeValueSet = valueSet;
-  }
+  // // inefficient, because the tracker is still running; but hey...
+  // if(valueSet){
+  //   activeValueSet = valueSet;
+  // }
 
   function updateField(path, event){
     console.log('updateField', event.currentTarget.value);
@@ -127,7 +127,7 @@ export function ValueSetSelection(props){
 
   let renderElements = [];
   let conceptsTable;
-  let composeIncludes = get(activeValueSet, 'compose.include');
+  let composeIncludes = get(valueSet, 'compose.include');
   console.log('composeIncludes', composeIncludes)
 
   if(Array.isArray(composeIncludes)){
@@ -140,10 +140,8 @@ export function ValueSetSelection(props){
               <Typography 
                 id={"concecptCode-" + get(concept, 'code')}
                 name={"concecptCode-" + get(concept, 'code')}
-                variant="h5"
-                fullWidth   
+                variant="h5"   
                 label={index === 0 ? 'Concept Code' : ''}
-                InputLabelProps={index === 0 ? {shrink: true} : null }
                 key={index + 'a'}
                 style={{cursor: 'pointer', color: 'black'}}
                 onClick={handleClickRow.bind(this, index)}
@@ -153,10 +151,8 @@ export function ValueSetSelection(props){
               <Typography 
                 id={"conceptDisplay-" + get(concept, 'code')}
                 name={"conceptDisplay-" + get(concept, 'code')}
-                variant="h5"
-                fullWidth   
+                variant="h5"                   
                 label={index === 0 ? 'Concept Display' : ''}
-                InputLabelProps={index === 0 ? {shrink: true} : null }
                 key={index + 'd'}
                 style={{cursor: 'pointer', color: 'black'}}
                 onClick={handleClickRow.bind(this, index)}
@@ -209,16 +205,16 @@ export function ValueSetSelection(props){
   }
 
   let approvedOnDate = '';
-  if(get(activeValueSet, 'approvedDate')){
-    approvedOnDate = moment(get(activeValueSet, 'approvedDate')).format("YYYY-MM-DD")
+  if(get(valueSet, 'approvedDate')){
+    approvedOnDate = moment(get(valueSet, 'approvedDate')).format("YYYY-MM-DD")
   }
   let lastEditedDate = '';
-  if(get(activeValueSet, 'date')){
-    lastEditedDate = moment(get(activeValueSet, 'date')).format("YYYY-MM-DD")
+  if(get(valueSet, 'date')){
+    lastEditedDate = moment(get(valueSet, 'date')).format("YYYY-MM-DD")
   }
   let lastReviewDate = '';
-  if(get(activeValueSet, 'lastReviewDate')){
-    lastReviewDate = moment(get(activeValueSet, 'lastReviewDate')).format("YYYY-MM-DD")
+  if(get(valueSet, 'lastReviewDate')){
+    lastReviewDate = moment(get(valueSet, 'lastReviewDate')).format("YYYY-MM-DD")
   }
 
 

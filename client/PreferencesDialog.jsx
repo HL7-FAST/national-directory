@@ -42,8 +42,14 @@ import { ValueSetSelection } from './ValueSetSelection';
 
 export function PreferencesDialog(props){
 
+  const [showServerStats, setShowServerStats] = useState(false);
   const [showExperimental, setShowExperimental] = useState(false);
   const [onlyShowMatched, setOnlyShowMatched] = useState(false);
+  const [showUrlPreview, setShowUrlPreview] = useState(false);
+
+
+  
+
 
 
   let { 
@@ -68,21 +74,37 @@ export function PreferencesDialog(props){
     setOnlyShowMatched(newValue);
     Session.set('onlyShowMatched', newValue);
   }
+  function handleToggleServerStats(event, newValue){
+    setShowServerStats(newValue);
+    Session.set('showServerStats', newValue);
+  }
+  function handleToggleShowUrlPreview(event, newValue){
+    setShowUrlPreview(newValue);
+    Session.set('showUrlPreview', newValue);
+  }
   function openPage(url){
     props.history.replace(url)
   }
 
   return(
-    <DialogContent id={id} className="PreferencesDialog" style={{width: '100%'}} dividers={scroll === 'paper'}>      
+    <DialogContent id={id} className="PreferencesDialog" style={{width: '100%', userSelect: 'none'}} dividers={scroll === 'paper'}>      
       
+      <FormControlLabel                
+        control={<Checkbox checked={showServerStats} onChange={handleToggleServerStats} name="toggleShowExperimental" />}
+        label="Show server stats"
+      /><br />
       <FormControlLabel                
         control={<Checkbox checked={showExperimental} onChange={handleToggleShowExperimental} name="toggleShowExperimental" />}
         label="Show experimental search options"
-      />
+      /><br />
       <FormControlLabel                
         control={<Checkbox checked={onlyShowMatched} onChange={handleToggleOnlyShowMatched} name="toggleShowExperimental" />}
         label="Only show Orgs with matched names and addresses"
-      />
+      /><br />
+      <FormControlLabel                
+        control={<Checkbox checked={showUrlPreview} onChange={handleToggleShowUrlPreview} name="toggleShowExperimental" />}
+        label="Show URL preview"
+      /><br />
       <DynamicSpacer />      
       <Button
         variant="contained"
@@ -96,11 +118,11 @@ export function PreferencesDialog(props){
         onClick={ openPage.bind(this, '/udap-registration')}
       >Register App</Button>
       <DynamicSpacer />
-      <Button
+      {/* <Button
         variant="contained"
         fullWidth
         onClick={ openPage.bind(this, '/verification-results')}
-      >Validation Queue</Button>
+      >Validation Queue</Button> */}
       
     </DialogContent>
   )

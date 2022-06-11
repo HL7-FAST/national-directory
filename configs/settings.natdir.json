@@ -73,7 +73,7 @@
           "DynamicModules": true,
           "SidebarWorkflows": true,
           "Theme": false,
-          "About": true,
+          "About": false,
           "ConstructionZone": false,
           "Navbars": false,
           "DataImport": true,
@@ -91,6 +91,7 @@
           "QrScanner": false
         },
         "hidden": [
+          "/about",
           "/allergies",
           "/allergy-intolerances",
           "/audit-events",

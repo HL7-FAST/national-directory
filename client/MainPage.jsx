@@ -82,7 +82,7 @@ import Carousel from 'react-multi-carousel';
 
 import { useTracker } from 'meteor/react-meteor-data';
 
-import { EndpointsTable, OrganizationsTable, PractitionersTable } from 'meteor/clinical:hl7-fhir-data-infrastructure';
+import { LayoutHelpers, EndpointsTable, OrganizationsTable, PractitionersTable, LocationsTable, HealthcareServicesTable, InsurancePlansTable } from 'meteor/clinical:hl7-fhir-data-infrastructure';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -164,10 +164,20 @@ function addFhirBase(url){
 }
 Session.setDefault('showExperimental', false);
 Session.setDefault('onlyShowMatched', false);
+Session.setDefault('showUrlPreview', false);
+Session.setDefault('showServerStats', true);
 Session.setDefault('dialogReturnValue', 'MainSearch.state');
+
+
 
 function MainPage(props){
   const classes = useStyles();
+
+  let { 
+    children, 
+    jsonContent,
+    ...otherProps 
+  } = props;
 
   let [ showSearchResults, setShowSearchResults ] = useState(false);
   let [ showNoResults, setShowNoResults ] = useState(false);
@@ -179,10 +189,16 @@ function MainPage(props){
   let [ matchedEndpoints, setMatchedEndpoints ] = useState([]);
   let [ matchedOrganizations, setMatchedOrganizations ] = useState([]);
   let [ matchedPractitioners, setMatchedPractitioners ] = useState([]);
+  let [ matchedLocations, setMatchedLocations ] = useState([]);
+  let [ matchedHealthcareServices, setMatchedHealthcareServices ] = useState([]);
+  let [ matchedInsurancePlans, setMatchedInsurancePlans ] = useState([]);
 
   let [ endpointPageIndex, setEndpointPageIndex ] = useState(0);
   let [ organizationPageIndex, setOrganizationPageIndex ] = useState(0);
   let [ practitionerPageIndex, setPractitionerPageIndex ] = useState(0);
+  let [ locationPageIndex, setLocationPageIndex ] = useState(0);
+  let [ insurancePlanPageIndex, setInsurancePlanPageIndex ] = useState(0);
+  let [ healthcareServicePageIndex, setHealthcareServicePageIndex ] = useState(0);
 
   let [ showDetailedSearch, setShowDetailedSearch ] = useState(false);
   let [ statsToShow, setStatsToShow ] = useState("server");
@@ -241,6 +257,12 @@ function MainPage(props){
   let onlyShowMatched = useTracker(function(){
     return Session.get('onlyShowMatched');
   }, [])
+  let showUrlPreview = useTracker(function(){
+    return Session.get('showUrlPreview');
+  }, [])
+  let showServerStats = useTracker(function(){
+    return Session.get('showServerStats');
+  }, [])
 
 
   let searchName = useTracker(function(){
@@ -259,37 +281,157 @@ function MainPage(props){
     return Session.get('MainSearch.country');
   }, [])
 
+  let searchPractitionerSpecialty = useTracker(function(){
+    return Session.get('MainSearch.practitionerSpecialty');
+  }, [])
+  let searchEndpointType = useTracker(function(){
+    return Session.get('MainSearch.endpointType');
+  }, [])
+  let searchHealthcareService = useTracker(function(){
+    return Session.get('MainSearch.healthcareService');
+  }, [])
+  let searchInsurancePlan = useTracker(function(){
+    return Session.get('MainSearch.insurancePlan');
+  }, [])
+
   
 
+
+  //----------------------------------------------------------------------
+  // Urls  
+  
+  let baseUrl = addFhirBase(trimTrailingSlash(Meteor.absoluteUrl()));
+  let organizationUrl = baseUrl + "/Organization?_count=" + searchCount;
+  let practitionerUrl = baseUrl + "/Practitioner?_count=" + searchCount;
+  let endpointUrl = baseUrl + "/Endpoint?_count=" + searchCount;
+  let healthcareServiceUrl = baseUrl + "/HealthcareService?_count=" + searchCount;
+  let locationUrl = baseUrl + "/Location?_count=" + searchCount;
+  let insurancePlanUrl = baseUrl + "/InsurancePlan?_count=" + searchCount;
+
+
+
+  let organizationUrlWithParams = useTracker(function(){
+    let returnUrl = organizationUrl;
+    if(Session.get('MainSearch.city')){
+      returnUrl = returnUrl + '&address-city=' + Session.get('MainSearch.city');
+    }
+    if(Session.get('MainSearch.state')){
+      returnUrl = returnUrl + '&address-state=' + get(Session.get('MainSearch.state'), 'code');
+    }
+    if(Session.get('MainSearch.postalCode')){
+      returnUrl = returnUrl + '&address-postalcode=' + Session.get('MainSearch.postalCode');
+    }
+    if(Session.get('MainSearch.country')){
+      returnUrl = returnUrl + '&address-country=' + get(Session.get('MainSearch.country'), 'code');
+    }
+    if(onlyShowMatched){
+      returnUrl = returnUrl + '&name'
+    } else {
+      if(Session.get('MainSearch.name')){
+        returnUrl = returnUrl + '&name=' + Session.get('MainSearch.name');
+      }  
+    }
+    return returnUrl;
+  }, [])
+
+
+
+  let practitionerUrlWithParams = useTracker(function(){
+    let returnUrl = practitionerUrl;
+    if(Session.get('MainSearch.practitionerSpecialty')){
+      returnUrl = returnUrl + '&specialty=' + get(Session.get('MainSearch.practitionerSpecialty'), 'code');
+    }
+    if(onlyShowMatched){
+      returnUrl = returnUrl + '&name'
+    } else {
+      if(Session.get('MainSearch.name')){
+        returnUrl = returnUrl + '&name=' + Session.get('MainSearch.name');
+      }  
+    }
+    return returnUrl;
+  }, [])
+
+
+  let endpointUrlWithParams = useTracker(function(){
+    let returnUrl = endpointUrl;
+    if(Session.get('MainSearch.endpointType')){
+      returnUrl = returnUrl + '&connection-type=' + get(Session.get('MainSearch.endpointType'), 'code');
+    }
+    if(onlyShowMatched){
+      returnUrl = returnUrl + '&name'
+    } else {
+      if(Session.get('MainSearch.name')){
+        returnUrl = returnUrl + '&name=' + Session.get('MainSearch.name');
+      }  
+    }
+    return returnUrl;
+  }, [])
+
+  let locationUrlWithParams = useTracker(function(){
+    let returnUrl = locationUrl;
+    // if(Session.get('MainSearch.endpointType')){
+    //   locationUrl = locationUrl + '&connection-type=' + get(Session.get('MainSearch.endpointType'), 'code');
+    // }
+    if(Session.get('MainSearch.city')){
+      returnUrl = returnUrl + '&address-city=' + Session.get('MainSearch.city');
+    }
+    if(Session.get('MainSearch.state')){
+      returnUrl = returnUrl + '&address-state=' + get(Session.get('MainSearch.state'), 'code');
+    }
+    if(Session.get('MainSearch.postalCode')){
+      returnUrl = returnUrl + '&address-postalcode=' + Session.get('MainSearch.postalCode');
+    }
+    if(Session.get('MainSearch.country')){
+      returnUrl = returnUrl + '&address-country=' + get(Session.get('MainSearch.country'), 'code');
+    }
+    if(onlyShowMatched){
+      returnUrl = returnUrl + '&name'
+    } else {
+      if(Session.get('MainSearch.name')){
+        returnUrl = returnUrl + '&name=' + Session.get('MainSearch.name');
+      }  
+    }
+    return returnUrl;
+  }, [])
+
+  let healthcareServiceUrlWithParams = useTracker(function(){
+    let returnUrl = healthcareServiceUrl;
+    if(Session.get('MainSearch.healthcareService')){
+      returnUrl = returnUrl + '&specialty=' + get(Session.get('MainSearch.healthcareService'), 'code');
+    }
+    if(onlyShowMatched){
+      returnUrl = returnUrl + '&name'
+    } else {
+      if(Session.get('MainSearch.name')){
+        returnUrl = returnUrl + '&name=' + Session.get('MainSearch.name');
+      }  
+    }
+    return returnUrl;
+  }, [])
+
+  let insurancePlanUrlWithParams = useTracker(function(){
+    let returnUrl = insurancePlanUrl;
+    if(Session.get('MainSearch.insurancePlan')){
+      returnUrl = returnUrl + '&specialty=' + get(Session.get('MainSearch.insurancePlan'), 'code');
+    }
+    if(onlyShowMatched){
+      returnUrl = returnUrl + '&name'
+    } else {
+      if(Session.get('MainSearch.name')){
+        returnUrl = returnUrl + '&name=' + Session.get('MainSearch.name');
+      }  
+    }
+    return returnUrl;
+  }, [])
 
 
 
   //----------------------------------------------------------------------
-  // Carousel  
-
-  const responsive = {
-    desktop: {
-      breakpoint: { max: 3000, min: 1024 },
-      items: 3,
-      paritialVisibilityGutter: 60
-    },
-    tablet: {
-      breakpoint: { max: 1024, min: 464 },
-      items: 2,
-      paritialVisibilityGutter: 50
-    },
-    mobile: {
-      breakpoint: { max: 464, min: 0 },
-      items: 1,
-      paritialVisibilityGutter: 30
-    }
-  };
-
+  // Functions  
 
   function openExternalPage(url){
     logger.debug('client.app.layout.MainPage.openExternalPage', url);
     window.open(url);
-    // props.history.replace(url)
   }
   function openPage(url){
     props.history.replace(url)
@@ -329,22 +471,21 @@ function MainPage(props){
     pageStyle.marginRight = '0px';
   }
 
-  function openPage(url){
-    props.history.replace(url)
-  }
-
   
   function handleExactMatchSearch(){
     console.log('Conducting exact match search...');
     if(searchTerm.length > 0){
       setShowSearchResults(true);
-      setShowNoResults(false);
+      // setShowNoResults(false);
     } else {
       setShowSearchResults(false);
     }
-    setMatchedEndpoints(Endpoints.find({name: searchTerm}).fetch());
-    setMatchedOrganizations(Organizations.find({name: searchTerm}).fetch());
+    setMatchedEndpoints(Endpoints.find({'name': searchTerm}).fetch());
+    setMatchedOrganizations(Organizations.find({'name': searchTerm}).fetch());
     setMatchedPractitioners(Practitioners.find({'name.text': searchTerm}).fetch());
+    setMatchedEndpoints(Organizations.find({'name': searchTerm}).fetch());
+    setMatchedHealthcareServices(Organizations.find({'name': searchTerm}).fetch());
+    setMatchedInsurancePlans(Organizations.find({'name': searchTerm}).fetch());
 
     setEndpointPageIndex(0);
     setOrganizationPageIndex(0);
@@ -355,40 +496,19 @@ function MainPage(props){
 
     if(searchTerm.length > 0){
       setShowSearchResults(true);
-      setShowNoResults(false);
+      // setShowNoResults(false);
     } else {
       setShowSearchResults(false);
-      setShowNoResults(true);
+      // setShowNoResults(true);
     }
 
-    let baseUrl = addFhirBase(trimTrailingSlash(Meteor.absoluteUrl()));
 
-    let organizationUrl = baseUrl + "/Organization?_count=" + searchCount;
-
-    if(searchTerm){
-      organizationUrl = organizationUrl + '&name=' + searchTerm;
-    }
-    if(Session.get('MainSearch.city')){
-      organizationUrl = organizationUrl + '&address-city=' + Session.get('MainSearch.city');
-    }
-    if(Session.get('MainSearch.state')){
-      organizationUrl = organizationUrl + '&address-state=' + get(Session.get('MainSearch.state'), 'code');
-    }
-    if(Session.get('MainSearch.postalCode')){
-      organizationUrl = organizationUrl + '&address-postalcode=' + Session.get('MainSearch.postalCode');
-    }
-    if(Session.get('MainSearch.country')){
-      organizationUrl = organizationUrl + '&address-country=' + get(Session.get('MainSearch.country'), 'code');
-    }
-
-    if(onlyShowMatched){
-      organizationUrl = organizationUrl + '&name'
-    }
-
-    console.log('organizationUrl', organizationUrl);
+    
 
 
-    HTTP.get(organizationUrl, function(error, result){
+
+    console.log('organizationUrlWithParams', organizationUrlWithParams);
+    HTTP.get(organizationUrlWithParams, function(error, result){
       if(error){
         console.error('error', error)
       }
@@ -397,7 +517,7 @@ function MainPage(props){
 
         let parsedContent = JSON.parse(get(result, 'content'));
         if(get(parsedContent, 'total') === 0){
-          setShowNoResults(true);
+          // setShowNoResults(true);
         } else {
           let entryArray = get(parsedContent, 'entry');
           if(Array.isArray(entryArray)){
@@ -407,7 +527,138 @@ function MainPage(props){
             setMatchedOrganizations(orgArray)
             console.log('orgArray', orgArray)  
             setShowSearchResults(true);
-            setShowNoResults(false);
+            // setShowNoResults(false);
+          }  
+        }
+      }
+    })
+
+
+    console.log('practitionerUrlWithParams', practitionerUrlWithParams);
+    HTTP.get(practitionerUrlWithParams, function(error, result){
+      if(error){
+        console.error('error', error)
+      }
+      if(result){
+        console.log('result', JSON.parse(get(result, 'content')));
+
+        let parsedContent = JSON.parse(get(result, 'content'));
+        if(get(parsedContent, 'total') === 0){
+          // setShowNoResults(true);
+        } else {
+          let entryArray = get(parsedContent, 'entry');
+          if(Array.isArray(entryArray)){
+            let practitionerArray = entryArray.map(function(entry){
+              return entry.resource;
+            })        
+            setMatchedPractitioners(practitionerArray)
+            console.log('practitionerArray', practitionerArray)  
+            setShowSearchResults(true);
+            // setShowNoResults(false);
+          }  
+        }
+      }
+    })
+
+    console.log('endpointUrlWithParams', endpointUrlWithParams);
+    HTTP.get(endpointUrlWithParams, function(error, result){
+      if(error){
+        console.error('error', error)
+      }
+      if(result){
+        console.log('result', JSON.parse(get(result, 'content')));
+
+        let parsedContent = JSON.parse(get(result, 'content'));
+        if(get(parsedContent, 'total') === 0){
+          // setShowNoResults(true);
+        } else {
+          let entryArray = get(parsedContent, 'entry');
+          if(Array.isArray(entryArray)){
+            let endpointArray = entryArray.map(function(entry){
+              return entry.resource;
+            })        
+            setMatchedEndpoints(endpointArray)
+            console.log('endpointArray', endpointArray)  
+            setShowSearchResults(true);
+            // setShowNoResults(false);
+          }  
+        }
+      }
+    })
+
+    console.log('locationUrlWithParams', locationUrlWithParams);
+    HTTP.get(locationUrlWithParams, function(error, result){
+      if(error){
+        console.error('error', error)
+      }
+      if(result){
+        console.log('result', JSON.parse(get(result, 'content')));
+
+        let parsedContent = JSON.parse(get(result, 'content'));
+        if(get(parsedContent, 'total') === 0){
+          // setShowNoResults(true);
+        } else {
+          let entryArray = get(parsedContent, 'entry');
+          if(Array.isArray(entryArray)){
+            let locationArray = entryArray.map(function(entry){
+              return entry.resource;
+            })        
+            setMatchedLocations(locationArray)
+            console.log('locationArray', locationArray)  
+            setShowSearchResults(true);
+            // setShowNoResults(false);
+          }  
+        }
+      }
+    })
+
+    console.log('insurancePlanUrlWithParams', insurancePlanUrlWithParams);
+    HTTP.get(insurancePlanUrlWithParams, function(error, result){
+      if(error){
+        console.error('error', error)
+      }
+      if(result){
+        console.log('result', JSON.parse(get(result, 'content')));
+
+        let parsedContent = JSON.parse(get(result, 'content'));
+        if(get(parsedContent, 'total') === 0){
+          // setShowNoResults(true);
+        } else {
+          let entryArray = get(parsedContent, 'entry');
+          if(Array.isArray(entryArray)){
+            let insurancePlanArray = entryArray.map(function(entry){
+              return entry.resource;
+            })        
+            setMatchedInsurancePlans(insurancePlanArray)
+            console.log('insurancePlanArray', insurancePlanArray)  
+            setShowSearchResults(true);
+            // setShowNoResults(false);
+          }  
+        }
+      }
+    })
+
+    console.log('healthcareServiceUrlWithParams', healthcareServiceUrlWithParams);
+    HTTP.get(healthcareServiceUrlWithParams, function(error, result){
+      if(error){
+        console.error('error', error)
+      }
+      if(result){
+        console.log('result', JSON.parse(get(result, 'content')));
+
+        let parsedContent = JSON.parse(get(result, 'content'));
+        if(get(parsedContent, 'total') === 0){
+          // setShowNoResults(true);
+        } else {
+          let entryArray = get(parsedContent, 'entry');
+          if(Array.isArray(entryArray)){
+            let healthcareServiceArray = entryArray.map(function(entry){
+              return entry.resource;
+            })        
+            setMatchedHealthcareServices(healthcareServiceArray)
+            console.log('healthcareServiceArray', healthcareServiceArray)  
+            setShowSearchResults(true);
+            // setShowNoResults(false);
           }  
         }
       }
@@ -421,16 +672,41 @@ function MainPage(props){
     setEndpointPageIndex(0);
     setOrganizationPageIndex(0);
     setPractitionerPageIndex(0);
+    setLocationPageIndex(0);
+    setHealthcareServicePageIndex(0);
+    setInsurancePlanPageIndex(0);
+  }
+  function handleClearSearch(){
+    setMatchedEndpoints([]);
+    setMatchedOrganizations([]);
+    setMatchedPractitioners([]);
+    setMatchedLocations([]);
+    setMatchedHealtcareServices([]);
+    setMatchedInsurancePlans([]);
+
+    // setShowNoResults(false);
+    setShowSearchResults(true);
+
+    Session.set('MainSearch.city', '');
+    Session.set('MainSearch.state', {display: '', code: ''});
+    Session.set('MainSearch.postalCode', '');
+    Session.set('MainSearch.country', {display: '', code: ''});
+    Session.set('MainSearch.practitionerSpecialty', {display: '', code: ''});
+    Session.set('MainSearch.practitionerQualification', {display: '', code: ''});
+    Session.set('MainSearch.healthcareService', {display: '', code: ''});
+    Session.set('MainSearch.insurancePlan', {display: '', code: ''});
+    Session.set('MainSearch.securityDialog', {display: '', code: ''});
+    Session.set('MainSearch.endpointType', {display: '', code: ''});
   }
   function handleFuzzySubscribe(){
     console.log('Conducting fuzzy subscribe...');
 
     if(searchTerm.length > 0){
       setShowSearchResults(true);
-      setShowNoResults(false)
+      // setShowNoResults(false)
     } else {
       setShowSearchResults(false);
-      setShowNoResults(true)
+      // setShowNoResults(true)
     }
     setMatchedEndpoints(Endpoints.find({name: {$regex: searchTerm, $options:"i"}}).fetch());
     setMatchedOrganizations(Organizations.find({name: {$regex: searchTerm, $options:"i"}}).fetch());
@@ -441,7 +717,8 @@ function MainPage(props){
     setPractitionerPageIndex(0);
   }
   function handleChangeSearchTerm(event){
-    setSearchTerm(event.currentTarget.value);    
+    setSearchTerm(event.currentTarget.value); 
+    Session.set('MainSearch.name', event.currentTarget.value);   
   }
   function handleChangeCount(event){
     setSearchCount(event.currentTarget.value);    
@@ -457,23 +734,84 @@ function MainPage(props){
     Session.set('mainAppDialogOpen', true);
   }  
   function handleOpenStateDialog(){
+    Session.set('selectedValueSet', 'us-core-usps-state');
     Session.set('mainAppDialogTitle', "Search States & Territories");
     Session.set('mainAppDialogComponent', "SearchValueSetsDialog");
     Session.set('lastUpdated', new Date());
     Session.set('mainAppDialogMaxWidth', "md");
     Session.set('mainAppDialogOpen', true);
-    Session.set('selectedValueSet', 'us-core-usps-state');
     Session.set('dialogReturnValue', 'MainSearch.state');
   }  
   function handleOpenCountryDialog(){
+    Session.set('selectedValueSet', 'country');
     Session.set('mainAppDialogTitle', "Search Nations");
     Session.set('mainAppDialogComponent', "SearchValueSetsDialog");
     Session.set('lastUpdated', new Date());
     Session.set('mainAppDialogMaxWidth', "md");
     Session.set('mainAppDialogOpen', true);
-    Session.set('selectedValueSet', 'country');
     Session.set('dialogReturnValue', 'MainSearch.country');
   }  
+
+  function handlePractitionerSpecialtyDialog(){
+    Session.set('selectedValueSet', 'c80-practice-codes');
+    Session.set('mainAppDialogTitle', "Search for Clinician Specialty");
+    Session.set('mainAppDialogComponent', "SearchValueSetsDialog");
+    Session.set('lastUpdated', new Date());
+    Session.set('mainAppDialogMaxWidth', "md");
+    Session.set('mainAppDialogOpen', true);
+    Session.set('dialogReturnValue', 'MainSearch.practitionerSpecialty');
+  }  
+  // function handlePractitionerQualificationDialog(){
+  //   Session.set('selectedValueSet', 'c80-practice-codes');
+  //   Session.set('mainAppDialogTitle', "Search by Practitioner Qualification");
+  //   Session.set('mainAppDialogComponent', "SearchValueSetsDialog");
+  //   Session.set('lastUpdated', new Date());
+  //   Session.set('mainAppDialogMaxWidth', "md");
+  //   Session.set('mainAppDialogOpen', true);
+  //   Session.set('dialogReturnValue', 'MainSearch.practitionerQualification');
+  // }  
+
+  function handleHealthcareServiceDialog(){
+    Session.set('selectedCodeSystem', 'service-type');
+    Session.set('mainAppDialogTitle', "Search Healthcare Service");
+    Session.set('mainAppDialogComponent', "SearchCodeSystemDialog");
+    Session.set('lastUpdated', new Date());
+    Session.set('mainAppDialogMaxWidth', "md");
+    Session.set('mainAppDialogOpen', true);
+    Session.set('dialogReturnValue', 'MainSearch.healthcareService');
+  }  
+  function handleInsurancePlanDialog(){
+    Session.set('selectedCodeSystem', 'insurance-plan-type');
+    Session.set('mainAppDialogTitle', "Search Insurance Plan Type");
+    Session.set('mainAppDialogComponent', "SearchCodeSystemDialog");
+    Session.set('lastUpdated', new Date());
+    Session.set('mainAppDialogMaxWidth', "md");
+    Session.set('mainAppDialogOpen', true);
+    Session.set('dialogReturnValue', 'MainSearch.insurancePlan');
+  }  
+
+  function handleEndpointDialog(){
+    Session.set('selectedCodeSystem', 'endpoint-connection-type');
+    Session.set('mainAppDialogTitle', "Search Endpoint Types");
+    Session.set('mainAppDialogComponent', "SearchCodeSystemDialog");
+    Session.set('lastUpdated', new Date());
+    Session.set('mainAppDialogMaxWidth', "md");
+    Session.set('mainAppDialogOpen', true);
+    Session.set('dialogReturnValue', 'MainSearch.endpointType');
+  }  
+  function handleSecurityDialog(){
+    Session.set('selectedValueSet', '');
+    Session.set('mainAppDialogTitle', "Search Security Dialog");
+    Session.set('mainAppDialogComponent', "SearchValueSetsDialog");
+    Session.set('lastUpdated', new Date());
+    Session.set('mainAppDialogMaxWidth', "md");
+    Session.set('mainAppDialogOpen', true);
+    Session.set('dialogReturnValue', 'MainSearch.securityDialog');
+  }  
+
+
+
+
 
   function updatePostalCode(event){
     // console.log('updatePostalCode', event.currentTarget.value);    
@@ -496,6 +834,10 @@ function MainPage(props){
     let organizationResultsCard;
     let practitionerResultsCard;
 
+    let locationResultsCard;
+    let healthcareServiceResultsCard;
+    let insurancePlanResultsCard;
+
     
 
     if(matchedEndpoints.length > 0){
@@ -504,7 +846,7 @@ function MainPage(props){
         hideEndpointPagination = false;
       }
       endpointResultsCard = <StyledCard margin={20} style={{marginTop: '0px', paddingTop: '0px', marginBottom: '20px', width: '100%'}}>    
-        <CardHeader title={matchedEndpoints.length + " Endpoints"} style={{marginBottom: '0px', paddingBottom: '0px'}} />
+        <CardHeader title={matchedEndpoints.length + " Endpoints"} subheader={endpointUrlWithParams} style={{marginBottom: '0px', paddingBottom: '0px'}} />
         <CardContent style={{marginTop: '0px', marginLeft: '20px', marginRight: '20px'}}>
           <EndpointsTable 
             endpoints={matchedEndpoints}
@@ -527,7 +869,7 @@ function MainPage(props){
         hideOrgPagination = false;
       }
       organizationResultsCard = <StyledCard margin={20} style={{marginTop: '0px', paddingTop: '0px', marginBottom: '20px', width: '100%'}}>    
-        <CardHeader title={matchedOrganizations.length + " Organizations"} style={{marginBottom: '0px', paddingBottom: '0px'}} />
+        <CardHeader title={matchedOrganizations.length + " Organizations"} subheader={organizationUrlWithParams} style={{marginBottom: '0px', paddingBottom: '0px'}} />
         <CardContent style={{marginTop: '0px', marginLeft: '20px', marginRight: '20px'}}>
           <OrganizationsTable 
             organizations={matchedOrganizations}
@@ -540,6 +882,7 @@ function MainPage(props){
             onSetPage={function(index){
               setOrganizationPageIndex(index)
             }}
+            rowsPerPage={ 5 }
           />
         </CardContent>
       </StyledCard>
@@ -551,7 +894,7 @@ function MainPage(props){
         hidePractitionerPagination = false;
       }
       practitionerResultsCard = <StyledCard margin={20} style={{marginTop: '0px', paddingTop: '0px', marginBottom: '20px', width: '100%'}}>    
-        <CardHeader title={matchedPractitioners.length + " Practitioners"} style={{marginBottom: '0px', paddingBottom: '0px'}} />
+        <CardHeader title={matchedPractitioners.length + " Practitioners"} subheader={practitionerUrlWithParams} style={{marginBottom: '0px', paddingBottom: '0px'}} />
         <CardContent style={{marginTop: '0px', marginLeft: '20px', marginRight: '20px'}}>
           <PractitionersTable 
             practitioners={matchedPractitioners}
@@ -568,42 +911,115 @@ function MainPage(props){
       </StyledCard>
     }
 
+
+    if(matchedLocations.length > 0){
+      let hideLocationPagination = true;
+      if(matchedLocations.length > 5){
+        hideLocationPagination = false;
+      }
+      locationResultsCard = <StyledCard margin={20} style={{marginTop: '0px', paddingTop: '0px', marginBottom: '20px', width: '100%'}}>    
+        <CardHeader title={matchedLocations.length + " Locations"} subheader={locationUrlWithParams} style={{marginBottom: '0px', paddingBottom: '0px'}} />
+        <CardContent style={{marginTop: '0px', marginLeft: '20px', marginRight: '20px'}}>
+          <LocationsTable 
+            locations={matchedLocations}
+            disablePagination={hideLocationPagination}
+            rowsPerPage={5}
+            hideActionIcons={true}
+            count={matchedLocations.length}
+            page={locationPageIndex}
+            onSetPage={function(index){
+              setLocationPageIndex(index)
+            }}
+          />
+        </CardContent>
+      </StyledCard>
+    }
+
+
+    if(matchedHealthcareServices.length > 0){
+      let hideHealthcareServicePagination = true;
+      if(matchedHealthcareServices.length > 5){
+        hideHealthcareServicePagination = false;
+      }
+      healthcareServiceResultsCard = <StyledCard margin={20} style={{marginTop: '0px', paddingTop: '0px', marginBottom: '20px', width: '100%'}}>    
+        <CardHeader title={matchedHealthcareServices.length + " HealthcareServices"} subheader={healthcareServiceUrlWithParams} style={{marginBottom: '0px', paddingBottom: '0px'}} />
+        <CardContent style={{marginTop: '0px', marginLeft: '20px', marginRight: '20px'}}>
+          <HealthcareServicesTable 
+            healthcareServices={matchedHealthcareServices}
+            disablePagination={hideHealthcareServicePagination}
+            rowsPerPage={5}
+            hideActionIcons={true}
+            count={matchedHealthcareServices.length}
+            page={HealthcareServicePageIndex}
+            onSetPage={function(index){
+              setHealthcareServicePageIndex(index)
+            }}
+          />
+        </CardContent>
+      </StyledCard>
+    }
+
+    if(matchedInsurancePlans.length > 0){
+      let hideInsurancePlanPagination = true;
+      if(matchedInsurancePlans.length > 5){
+        hideInsurancePlanPagination = false;
+      }
+      insurancePlanResultsCard = <StyledCard margin={20} style={{marginTop: '0px', paddingTop: '0px', marginBottom: '20px', width: '100%'}}>    
+        <CardHeader title={matchedInsurancePlans.length + " InsurancePlans"} subheader={insurancePlanUrlWithParams} style={{marginBottom: '0px', paddingBottom: '0px'}} />
+        <CardContent style={{marginTop: '0px', marginLeft: '20px', marginRight: '20px'}}>
+          <InsurancePlansTable 
+            insurancePlans={matchedInsurancePlans}
+            disablePagination={hideInsurancePlanPagination}
+            rowsPerPage={5}
+            hideActionIcons={true}
+            count={matchedInsurancePlans.length}
+            page={insurancePlanPageIndex}
+            onSetPage={function(index){
+              setInsurancePlanPageIndex(index)
+            }}
+          />
+        </CardContent>
+      </StyledCard>
+    }
+
     mainContent = <Grid container spacing={1} justify="center" style={{marginBottom: '20px'}}>
       <Grid item xs={12} sm={12} style={{marginTop: '20px', marginBottom: '80px'}} >
         
-        { endpointResultsCard }
-        { organizationResultsCard }
         { practitionerResultsCard }
-        
+        { organizationResultsCard }
+        { locationResultsCard }
+        { healthcareServiceResultsCard }
+        { insurancePlanResultsCard }
+        { endpointResultsCard }
+
       </Grid>
     </Grid>
   } else {
-    mainContent = <Grid container spacing={1} justify="center" style={{marginBottom: '20px'}}>
-      <Grid item xs={12} sm={12} style={{marginTop: '20px'}} >
-        <StyledCard margin={20} style={{marginBottom: '20px', width: '100%'}}>
-          <CardHeader title="Getting Started" />
-          <CardContent style={{marginLeft: '20px', marginRight: '20px'}}>
-            <h4>About</h4>
-            <p>
-              This server implements the <a href="https://build.fhir.org/ig/HL7/fhir-directory-exchange/index.html" target="_blank">National Directory Implementation Guide</a>.  It is best viewed in Chrome or Safari, and on mobile devices.  
-            </p>
-            <h4>API Connectivity</h4>
-            <p>
-              To access the directory via API, you will want to use a tool like <a href="https://www.postman.com/" target="_blank">Postman</a>, and then connect to the following URLs:  
-            </p>
-            <code>
-              GET <a href="https://vhdir.meteorapp.com/baseR4/metadata" target="_blank">https://vhdir.meteorapp.com/baseR4/metadata</a>  <br />
-              GET <a href="https://vhdir.meteorapp.com/baseR4/Organization" target="_blank">https://vhdir.meteorapp.com/baseR4/Organization</a> <br />
-              GET <a href="https://vhdir.meteorapp.com/baseR4/Endpoint" target="_blank">https://vhdir.meteorapp.com/baseR4/Endpoint</a> <br />
-              GET <a href="https://vhdir.meteorapp.com/baseR4/HealthcareService" target="_blank">https://vhdir.meteorapp.com/baseR4/HealthcareService</a> <br />
-            </code>
-            <h4>Contact Us</h4>
-            <p>
-              To request an account to the system, email: <a href="mailto://awatson@mitre.org">awatson@mitre.org</a>
-            </p>
-          </CardContent>
-        </StyledCard>
-      </Grid>
+    mainContent = <div style={{textAlign: 'center', width: '100%'}}><CardHeader title="No Search Results" /></div>
+    
+    // <Grid container spacing={1} justify="center" style={{marginBottom: '20px'}}>
+    //   <Grid item xs={12} sm={12} style={{marginTop: '20px'}} >
+    //     <StyledCard margin={20} style={{marginBottom: '20px', width: '100%'}}>
+    //       <CardHeader title="Getting Started" />
+    //       <CardContent style={{marginLeft: '20px', marginRight: '20px'}}>
+    //         <h4>About</h4>
+    //         <p>
+    //           This server implements the <a href="https://build.fhir.org/ig/HL7/fhir-directory-exchange/index.html" target="_blank">National Directory Implementation Guide</a>.  It is best viewed in Chrome or Safari, and on mobile devices.  
+    //         </p>
+    //         <h4>API Connectivity</h4>
+    //         <code>
+    //           GET <a href="https://vhdir.meteorapp.com/baseR4/metadata" target="_blank">https://vhdir.meteorapp.com/baseR4/metadata</a>  <br />
+    //           GET <a href="https://vhdir.meteorapp.com/baseR4/Organization" target="_blank">https://vhdir.meteorapp.com/baseR4/Organization</a> <br />
+    //           GET <a href="https://vhdir.meteorapp.com/baseR4/Endpoint" target="_blank">https://vhdir.meteorapp.com/baseR4/Endpoint</a> <br />
+    //           GET <a href="https://vhdir.meteorapp.com/baseR4/HealthcareService" target="_blank">https://vhdir.meteorapp.com/baseR4/HealthcareService</a> <br />
+    //         </code>
+    //         <h4>Contact Us</h4>
+    //         <p>
+    //           To request an account to the system, email: <a href="mailto://awatson@mitre.org">awatson@mitre.org</a>
+    //         </p>
+    //       </CardContent>
+    //     </StyledCard>
+    //   </Grid>
       {/* <Grid item xs={12} sm={6} style={{marginTop: '20px'}}>
         <StyledCard margin={20} style={{marginBottom: '20px', width: '100%'}}>
           <CardHeader title="Workflows" />
@@ -627,107 +1043,281 @@ function MainPage(props){
             >Validation Queue</Button>
           </CardContent>
         </StyledCard>
-      </Grid> */}
-    </Grid>
+      </Grid>
+    </Grid> */}
   }
 
   let noResults;
   if(showNoResults){
     noResults = <div style={{width: '100%', textAlign: 'center', userSelect: 'none', position: 'relative'}}>
-        <Typography variant="h4">No Results</Typography>
-      </div>
+      <Typography variant="h4">No Results</Typography>
+    </div>
   }
 
   let addressSearchElements = <Grid container spacing={1}>
-    <Grid item xs={3}>
-      <FormControl style={{width: '100%', marginTop: '0px'}}>
-        <InputLabel className={classes.label}>City</InputLabel>
-        <Input
-          id="city"
-          name="city"
-          className={classes.input}   
-          value={searchCity}
-          onChange={updateCity.bind(this)}
-          fullWidth    
-          type="text"
-          placeholder="Chicago"          
-        />
-      </FormControl>
+    <Grid disabled  item xs={12} container spacing={3} style={{padding: '0px', margin: '0px'}}>
+      <Grid item xs={3}>
+        <FormControl style={{width: '100%', marginTop: '0px'}}>
+          <InputLabel className={classes.label}>City</InputLabel>
+          <Input
+            id="city"
+            name="city"
+            className={classes.input}   
+            value={searchCity}
+            onChange={updateCity.bind(this)}
+            fullWidth    
+            type="text"
+            placeholder="Chicago"          
+          />
+        </FormControl>
+      </Grid>
+      <Grid item xs={3}>
+        <FormControl style={{width: '100%', marginTop: '0px'}}>
+          <InputLabel className={classes.label}>State</InputLabel>
+          <Input
+            id="stateOrJurisdiction"
+            name="stateOrJurisdiction"
+            className={classes.input}   
+            value={get(searchState, 'display')}
+            fullWidth    
+            type="text"
+            placeholder="Illinois"
+            onKeyDown= {(e) => {
+              if (e.key === 'Backspace') {
+                Session.set('MainSearch.state', null);
+                // Session.set('MainSearch.state', {code: '', display: ''});
+              }
+            }}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle type select"
+                  onClick={ handleOpenStateDialog.bind(this) }
+                >
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            }           
+          />
+        </FormControl>              
+      </Grid>
+      <Grid item xs={3}>
+        <FormControl style={{width: '100%', marginTop: '0px'}}>
+          <InputLabel className={classes.label}>Postal Code</InputLabel>
+          <Input
+            id="postalCode"
+            name="postalCode"
+            className={classes.input}   
+            value={searchPostalCode}
+            onChange={updatePostalCode.bind(this)}
+            fullWidth    
+            type="text"
+            placeholder="60618"          
+          />
+        </FormControl>
+      </Grid>
+      <Grid item xs={3}>
+        <FormControl style={{width: '100%', marginTop: '0px'}}>
+          <InputLabel className={classes.label}>Country</InputLabel>
+          <Input
+            id="country"
+            name="country"
+            className={classes.input}   
+            value={get(searchCountry, 'display')}
+              
+            type="text"
+            placeholder="USA"
+            onKeyDown= {(e) => {
+              if (e.key === 'Backspace') {
+                Session.set('MainSearch.country', null);
+                // Session.set('MainSearch.country', {code: '', display: ''});
+              }
+            }}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle type select"
+                  onClick={ handleOpenCountryDialog.bind(this) }
+                >
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            }           
+          />          
+        </FormControl>
+      </Grid>
     </Grid>
-    <Grid item xs={3}>
-      <FormControl style={{width: '100%', marginTop: '0px'}}>
-        <InputLabel className={classes.label}>State</InputLabel>
-        <Input
-          id="stateOrJurisdiction"
-          name="stateOrJurisdiction"
-          className={classes.input}   
-          value={get(searchState, 'display')}
-          fullWidth    
-          type="text"
-          placeholder="Illinois"
-          onKeyDown= {(e) => {
-            if (e.key === 'Backspace') {
-              Session.set('MainSearch.state', null);
-              // Session.set('MainSearch.state', {code: '', display: ''});
-            }
-          }}
-          endAdornment={
-            <InputAdornment position="end">
-              <IconButton
-                aria-label="toggle type select"
-                onClick={ handleOpenStateDialog.bind(this) }
-              >
-                <SearchIcon />
-              </IconButton>
-            </InputAdornment>
-          }           
-        />
-      </FormControl>              
+    <Grid disabled  item xs={12} container spacing={3} style={{padding: '0px', margin: '0px'}}>
+      <Grid item xs={6}>
+        <FormControl style={{width: '100%', marginTop: '0px'}}>
+          <InputLabel className={classes.label}>Practitioner Specialty</InputLabel>
+          <Input
+            id="practitionerSpecialty"
+            name="practitionerSpecialty"
+            className={classes.input}   
+            value={get(searchPractitionerSpecialty, 'display')}
+            fullWidth    
+            type="text"
+            placeholder="Cardiologist"
+            onKeyDown= {(e) => {
+              if (e.key === 'Backspace') {
+                Session.set('MainSearch.practitionerSpecialty', null);
+              }
+            }}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle type select"
+                  onClick={ handlePractitionerSpecialtyDialog.bind(this) }
+                >
+                  <AssignmentIndIcon />
+                </IconButton>
+              </InputAdornment>
+            }           
+          />
+        </FormControl>              
+      </Grid>
+      {/* <Grid item xs={6}>
+        <FormControl style={{width: '100%', marginTop: '0px'}}>
+          <InputLabel className={classes.label}>Practitioner Qualification</InputLabel>
+          <Input
+            id="practitionerQualifications"
+            name="practitionerQualifications"
+            className={classes.input}   
+            // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
+            // onChange={updateField.bind(this, 'type[0].text')}
+            fullWidth    
+            type="text"
+            placeholder="Medical Doctor"
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle type select"
+                  onClick={ handlePractitionerQualificationDialog.bind(this) }
+                >
+                  <PersonIcon />
+                </IconButton>
+              </InputAdornment>
+            }           
+          />
+        </FormControl>
+      </Grid> */}
+      <Grid item xs={6}>
+        <FormControl style={{width: '100%', marginTop: '0px'}}>
+          <InputLabel className={classes.label}>Endpoint Type</InputLabel>
+          <Input
+            id="endpointType"
+            name="endpointType"
+            className={classes.input}   
+            value={get(searchEndpointType, 'display')}    
+            type="text"
+            placeholder="HL7 FHIR"
+            onKeyDown= {(e) => {
+              if (e.key === 'Backspace') {
+                Session.set('MainSearch.endpointType', null);
+              }
+            }}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle type select"
+                  onClick={ handleEndpointDialog.bind(this) }
+                >
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            }           
+          />
+        </FormControl>
+      </Grid>
     </Grid>
-    <Grid item xs={3}>
-      <FormControl style={{width: '100%', marginTop: '0px'}}>
-        <InputLabel className={classes.label}>Postal Code</InputLabel>
-        <Input
-          id="postalCode"
-          name="postalCode"
-          className={classes.input}   
-          value={searchPostalCode}
-          onChange={updatePostalCode.bind(this)}
-          fullWidth    
-          type="text"
-          placeholder="60618"          
-        />
-      </FormControl>
+    <Grid disabled  item xs={12} container spacing={3} style={{padding: '0px', margin: '0px'}}>
+      <Grid item xs={6}>
+        <FormControl style={{width: '100%', marginTop: '0px'}}>
+          <InputLabel className={classes.label}>Healthcare Service</InputLabel>
+          <Input
+            id="healthcareService"
+            name="healthcareService"
+            className={classes.input}   
+            value={get(searchHealthcareService, 'display')}
+            fullWidth    
+            type="text"
+            placeholder="Physical Therapy"
+            onKeyDown= {(e) => {
+              if (e.key === 'Backspace') {
+                Session.set('MainSearch.healthcareService', null);
+              }
+            }}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle type select"
+                  onClick={ handleHealthcareServiceDialog.bind(this) }
+                >
+                  <LocalPlayIcon />
+                </IconButton>
+              </InputAdornment>
+            }           
+          />
+        </FormControl>              
+      </Grid>
+      <Grid item xs={6}>
+        <FormControl style={{width: '100%', marginTop: '0px'}}>
+          <InputLabel className={classes.label}>Insurance Plan</InputLabel>
+          <Input
+            id="insurancePlan"
+            name="insurancePlan"
+            className={classes.input}   
+            value={get(searchInsurancePlan, 'display')}
+            fullWidth    
+            type="text"
+            placeholder="BCBS PPO Silver"
+            onKeyDown= {(e) => {
+              if (e.key === 'Backspace') {
+                Session.set('MainSearch.insurancePlan', null);
+              }
+            }}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle type select"
+                  onClick={ handleInsurancePlanDialog.bind(this) }
+                >
+                  <ClassIcon />
+                </IconButton>
+              </InputAdornment>
+            }           
+          />
+        </FormControl>              
+      </Grid>
     </Grid>
-    <Grid item xs={3}>
-      <FormControl style={{width: '100%', marginTop: '0px'}}>
-        <InputLabel className={classes.label}>Country</InputLabel>
-        <Input
-          id="country"
-          name="country"
-          className={classes.input}   
-          value={get(searchCountry, 'display')}
-          fullWidth    
-          type="text"
-          placeholder="USA"
-          onKeyDown= {(e) => {
-            if (e.key === 'Backspace') {
-              Session.set('MainSearch.country', null);
-              // Session.set('MainSearch.country', {code: '', display: ''});
-            }
-          }}
-          endAdornment={
-            <InputAdornment position="end">
-              <IconButton
-                aria-label="toggle type select"
-                onClick={ handleOpenCountryDialog.bind(this) }
-              >
-                <SearchIcon />
-              </IconButton>
-            </InputAdornment>
-          }           
-        />
-      </FormControl>
+    <Grid disabled  item xs={12} container spacing={3} style={{padding: '0px', margin: '0px'}}>
+      
+      {/* <Grid item xs={6}>
+        <FormControl style={{width: '100%', marginTop: '0px'}}>
+          <InputLabel className={classes.label}>Security</InputLabel>
+          <Input
+            id="endpointSignature"
+            name="endpointSignature"
+            className={classes.input}   
+            // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
+            // onChange={updateField.bind(this, 'type[0].text')}
+            fullWidth    
+            type="text"
+            placeholder="RS256"
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle type select"
+                  onClick={ handleSecurityDialog.bind(this) }
+                >
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            }           
+          />
+        </FormControl>
+      </Grid> */}
     </Grid>
   </Grid>  
 
@@ -838,62 +1428,7 @@ function MainPage(props){
               </FormControl>               
             </Grid>
           </Grid>
-          <Grid disabled  item xs={12} container spacing={3} style={{padding: '0px', margin: '0px'}}>
-            <Grid item xs={6}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>Practitioner Specialty</InputLabel>
-                <Input
-                  id="practitionerSpecialty"
-                  name="practitionerSpecialty"
-                  className={classes.input}   
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="Cardiologist"
-                  disabled={true}
-                  // disabled={isDisabled}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle type select"
-                        onClick={ handleOpenTypes.bind(this) }
-                      >
-                        <AssignmentIndIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }           
-                />
-              </FormControl>              
-            </Grid>
-            <Grid item xs={6}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>Practitioner Qualification</InputLabel>
-                <Input
-                  id="practitionerQualifications"
-                  name="practitionerQualifications"
-                  className={classes.input}   
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="Medical Doctor"
-                  disabled={true}
-                  // disabled={isDisabled}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle type select"
-                        onClick={ handleOpenTypes.bind(this) }
-                      >
-                        <PersonIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }           
-                />
-              </FormControl>
-            </Grid>
-          </Grid>
+          
           <Grid disabled  item xs={12} container spacing={3} style={{padding: '0px', margin: '0px'}}>
             <Grid item xs={6}>
               <FormControl style={{width: '100%', marginTop: '0px'}}>
@@ -916,62 +1451,6 @@ function MainPage(props){
                         onClick={ handleOpenTypes.bind(this) }
                       >
                         <CollectionsBookmarkIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }           
-                />
-              </FormControl>              
-            </Grid>
-            <Grid item xs={6}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>Insurance Plan</InputLabel>
-                <Input
-                  id="insurancePlan"
-                  name="insurancePlan"
-                  className={classes.input}   
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="BCBS PPO Silver"
-                  disabled={true}
-                  // disabled={isDisabled}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle type select"
-                        onClick={ handleOpenTypes.bind(this) }
-                      >
-                        <ClassIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }           
-                />
-              </FormControl>              
-            </Grid>
-          </Grid>
-          <Grid disabled  item xs={12} container spacing={3} style={{padding: '0px', margin: '0px'}}>
-            <Grid item xs={6}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>Healthcare Service</InputLabel>
-                <Input
-                  id="healthcareService"
-                  name="healthcareService"
-                  className={classes.input}   
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="Physical Therapy"
-                  disabled={true}
-                  // disabled={isDisabled}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle type select"
-                        onClick={ handleOpenTypes.bind(this) }
-                      >
-                        <LocalPlayIcon />
                       </IconButton>
                     </InputAdornment>
                   }           
@@ -1006,78 +1485,67 @@ function MainPage(props){
               </FormControl>
             </Grid>
           </Grid>
-          <Grid disabled  item xs={12} container spacing={3} style={{padding: '0px', margin: '0px'}}>
-            <Grid item xs={6}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>Endpoint Type</InputLabel>
-                <Input
-                  id="endpointType"
-                  name="endpointType"
-                  className={classes.input}   
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="HL7 FHIR"
-                  // disabled={isDisabled}
-                  disabled={true}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle type select"
-                        onClick={ handleOpenTypes.bind(this) }
-                      >
-                        <SearchIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }           
-                />
-              </FormControl>
-            </Grid>
-            <Grid item xs={6}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>Security</InputLabel>
-                <Input
-                  id="endpointSignature"
-                  name="endpointSignature"
-                  className={classes.input}   
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="RS256"
-                  // disabled={isDisabled}
-                  disabled={true}x
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle type select"
-                        onClick={ handleOpenTypes.bind(this) }
-                      >
-                        <SearchIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }           
-                />
-              </FormControl>
-            </Grid>
+
+
+        </Grid>
+      </CardContent>
+    </StyledCard>
+  }
+
+
+  // let orgUrlPreview = "http://localhost:3000/baseR4/Organization";
+  // let practitionerUrlPreview = "http://localhost:3000/baseR4/Practitioner";
+  
+  // let endpointUrlWithParams = "http://localhost:3000/baseR4/Endpoint";
+  // let locationUrlWithParams = "http://localhost:3000/baseR4/Location";
+  // let healthcareServiceUrlWithParams = "http://localhost:3000/baseR4/HealthcareService";
+  // let insurancePlanUrlWithParams = "http://localhost:3000/baseR4/InsurancePlan";
+  
+
+  let urlPreview;
+  if(showUrlPreview){
+    urlPreview = <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} >
+      <CardHeader title="Urls Being Used" style={{paddingBottom: '0px', marginBottom: '0px', marginTop: '0px', userSelect: 'none'}}  />
+      <CardContent>
+        <Grid container justify="center" style={{marginBottom: '0px'}}>
+          <Grid disabled item xs={12} container spacing={3} style={{padding: '0px', margin: '0px', fontSize: '120%'}}>
+            <div style={{width: '100%'}} onClick={openExternalPage.bind(this, organizationUrlWithParams)}>GET {organizationUrlWithParams}</div><br />
+            <div style={{width: '100%'}} onClick={openExternalPage.bind(this, endpointUrlWithParams)}>GET {endpointUrlWithParams}</div><br />
+            <div style={{width: '100%'}} onClick={openExternalPage.bind(this, locationUrlWithParams)}>GET {locationUrlWithParams}</div><br />
+            <div style={{width: '100%'}} onClick={openExternalPage.bind(this, healthcareServiceUrlWithParams)}>GET {healthcareServiceUrlWithParams}</div><br />
+            <div style={{width: '100%'}} onClick={openExternalPage.bind(this, insurancePlanUrlWithParams)}>GET {insurancePlanUrlWithParams}</div><br />
+            <div style={{width: '100%'}} onClick={openExternalPage.bind(this, practitionerUrlWithParams)}>GET {practitionerUrlWithParams}</div><br />
           </Grid>
         </Grid>
       </CardContent>
-      </StyledCard>
+      <CardActions>
+        <Button onClick={openExternalPage.bind(this, "https://www.postman.com/")}>Download Postman</Button>
+      </CardActions>
+      
+    </StyledCard>
   }
 
   let serverStatsCard = <div>
     <CardHeader title="Server Stats" style={{paddingBottom: '0px', marginBottom: '0px', marginTop: '20px', cursor: 'pointer', userSelect: 'none'}} onClick={handleToggleStats} />
     <Grid container spacing={1} justify="center" >
       <Grid item xs={12} sm={2}>
+        <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/practitioners')} >
+          <CardHeader title={get(serverStats, "Practitioners", "0")} subheader="Practitioners"  />
+        </StyledCard>
+      </Grid>
+      <Grid item xs={12} sm={2}>
         <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/organizations')} >
           <CardHeader title={get(serverStats, "Organizations", "0") } subheader="Organizations"  />
         </StyledCard>
       </Grid>
       <Grid item xs={12} sm={2}>
-        <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/practitioners')} >
-          <CardHeader title={get(serverStats, "Practitioners", "0")} subheader="Practitioners"  />
+        <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/locations')} >
+          <CardHeader title={get(serverStats, "Locations", "0")} subheader="Locations"  />
+        </StyledCard>
+      </Grid>
+      <Grid item xs={12} sm={2}>
+        <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/endpoints')} >
+          <CardHeader title={get(serverStats, "Endpoints", "0")} subheader="Endpoints"  />
         </StyledCard>
       </Grid>
       <Grid item xs={12} sm={2}>
@@ -1088,16 +1556,6 @@ function MainPage(props){
       <Grid item xs={12} sm={2}>
         <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/insurance-plans')} >
           <CardHeader title={get(serverStats, "InsurancePlans", "0")} subheader="Insurance Plans"  />
-        </StyledCard>
-      </Grid>
-      <Grid item xs={12} sm={2}>
-        <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/endpoints')} >
-          <CardHeader title={get(serverStats, "Endpoints", "0")} subheader="Endpoints"  />
-        </StyledCard>
-      </Grid>
-      <Grid item xs={12} sm={2}>
-        <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/locations')} >
-          <CardHeader title={get(serverStats, "Locations", "0")} subheader="Locations"  />
         </StyledCard>
       </Grid>
     </Grid>
@@ -1140,21 +1598,27 @@ function MainPage(props){
   </div> 
 
   let statsToRender;
-  if(statsToShow === "local"){
-    statsToRender = localStatsCard;
-  } else if (statsToShow === "server"){
-    statsToRender = serverStatsCard;
+  if(showServerStats){
+    if(statsToShow === "local"){
+      statsToRender = localStatsCard;
+    } else if (statsToShow === "server"){
+      statsToRender = serverStatsCard;
+    }  
   }
+
+
 
   return (
     <PageCanvas id='MainPage' headerHeight={headerHeight} paddingLeft={10} paddingRight={10}>
       <Container maxWidth="lg" style={{paddingBottom: '84px'}} >
         
         { statsToRender }
+        { urlPreview }
 
         <Grid container justify="center" style={{marginBottom: '0px'}}>
           <Grid item xs={12}>
             <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} >
+              <CardHeader title="Search Parameters" />
               <CardContent>
                 <Grid container spacing={1} justify="center">
                   <Grid item xs={10}>
@@ -1191,6 +1655,10 @@ function MainPage(props){
                   variant="contained"
                   onClick={ handleFuzzySearch.bind(this) }
                 >Search</Button>
+                <Button
+                  variant="contained"
+                  onClick={ handleClearSearch.bind(this) }
+                >Clear</Button>
                 {/* <Button
                   variant="contained"
                   onClick={ handleExactMatchSearch.bind(this) }

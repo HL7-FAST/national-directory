@@ -11,6 +11,11 @@ import SearchValueSetsDialog from './client/SearchValueSetsDialog';
 import SearchStatesDialog from './client/SearchStatesDialog';
 import SearchResourceTypesDialog from './client/SearchResourceTypesDialog';
 import PreferencesDialog from './client/PreferencesDialog';
+import SearchCodeSystemDialog from './client/SearchCodeSystemDialog';
+
+import AboutNatDirDialog from './client/AboutNatDirDialog';
+import PrivacyPage from './client/PrivacyPage';
+import TermsAndConditionsPage from './client/TermsAndConditionsPage';
 
 import { 
   CardContent,
@@ -43,25 +48,35 @@ import {
 
 
 let DynamicRoutes = [{
-  name: 'UdapRegistrationPage',
-  path: '/udap-registration',
-  component: UdapRegistrationPage,
-  requireAuth: true
-}, {
-  name: 'ServerConfigurationPage',
-  path: '/server-configuration',
-  component: ServerConfigurationPage,
-  requireAuth: true
-}, {
-  name: 'CertificateStoragePage',
-  path: '/certificate-storage-page',
-  component: CertificateStoragePage,
-  requireAuth: true
-}, {
-  name: 'OauthClientsPage',
-  path: '/oauth-clients',
-  component: OauthClientsPage,
-  requireAuth: true
+    name: 'TermsAndConditionsPage',
+    path: '/terms-and-conditions',
+    component: TermsAndConditionsPage,
+    requireAuth: true
+  }, {
+    name: 'PrivacyPage',
+    path: '/privacy',
+    component: PrivacyPage,
+    requireAuth: true
+  }, {
+    name: 'UdapRegistrationPage',
+    path: '/udap-registration',
+    component: UdapRegistrationPage,
+    requireAuth: true
+  }, {
+    name: 'ServerConfigurationPage',
+    path: '/server-configuration',
+    component: ServerConfigurationPage,
+    requireAuth: true
+  }, {
+    name: 'CertificateStoragePage',
+    path: '/certificate-storage-page',
+    component: CertificateStoragePage,
+    requireAuth: true
+  }, {
+    name: 'OauthClientsPage',
+    path: '/oauth-clients',
+    component: OauthClientsPage,
+    requireAuth: true
 }]
 
 let SidebarWorkflows = [{
@@ -180,6 +195,9 @@ let FooterButtons = [{
 
 
 let DialogComponents = [{
+  name: "AboutNatDirDialog",
+  component: <DialogContent><AboutNatDirDialog /></DialogContent>
+}, {
   name: "SearchResourceTypesDialog",
   component: <DialogContent><SearchResourceTypesDialog /></DialogContent>,
   actions: <DefaultPostDialogActions resourceType="ValueSet" />
@@ -191,8 +209,11 @@ let DialogComponents = [{
   name: "PreferencesDialog",
   component: <DialogContent><PreferencesDialog /></DialogContent>,
   actions: <DefaultPostDialogActions resourceType="ValueSet" />
-}, 
-{
+}, {
+  name: "SearchCodeSystemDialog",
+  component: <DialogContent><SearchCodeSystemDialog /></DialogContent>,
+  actions: <DefaultPostDialogActions resourceType="ValueSet" />
+}, {
   name: "SearchValueSetsDialog",
   component: <DialogContent><SearchValueSetsDialog /></DialogContent>,
   actions: <DefaultPostDialogActions resourceType="ValueSet" />
