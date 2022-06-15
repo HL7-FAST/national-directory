@@ -1562,7 +1562,7 @@ function MainPage(props){
   </div> 
 
   let localStatsCard = <div>
-    <CardHeader title="Local Subscribtion Cache" style={{paddingBottom: '0px', marginBottom: '0px', marginTop: '20px', cursor: 'pointer', userSelect: 'none'}} onClick={handleToggleStats} />
+    <CardHeader title="Local Subscription Cache" style={{paddingBottom: '0px', marginBottom: '0px', marginTop: '20px', cursor: 'pointer', userSelect: 'none'}} onClick={handleToggleStats} />
     <Grid container spacing={1} justify="center" >
       <Grid item xs={12} sm={2}>
         <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/organizations')} >

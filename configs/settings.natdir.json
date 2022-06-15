@@ -39,6 +39,15 @@
         "nivoTheme": "red_grey"
       }
     },
+    "socialmedia": {
+      "title": "National Care Directory",
+      "type": "article",
+      "url": "https://national-directory.meteorapp.com",
+      "image": "https://national-directory.meteorapp.com/packages/mitre_national-directory/assets/SocialMedia.jpeg",
+      "description": "National Care Directory - a modern phone book and listing of healthcare providers in the US, using the latest interoperability standards.",
+      "site_name": "National Care Directory",
+      "app_id": "national-directory.mitre.us"
+    },
     "loggingThreshold": "debug",
     "fhirAutoSubscribe": true,
     "defaults": {

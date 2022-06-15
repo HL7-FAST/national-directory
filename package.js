@@ -1,6 +1,6 @@
 Package.describe({
   name: 'mitre:national-directory',
-  version: '0.13.3',
+  version: '0.13.4',
   summary: 'Validated Care Coordination Directory',
   // git: 'http://github.com/mitre/vhdir-core',
   documentation: 'README.md'
@@ -32,7 +32,6 @@ Package.onUse(function(api) {
 
   api.addAssets('data/nppes/parsed-npi-records-100k.ndjson', 'server');
   api.addAssets('data/lantern/lantern_out.ndjson', 'server');
-
   
   api.addAssets('data/vhdir-definitions/CodeSystem-accessibility.json', 'server');
   api.addAssets('data/vhdir-definitions/CodeSystem-consent.json', 'server');
@@ -280,6 +279,7 @@ Package.onUse(function(api) {
   api.addAssets('data/vhdir-definitions/ValueSet-validationneed.json', 'server');
   api.addAssets('data/vhdir-definitions/ValueSet-validationprocess.json', 'server');
 
+  api.addFiles('assets/SocialMedia.jpg', "client", {isAsset: true});
 
   api.mainModule('index.jsx', 'client');
 });
