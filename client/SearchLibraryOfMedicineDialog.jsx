@@ -1,6 +1,13 @@
 // UMLS Metathesaurus License
 // Need to file an annual report on usage
 
+// https://taxonomy.nucc.org/
+// https://www.nlm.nih.gov/vsac/support/usingvsac/vsacsvsapiv2.html  
+// https://www.nlm.nih.gov/vsac/support/usingvsac/vsacfhirapi.html  
+
+// https://npiprofile.com/
+// https://npiprofile.com/validation/1679576722
+
 
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';

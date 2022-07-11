@@ -79,8 +79,9 @@ Meteor.methods({
 
         let result = {};
 
-        let privateKeyPem = get(Meteor, 'settings.private.x509.publicCertPem');
-        console.log('privateKeyPem', privateKeyPem)            
+        let privateKeyPem = get(Meteor, 'settings.private.x509.privateKey');
+        console.log('privateKeyPem')   
+        console.log(privateKeyPem)            
 
         jwt.sign(jwtPayload, privateKeyPem.trim(), {
             algorithm: 'RS256',
@@ -799,5 +800,32 @@ Meteor.methods({
           })
 
         // return methodResult;
-    }
+    },
+    fetchWellKnownUdap: async function(wellKnownUdapUrl){
+        console.log('fetchWellKnownUdap', wellKnownUdapUrl);
+
+        // let valueSetId = "2.16.840.1.114222.4.11.1066";
+        // let methodResult = null;
+
+        // let nlmApiKey = get(Meteor, 'settings.private.nationalLibraryOfMedicine.apiKey', '')
+
+        return await HTTP.get(wellKnownUdapUrl)
+
+        // HTTP.get(wellKnownUdapUrl, function(error, result){
+        //     if(error){
+        //       console.log('handleFetchWellknownUdap.error', error)
+        //     }
+        //     if(result){
+        //       console.log('handleFetchWellknownUdap.result.data', get(result, 'data'))
+      
+        //       setUdapConfig(get(result, 'data'));
+              
+        //       if(Array.isArray(get(result, 'data.x5c'))){
+        //         console.log('x.509 cert: ' + result.data.x5c[0]);
+        //         setCertificate(result.data.x5c);          
+        //       }
+              
+        //     }
+        //   })
+    },
 })
