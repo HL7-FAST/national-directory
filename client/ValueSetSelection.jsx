@@ -1,3 +1,6 @@
+import React, { useState } from 'react';
+import { useTracker } from 'meteor/react-meteor-data';
+
 import { 
   Grid, 
   Container,
@@ -19,9 +22,6 @@ import {
   TablePagination
 } from '@material-ui/core';
 
-
-import React, { useState } from 'react';
-import { useTracker } from 'meteor/react-meteor-data';
 
 import PropTypes from 'prop-types';
 
@@ -89,22 +89,20 @@ export function ValueSetSelection(props){
     ...otherProps 
   } = props;
 
+  let [ activeValueSet, setActiveValueSet ] = useState(valueSet);
 
-  // let activeValueSet = defaultValueSet;
+  let data = {
+    activeValueSet: valueSet
+  }
 
-  // activeValueSet = useTracker(function(){
-  //   return Session.get('ValueSet.Current');
-  // }, []);  
+  useTracker(function(){
+    setActiveValueSet(Session.get('selectedValueSet'));
+  }, []);  
 
   const [valueSetSearchTerm, handleSetSearchText] = useState("");
   const [selectedValue, setSelectedValue] = useState({});
+  // const [renderElements, setRenderElements] = useState([]);
 
-
-
-  // // inefficient, because the tracker is still running; but hey...
-  // if(valueSet){
-  //   activeValueSet = valueSet;
-  // }
 
   function updateField(path, event){
     console.log('updateField', event.currentTarget.value);
@@ -124,84 +122,78 @@ export function ValueSetSelection(props){
     }
   }
 
+  function renderCode(city){
+    return (
+      <TableCell className="city ">{ city }</TableCell>
+    );
+  }
+  function renderCodeHeader(){
+    return (
+      <TableCell className="city">City</TableCell>
+    );
+  }
+  function renderDisplay(city){
+    return (
+      <TableCell className="city ">{ city }</TableCell>
+    );
+  }
+  function renderDisplayHeader(){
+    return (
+      <TableCell className="city">City</TableCell>
+    );
+  }
 
   let renderElements = [];
   let conceptsTable;
-  let composeIncludes = get(valueSet, 'compose.include');
-  console.log('composeIncludes', composeIncludes)
+  let composeIncludes;
+  let expansionContains;
 
-  if(Array.isArray(composeIncludes)){
-    composeIncludes.forEach(function(includeSystem, includeSystemIndex){
-      let includeConcepts = get(includeSystem, 'concept');
-      if(Array.isArray(includeConcepts) && !hideConcepts){
-        includeConcepts.forEach(function(concept, index){         
-          if(((get(concept, 'code', '')).includes(searchTerm)) || ((get(concept, 'display', '')).includes(searchTerm))){
-            renderElements.push(<Grid item xs={3} key={index + "y"} >
-              <Typography 
-                id={"concecptCode-" + get(concept, 'code')}
-                name={"concecptCode-" + get(concept, 'code')}
-                variant="h5"   
-                label={index === 0 ? 'Concept Code' : ''}
-                key={index + 'a'}
-                style={{cursor: 'pointer', color: 'black'}}
-                onClick={handleClickRow.bind(this, index)}
-              >{get(concept, 'code')}</Typography>
-            </Grid>)
-            renderElements.push(<Grid item xs={9} key={index + "w"}>
-              <Typography 
-                id={"conceptDisplay-" + get(concept, 'code')}
-                name={"conceptDisplay-" + get(concept, 'code')}
-                variant="h5"                   
-                label={index === 0 ? 'Concept Display' : ''}
-                key={index + 'd'}
-                style={{cursor: 'pointer', color: 'black'}}
-                onClick={handleClickRow.bind(this, index)}
-              >{get(concept, 'display')}</Typography>
-            </Grid>)
-          }
+  let rowStyle = {
+    cursor: 'pointer'
+  }
 
-        })
-      }
 
-      
-      // if(Array.isArray(includeConcepts) && hideTable){
-      //   let tableElements = [];
-      //   includeConcepts.forEach(function(concept, index){          
-      //     tableElements.push(<TableRow key={index} key={includeSystemIndex}>
-      //       <TableCell>
-      //         <TextField
-      //           id={"concecptCode-" + get(concept, 'code')}
-      //           name={"concecptCode-" + get(concept, 'code')}
-      //           type='text'
-      //           label={index === 0 ? 'Concept Code' : ''}
-      //           value={get(concept, 'code')}
-      //           fullWidth   
-      //           InputLabelProps={index === 0 ? {shrink: true} : null }
-      //           key={includeSystemIndex + 'n'}
-      //           // style={index === 0 ? {marginBottom: '20px'} : null }
-      //         />
-      //       </TableCell>  
-      //     </TableRow>)
-      //     tableElements.push(<TableRow>
-      //       <TextField
-      //         id={"conceptDisplay-" + get(concept, 'code')}
-      //         name={"conceptDisplay-" + get(concept, 'code')}
-      //         type='text'
-      //         label={index === 0 ? 'Concept Display' : ''}
-      //         value={get(concept, 'display')}
-      //         fullWidth   
-      //         InputLabelProps={index === 0 ? {shrink: true} : null }
-      //         key={includeSystemIndex + 'p'}
-      //         // style={index === 0 ? {marginBottom: '20px'} : null }         
-      //       />  
-      //     </TableRow>)
-      //     conceptsTable = <Table>
-      //       { tableElements }
-      //     </Table>
-      //   })
+  if(get(valueSet, 'expansion.contains')){
+    expansionContains = get(valueSet, 'expansion.contains');
+    console.log('expansionContains', expansionContains)
+  
+    if(Array.isArray(expansionContains)){
+      expansionContains.forEach(function(concept, conceptIndex){        
+        if(((get(concept, 'code', '')).includes(searchTerm)) || ((get(concept, 'display', '')).includes(searchTerm))){
+          renderElements.push(<TableRow className="practitionerRow" key={conceptIndex} style={rowStyle} onClick={ handleClickRow.bind(this, conceptIndex)} hover={true} >                      
+            { renderCode(get(concept, 'code')) }
+            { renderDisplay(get(concept, 'display')) }
+          </TableRow>)
+        }
+      })    
+    }
+  }
 
-      // }
-    })    
+  if(get(valueSet, 'compose.include')){
+    composeIncludes = get(valueSet, 'compose.include');
+    console.log('composeIncludes', composeIncludes)
+  
+    if(Array.isArray(composeIncludes)){
+      composeIncludes.forEach(function(includeSystem, includeSystemIndex){
+        
+    //     // if(Array.isArray(includeConcepts) && !hideConcepts){
+        if(Array.isArray(get(includeSystem, 'concept'))){
+          
+          includeSystem.concept.forEach(function(concept, conceptIndex){         
+            console.log('concept', concept)
+
+            
+            if(((get(concept, 'code', '')).includes(searchTerm)) || ((get(concept, 'display', '')).includes(searchTerm))){
+              renderElements.push(<TableRow className="practitionerRow" key={conceptIndex} style={rowStyle} onClick={ handleClickRow.bind(this, conceptIndex)} hover={true} >                      
+                { renderCode(get(concept, 'code')) }
+                { renderDisplay(get(concept, 'display')) }
+              </TableRow>)
+            }
+  
+          })
+        }        
+      })    
+    }
   }
 
   let approvedOnDate = '';
@@ -219,13 +211,20 @@ export function ValueSetSelection(props){
 
 
 
-
+  console.log('renderElements', renderElements)
   return(
-    <div className='ValueSetSelections'>
-        
-        <Grid container spacing={3}>
+    <div className='ValueSetSelections'> 
+      <Table id="valueSetElements" >
+        <TableHead>
+          <TableRow>
+            { renderCodeHeader() } 
+            { renderDisplayHeader() }
+          </TableRow>
+        </TableHead>
+        <TableBody>
           { renderElements }
-        </Grid>
+        </TableBody>
+      </Table>
     </div>
   );
 }
@@ -250,14 +249,19 @@ ValueSetSelection.propTypes = {
   hideConcepts: PropTypes.bool,
   hideTable: PropTypes.bool,
 
-  onSelection: PropTypes.func
+  onSelection: PropTypes.func,
+  jsonContent: PropTypes.object
 };
 ValueSetSelection.defaultValues = {
   hideTitleElements: false,
   hideDescriptionElements: false,
   hideConcepts: false,
   hideTable: true,
-  searchTerm: ''
+  searchTerm: '',
+  valueSet: {
+    resourceType: 'ValueSet'
+  },
+  jsonContent: {}
 }
 
 export default ValueSetSelection;

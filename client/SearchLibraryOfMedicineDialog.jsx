@@ -1,3 +1,7 @@
+// UMLS Metathesaurus License
+// Need to file an annual report on usage
+
+
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTracker } from 'meteor/react-meteor-data';
@@ -29,7 +33,7 @@ import { Session } from 'meteor/session';
 import { HTTP } from 'meteor/http';
 import JSON5 from 'json5';
 
-import { FhirUtilities, DynamicSpacer, ValueSets, ValueSetDetail } from 'meteor/clinical:hl7-fhir-data-infrastructure';
+import { FhirUtilities, DynamicSpacer, ValueSets, ValueSetsTable, ValueSetDetail } from 'meteor/clinical:hl7-fhir-data-infrastructure';
 
 import { ValueSetSelection } from './ValueSetSelection';
 
@@ -38,9 +42,10 @@ import { ValueSetSelection } from './ValueSetSelection';
 // SearchResourceTypesDialog
 
 
-export function SearchValueSetsDialog(props){
+export function SearchLibraryOfMedicineDialog(props){
 
-  const [valueSetSearchTerm, setValueSetSearchTerm] = useState("");
+  let [valueSetSearchTerm, setValueSetSearchTerm] = useState("2.16.840.1.114222.4.11.1066");
+  let [fetchedValueSet, setFetchedValueSet] = useState(null);
 
   let selectedValueSet = useTracker(function(){
     return ValueSets.findOne({id: Session.get('selectedValueSet')});
@@ -62,7 +67,7 @@ export function SearchValueSetsDialog(props){
     errorMessage = jsonContent;
   }
 
-  // console.log('SearchValueSetsDialog', errorMessage)
+  // console.log('SearchLibraryOfMedicineDialog', errorMessage)
 
   if(errorMessage){
     if(typeof errorMessage === "string"){
@@ -105,39 +110,83 @@ export function SearchValueSetsDialog(props){
     height: '2px'
   }
 
+  function handleQueryLibrary(){
+    console.log('handleQueryLibrary', props);
+
+    // let newCertificateRecord = {
+    //     resourceType: "UdapCertificate",
+    //     createdAt: new Date(),
+    //     certificateOwner:  Session.get('newUdapCertificateOwner'),
+    //     certificate:  Session.get('newUdapCertificate')
+    // }    
+
+    // // HTTP.post(Meteor.absoluteUrl() + "/newCertificate", {data: newCertificateRecord}, function(error, result){
+    // HTTP.post("https://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.11.20.9.46", {
+    //   header: {
+    //     auth: "apikey:2fa4ee2c-0023-4c5a-a4f1-5ae0f8a1c8ba"
+    //   }
+    // }, function(error, result){
+    //   if(error){
+    //       alert(JSON.stringify(error.message));
+    //   }
+    //   if(result){
+    //       console.log('HTTP.post', result)
+    //       // Session.set('mainAppDialogOpen', false);
+    //   }
+    // })
+
+    Meteor.call('fetchValueSetFromNlm', valueSetSearchTerm, function(error, result){
+      if(error){
+          alert(JSON.stringify(error.message));
+      }
+      if(result){
+          console.log('fetchValueSetFromNlm', JSON.parse(get(result, 'content')));
+          setFetchedValueSet(JSON.parse(get(result, 'content')));
+      }
+    })
+}
+
   return(
-    <DialogContent id={id} className="SearchValueSetsDialog" style={{width: '100%'}} dividers={scroll === 'paper'}>      
+    <DialogContent id={id} className="SearchLibraryOfMedicineDialog" style={{width: '100%'}} dividers={scroll === 'paper'}>      
       <TextField
         id="search"
         type="search"
-        label="Search"
+        label="Search (Library of Medicine)"
         fullWidth={true}
         value={ valueSetSearchTerm }
         onChange={ handleSetSearchText.bind(this) }
       />
       <DynamicSpacer />
-      <ValueSetSelection 
+      
+      <Button onClick={handleQueryLibrary.bind(this)} color="primary" variant="contained">
+        Query Library of Medicine
+      </Button>
+
+      <ValueSetsTable 
+        fullWidth
+      />
+      {/* <ValueSetSelection 
         valueSet={selectedValueSet}
         searchTerm={ valueSetSearchTerm }
         hideTitleElements={true}
         hideDescriptionElements={false}
         hideTable={false}
-        hideConcepts={false} 
+        hideConcepts={false}
         onSelection={function(selectedValue){
           Session.set(Session.get('dialogReturnValue'), selectedValue);
           Session.set('mainAppDialogOpen', false);
         }}        
-      />
+      /> */}
       
 
     </DialogContent>
   )
 }
 
-SearchValueSetsDialog.propTypes = {
+SearchLibraryOfMedicineDialog.propTypes = {
   errorMessage: PropTypes.string
 }
-SearchValueSetsDialog.defaultProps = {}
+SearchLibraryOfMedicineDialog.defaultProps = {}
 
 
-export default SearchValueSetsDialog;
+export default SearchLibraryOfMedicineDialog;

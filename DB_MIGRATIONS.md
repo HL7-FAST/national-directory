@@ -1,0 +1,104 @@
+
+#### Copy Endpoints.address to Practitioner.telecom
+
+```js
+db.Practitioners.find({}, {}, function(doc){
+  let directAddress;
+  let endpoint = db.Endpoints.findOne({_id: doc._id)});
+  if(endpoint){
+    if(endpoint.address){
+      db.Practitioners.update({_id: doc._id}, {$addToSet: {'telecom': {
+        system: 'email',
+        use: 'work',
+        value: endpoint.address
+      }})  
+    }
+  }
+})
+```
+
+
+```js
+db.Practitioners.find({id: '1154324382'}, {}).forEach(function(doc){
+    print(db.Endpoints.findOne({id: doc.id}).address)
+})
+```
+
+```
+db.Practitioners.find({id: '1154324382'}, {}).forEach(function(doc){
+    let endpointAddress = db.Endpoints.findOne({id: doc.id}).address;
+    if(endpointAddress){
+      let newTelco = {
+        system: 'email',
+        use: 'work',
+        value: endpointAddress
+      }
+      print(newTelco)
+    }
+})
+```
+
+```js
+db.Practitioners.find({id: '1154324382'}, {}).forEach(function(doc){
+    let endpointAddress = db.Endpoints.findOne({id: doc.id}).address;
+    if(endpointAddress){
+      db.Practitioners.updateOne({id: doc.id}, {$addToSet: {'telecom': {
+        system: 'email',
+        use: 'work',
+        value: endpointAddress
+      }}})
+    }
+})
+```
+
+
+```
+let count = 0;
+db.Endpoints.find({}, {}).forEach(function(doc, index){
+    count++;
+    print(count)
+    if(doc.connectionType){
+      if(doc.connectionType.code === "direct-project"){
+        db.Practitioners.updateMany({id: doc.id}, {$addToSet: {'telecom': {
+          system: 'email',
+          use: 'work',
+          value: doc.address
+        }}})
+      }
+    }
+})
+```
+
+WITHOUT INDICES
+
+1min - 570  570
+2min - 915  345
+3min - 1130 215
+4min - 1320 210
+5min - 1508 188
+6min - 1508 188
+7min - 1700 192
+8min - 1890 190
+
+2K - 8min 30s 
+4K - 17min - 1%
+
+WITH INDICES
+
+1min - 830   830
+2min - 1120  290
+3min - 1340  220
+4min - 1560  220
+5min - 1780  220
+6min - 2000  
+
+2K - 6min
+4K - 12min
+
+20K / hr
+2hr = 40K = 10%
+
+430K = 22hrs
+
+
+

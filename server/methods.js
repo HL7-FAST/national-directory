@@ -1,6 +1,7 @@
 
 import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
+import { HTTP } from 'meteor/http';
 import { get, has } from 'lodash';
 
 import forge from 'node-forge';
@@ -783,5 +784,20 @@ Meteor.methods({
                 }
             }
         })
+    },
+    fetchValueSetFromNlm: async function(options){
+        console.log('fetchValueSetFromNlm', options);
+
+        let valueSetId = "2.16.840.1.114222.4.11.1066";
+        let methodResult = null;
+
+        let nlmApiKey = get(Meteor, 'settings.private.nationalLibraryOfMedicine.apiKey', '')
+
+        return await HTTP.get("https://cts.nlm.nih.gov/fhir/ValueSet/" + valueSetId + "/$expand", {
+            header: {},
+            auth: "apikey:" + nlmApiKey
+          })
+
+        // return methodResult;
     }
 })

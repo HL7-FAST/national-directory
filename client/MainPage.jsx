@@ -338,14 +338,27 @@ function MainPage(props){
 
   let practitionerUrlWithParams = useTracker(function(){
     let returnUrl = practitionerUrl;
+    if(Session.get('MainSearch.city')){
+      returnUrl = returnUrl + '&address-city=' + Session.get('MainSearch.city');
+    }
+    if(Session.get('MainSearch.state')){
+      returnUrl = returnUrl + '&address-state=' + get(Session.get('MainSearch.state'), 'code');
+    }
+    if(Session.get('MainSearch.postalCode')){
+      returnUrl = returnUrl + '&address-postalcode=' + Session.get('MainSearch.postalCode');
+    }
+    if(Session.get('MainSearch.country')){
+      returnUrl = returnUrl + '&address-country=' + get(Session.get('MainSearch.country'), 'code');
+    }
+
     if(Session.get('MainSearch.practitionerSpecialty')){
-      returnUrl = returnUrl + '&specialty=' + get(Session.get('MainSearch.practitionerSpecialty'), 'code');
+      returnUrl = returnUrl + '&identifier=' + get(Session.get('MainSearch.practitionerSpecialty'), 'code');
     }
     if(onlyShowMatched){
       returnUrl = returnUrl + '&name'
     } else {
       if(Session.get('MainSearch.name')){
-        returnUrl = returnUrl + '&name=' + Session.get('MainSearch.name');
+        returnUrl = returnUrl + '&name-text=' + Session.get('MainSearch.name');
       }  
     }
     return returnUrl;
@@ -356,15 +369,16 @@ function MainPage(props){
     let returnUrl = endpointUrl;
     if(Session.get('MainSearch.endpointType')){
       returnUrl = returnUrl + '&connection-type=' + get(Session.get('MainSearch.endpointType'), 'code');
+
+      if(onlyShowMatched){
+        returnUrl = returnUrl + '&name'
+      } else {
+        if(Session.get('MainSearch.name')){
+          returnUrl = returnUrl + '&name=' + Session.get('MainSearch.name');
+        }  
+      }
     }
-    if(onlyShowMatched){
-      returnUrl = returnUrl + '&name'
-    } else {
-      if(Session.get('MainSearch.name')){
-        returnUrl = returnUrl + '&name=' + Session.get('MainSearch.name');
-      }  
-    }
-    return returnUrl;
+    return returnUrl;  
   }, [])
 
   let locationUrlWithParams = useTracker(function(){
@@ -560,31 +574,31 @@ function MainPage(props){
       }
     })
 
-    console.log('endpointUrlWithParams', endpointUrlWithParams);
-    HTTP.get(endpointUrlWithParams, function(error, result){
-      if(error){
-        console.error('error', error)
-      }
-      if(result){
-        console.log('result', JSON.parse(get(result, 'content')));
+    // console.log('endpointUrlWithParams', endpointUrlWithParams);
+    // HTTP.get(endpointUrlWithParams, function(error, result){
+    //   if(error){
+    //     console.error('error', error)
+    //   }
+    //   if(result){
+    //     console.log('result', JSON.parse(get(result, 'content')));
 
-        let parsedContent = JSON.parse(get(result, 'content'));
-        if(get(parsedContent, 'total') === 0){
-          // setShowNoResults(true);
-        } else {
-          let entryArray = get(parsedContent, 'entry');
-          if(Array.isArray(entryArray)){
-            let endpointArray = entryArray.map(function(entry){
-              return entry.resource;
-            })        
-            setMatchedEndpoints(endpointArray)
-            console.log('endpointArray', endpointArray)  
-            setShowSearchResults(true);
-            // setShowNoResults(false);
-          }  
-        }
-      }
-    })
+    //     let parsedContent = JSON.parse(get(result, 'content'));
+    //     if(get(parsedContent, 'total') === 0){
+    //       // setShowNoResults(true);
+    //     } else {
+    //       let entryArray = get(parsedContent, 'entry');
+    //       if(Array.isArray(entryArray)){
+    //         let endpointArray = entryArray.map(function(entry){
+    //           return entry.resource;
+    //         })        
+    //         setMatchedEndpoints(endpointArray)
+    //         console.log('endpointArray', endpointArray)  
+    //         setShowSearchResults(true);
+    //         // setShowNoResults(false);
+    //       }  
+    //     }
+    //   }
+    // })
 
     console.log('locationUrlWithParams', locationUrlWithParams);
     HTTP.get(locationUrlWithParams, function(error, result){
@@ -753,9 +767,10 @@ function MainPage(props){
   }  
 
   function handlePractitionerSpecialtyDialog(){
-    Session.set('selectedValueSet', 'c80-practice-codes');
+    Session.set('selectedValueSet', 'IndividualAndGroupSpecialtiesVS');
     Session.set('mainAppDialogTitle', "Search for Clinician Specialty");
     Session.set('mainAppDialogComponent', "SearchValueSetsDialog");
+    // Session.set('mainAppDialogComponent', "SearchLibraryOfMedicineDialog");
     Session.set('lastUpdated', new Date());
     Session.set('mainAppDialogMaxWidth', "md");
     Session.set('mainAppDialogOpen', true);
@@ -772,9 +787,9 @@ function MainPage(props){
   // }  
 
   function handleHealthcareServiceDialog(){
-    Session.set('selectedCodeSystem', 'service-type');
+    Session.set('selectedValueSet', '2.16.840.1.114222.4.11.1066');
     Session.set('mainAppDialogTitle', "Search Healthcare Service");
-    Session.set('mainAppDialogComponent', "SearchCodeSystemDialog");
+    Session.set('mainAppDialogComponent', "SearchValueSetsDialog");
     Session.set('lastUpdated', new Date());
     Session.set('mainAppDialogMaxWidth', "md");
     Session.set('mainAppDialogOpen', true);
@@ -877,12 +892,12 @@ function MainPage(props){
             rowsPerPage={5}
             hideActionIcons={true}
             hideIdentifier={true}
+            hideEmail={true}
             count={matchedOrganizations.length}
             page={organizationPageIndex}
             onSetPage={function(index){
               setOrganizationPageIndex(index)
             }}
-            rowsPerPage={ 5 }
           />
         </CardContent>
       </StyledCard>
@@ -901,6 +916,10 @@ function MainPage(props){
             disablePagination={hidePractitionerPagination}
             rowsPerPage={5}
             hideActionIcons={true}
+            hideAddressLine={true}
+            hideEmail={true}
+            hideQualification={true}
+            hideQualificationCode={true}
             count={matchedPractitioners.length}
             page={practitionerPageIndex}
             onSetPage={function(index){
@@ -925,6 +944,8 @@ function MainPage(props){
             disablePagination={hideLocationPagination}
             rowsPerPage={5}
             hideActionIcons={true}
+            hideLatitude={true}
+            hideLongitude={true}
             count={matchedLocations.length}
             page={locationPageIndex}
             onSetPage={function(index){
@@ -947,10 +968,11 @@ function MainPage(props){
           <HealthcareServicesTable 
             healthcareServices={matchedHealthcareServices}
             disablePagination={hideHealthcareServicePagination}
+            hideBarcode={true}
             rowsPerPage={5}
             hideActionIcons={true}
             count={matchedHealthcareServices.length}
-            page={HealthcareServicePageIndex}
+            page={healthcareServicePageIndex}
             onSetPage={function(index){
               setHealthcareServicePageIndex(index)
             }}
@@ -971,7 +993,12 @@ function MainPage(props){
             insurancePlans={matchedInsurancePlans}
             disablePagination={hideInsurancePlanPagination}
             rowsPerPage={5}
+            hideBarcode={true}
+            hideAlias={true}
             hideActionIcons={true}
+            hideCoverageArea={true}
+            hideCoverageType={true}
+            hideCoverageBenefitType={true}
             count={matchedInsurancePlans.length}
             page={insurancePlanPageIndex}
             onSetPage={function(index){
@@ -1073,7 +1100,7 @@ function MainPage(props){
       </Grid>
       <Grid item xs={3}>
         <FormControl style={{width: '100%', marginTop: '0px'}}>
-          <InputLabel className={classes.label}>State</InputLabel>
+          <InputLabel className={classes.label} shrink={true}>State</InputLabel>
           <Input
             id="stateOrJurisdiction"
             name="stateOrJurisdiction"
@@ -1103,7 +1130,7 @@ function MainPage(props){
       </Grid>
       <Grid item xs={3}>
         <FormControl style={{width: '100%', marginTop: '0px'}}>
-          <InputLabel className={classes.label}>Postal Code</InputLabel>
+          <InputLabel className={classes.label} shrink={true}>Postal Code</InputLabel>
           <Input
             id="postalCode"
             name="postalCode"
@@ -1118,7 +1145,7 @@ function MainPage(props){
       </Grid>
       <Grid item xs={3}>
         <FormControl style={{width: '100%', marginTop: '0px'}}>
-          <InputLabel className={classes.label}>Country</InputLabel>
+          <InputLabel className={classes.label} shrink={true}>Country</InputLabel>
           <Input
             id="country"
             name="country"
@@ -1150,7 +1177,7 @@ function MainPage(props){
     <Grid disabled  item xs={12} container spacing={3} style={{padding: '0px', margin: '0px'}}>
       <Grid item xs={6}>
         <FormControl style={{width: '100%', marginTop: '0px'}}>
-          <InputLabel className={classes.label}>Practitioner Specialty</InputLabel>
+          <InputLabel className={classes.label} shrink={true}>Practitioner Specialty</InputLabel>
           <Input
             id="practitionerSpecialty"
             name="practitionerSpecialty"
@@ -1204,7 +1231,7 @@ function MainPage(props){
       </Grid> */}
       <Grid item xs={6}>
         <FormControl style={{width: '100%', marginTop: '0px'}}>
-          <InputLabel className={classes.label}>Endpoint Type</InputLabel>
+          <InputLabel className={classes.label} shrink={true}>Endpoint Type</InputLabel>
           <Input
             id="endpointType"
             name="endpointType"
@@ -1234,7 +1261,7 @@ function MainPage(props){
     <Grid disabled  item xs={12} container spacing={3} style={{padding: '0px', margin: '0px'}}>
       <Grid item xs={6}>
         <FormControl style={{width: '100%', marginTop: '0px'}}>
-          <InputLabel className={classes.label}>Healthcare Service</InputLabel>
+          <InputLabel className={classes.label} shrink={true}>Healthcare Service</InputLabel>
           <Input
             id="healthcareService"
             name="healthcareService"
@@ -1263,7 +1290,7 @@ function MainPage(props){
       </Grid>
       <Grid item xs={6}>
         <FormControl style={{width: '100%', marginTop: '0px'}}>
-          <InputLabel className={classes.label}>Insurance Plan</InputLabel>
+          <InputLabel className={classes.label} shrink={true}>Insurance Plan</InputLabel>
           <Input
             id="insurancePlan"
             name="insurancePlan"
@@ -1509,12 +1536,13 @@ function MainPage(props){
       <CardContent>
         <Grid container justify="center" style={{marginBottom: '0px'}}>
           <Grid disabled item xs={12} container spacing={3} style={{padding: '0px', margin: '0px', fontSize: '120%'}}>
+            <div style={{width: '100%'}} onClick={openExternalPage.bind(this, practitionerUrlWithParams)}>GET {practitionerUrlWithParams}</div><br />
             <div style={{width: '100%'}} onClick={openExternalPage.bind(this, organizationUrlWithParams)}>GET {organizationUrlWithParams}</div><br />
-            <div style={{width: '100%'}} onClick={openExternalPage.bind(this, endpointUrlWithParams)}>GET {endpointUrlWithParams}</div><br />
             <div style={{width: '100%'}} onClick={openExternalPage.bind(this, locationUrlWithParams)}>GET {locationUrlWithParams}</div><br />
             <div style={{width: '100%'}} onClick={openExternalPage.bind(this, healthcareServiceUrlWithParams)}>GET {healthcareServiceUrlWithParams}</div><br />
             <div style={{width: '100%'}} onClick={openExternalPage.bind(this, insurancePlanUrlWithParams)}>GET {insurancePlanUrlWithParams}</div><br />
-            <div style={{width: '100%'}} onClick={openExternalPage.bind(this, practitionerUrlWithParams)}>GET {practitionerUrlWithParams}</div><br />
+            <div style={{width: '100%'}} onClick={openExternalPage.bind(this, endpointUrlWithParams)}>GET {endpointUrlWithParams}</div><br />
+            
           </Grid>
         </Grid>
       </CardContent>
@@ -1565,13 +1593,23 @@ function MainPage(props){
     <CardHeader title="Local Subscription Cache" style={{paddingBottom: '0px', marginBottom: '0px', marginTop: '20px', cursor: 'pointer', userSelect: 'none'}} onClick={handleToggleStats} />
     <Grid container spacing={1} justify="center" >
       <Grid item xs={12} sm={2}>
+        <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/practitioners')} >
+          <CardHeader title={ Practitioners.find().count() } subheader="Practitioners"  />
+        </StyledCard>
+      </Grid>
+      <Grid item xs={12} sm={2}>
         <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/organizations')} >
           <CardHeader title={ Organizations.find().count() } subheader="Organizations"  />
         </StyledCard>
       </Grid>
       <Grid item xs={12} sm={2}>
-        <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/practitioners')} >
-          <CardHeader title={ Practitioners.find().count() } subheader="Practitioners"  />
+        <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/locations')} >
+          <CardHeader title={ Locations.find().count() } subheader="Locations"  />
+        </StyledCard>
+      </Grid>
+      <Grid item xs={12} sm={2}>
+        <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/endpoints')} >
+          <CardHeader title={ Endpoints.find().count() } subheader="Endpoints"  />
         </StyledCard>
       </Grid>
       <Grid item xs={12} sm={2}>
@@ -1582,16 +1620,6 @@ function MainPage(props){
       <Grid item xs={12} sm={2}>
         <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/insurance-plans')} >
           <CardHeader title={ InsurancePlans.find().count() } subheader="Insurance Plans"  />
-        </StyledCard>
-      </Grid>
-      <Grid item xs={12} sm={2}>
-        <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/endpoints')} >
-          <CardHeader title={ Endpoints.find().count() } subheader="Endpoints"  />
-        </StyledCard>
-      </Grid>
-      <Grid item xs={12} sm={2}>
-        <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} onClick={openPage.bind(this, '/locations')} >
-          <CardHeader title={ Locations.find().count() } subheader="Locations"  />
         </StyledCard>
       </Grid>
     </Grid>

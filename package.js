@@ -1,6 +1,6 @@
 Package.describe({
   name: 'mitre:national-directory',
-  version: '0.13.4',
+  version: '0.13.6',
   summary: 'Validated Care Coordination Directory',
   // git: 'http://github.com/mitre/vhdir-core',
   documentation: 'README.md'
@@ -287,6 +287,7 @@ Package.onUse(function(api) {
 
 Npm.depends({
   "ndjson-parse": "1.0.4",
+  "react-router-dom": "6.3.0"
   // "ipfs-daemon": "0.12.3",
   // "ipfs-http-client": "56.0.3"
 })

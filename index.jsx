@@ -12,6 +12,7 @@ import SearchStatesDialog from './client/SearchStatesDialog';
 import SearchResourceTypesDialog from './client/SearchResourceTypesDialog';
 import PreferencesDialog from './client/PreferencesDialog';
 import SearchCodeSystemDialog from './client/SearchCodeSystemDialog';
+import SearchLibraryOfMedicineDialog from './client/SearchLibraryOfMedicineDialog';
 
 import AboutNatDirDialog from './client/AboutNatDirDialog';
 import PrivacyPage from './client/PrivacyPage';
@@ -80,6 +81,14 @@ let DynamicRoutes = [{
 }]
 
 let SidebarWorkflows = [{
+  'primaryText': 'Configure Server',
+  'to': '/server-configuration',
+  'href': '/server-configuration'
+}, {
+  'primaryText': 'UDAP Registration',
+  'to': '/udap-registration',
+  'href': '/udap-registration'
+}, {
   'primaryText': 'Certificates',
   'to': '/certificate-storage-page',
   'href': '/certificate-storage-page'
@@ -113,7 +122,8 @@ import {
   TasksFooterButtons,
   ValueSetsFooterButtons,
   VerificationResultsFooterButtons,
-
+  LibraryOfMedicineButtons,
+  
   CertificatesButtons,
   AddCertificateDialogActions,
 
@@ -304,7 +314,11 @@ let DialogComponents = [{
 }, {
   name: "NewCertificateDialog",
   component: <DialogContent><NewCertificateDialog /></DialogContent>,
-  actions: <AddCertificateDialogActions resourceType="VerificationResult" />
+  actions: <AddCertificateDialogActions />
+}, {
+  name: "SearchLibraryOfMedicineDialog",
+  component: <DialogContent><SearchLibraryOfMedicineDialog /></DialogContent>,
+  actions: <AddCertificateDialogActions />
 }]
 
 

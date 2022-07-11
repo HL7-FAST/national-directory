@@ -1,7 +1,9 @@
+
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTracker } from 'meteor/react-meteor-data';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { useHistory } from "react-router-dom";
 
 import { 
   Card,
@@ -36,35 +38,63 @@ import { FhirUtilities, DynamicSpacer, ValueSets, ValueSetDetail } from 'meteor/
 import { ValueSetSelection } from './ValueSetSelection';
 
 
-
-// SearchResourceTypesDialog
+Session.setDefault('showSystemIds', false);
+Session.setDefault('showPatientName', false);
+Session.setDefault('showSystemContexts', false);
+Session.setDefault('showFhirQueries', false);
 
 
 export function PreferencesDialog(props){
+  console.log('PreferencesDialog.props', props)
 
-  const [showServerStats, setShowServerStats] = useState(false);
+  const [showServerStats, setShowServerStats] = useState(true);
   const [showExperimental, setShowExperimental] = useState(false);
   const [onlyShowMatched, setOnlyShowMatched] = useState(false);
   const [showUrlPreview, setShowUrlPreview] = useState(false);
-
-
-  
-
-
+  const [showFhirIds, setShowFhirIds] = useState(false);
+  const [showSystemIds, setShowSystemIds] = useState(false);
+  const [showLatLng, setShowLatLng] = useState(false);
+  const [showPatientName, setShowPatientName] = useState(false);
+  const [showSystemContexts, setShowSystemContexts] = useState(false);
+  const [showFhirQueries, setShowFhirQueries] = useState(false);
 
   let { 
     children, 
     id,
-    // error,
     errorMessage,
     jsonContent,
+    history,
+    appHeight,
     ...otherProps 
   } = props;
 
-  // let showExperimental = useTracker(function(){
-  //   return Session.get('showExperimental');
-  // }, [])
+
+  useTracker(function(){
+    setShowLatLng(Session.get('showLatLng'));
+  }, [])
+  useTracker(function(){
+    setShowSystemIds(Session.get('showSystemIds'));
+  }, [])
+  useTracker(function(){
+    setShowFhirIds(Session.get('showFhirIds'));
+  }, [])
+  useTracker(function(){
+    setShowExperimental(Session.get('showExperimental'));
+  }, [])
+  useTracker(function(){
+    setShowUrlPreview(Session.get('showUrlPreview'));
+  }, [])
+  useTracker(function(){
+    setShowPatientName(Session.get('showPatientName'));
+  }, [])
+  useTracker(function(){
+    setShowSystemContexts(Session.get('showSystemContexts'));
+  }, [])
+  useTracker(function(){
+    setShowFhirQueries(Session.get('showFhirQueries'));
+  }, [])
   
+
 
   function handleToggleShowExperimental(event, newValue){
     setShowExperimental(newValue);
@@ -82,8 +112,33 @@ export function PreferencesDialog(props){
     setShowUrlPreview(newValue);
     Session.set('showUrlPreview', newValue);
   }
+  function handleToggleShowFhirIds(event, newValue){
+    setShowFhirIds(newValue);
+    Session.set('showFhirIds', newValue);
+  }
+  function handleToggleShowSystemIds(event, newValue){
+    setShowSystemIds(newValue);
+    Session.set('showSystemIds', newValue);
+  }
+  function handleToggleShowLatLng(event, newValue){
+    setShowLatLng(newValue);
+    Session.set('showLatLng', newValue);
+  }
+  function handleToggleShowPatientNames(event, newValue){
+    setShowPatientName(newValue);
+    Session.set('showPatientName', newValue);
+  }
+  function handleToggleShowSystemContexts(event, newValue){
+    setShowSystemContexts(newValue);
+    Session.set('showSystemContexts', newValue);
+  }
+  function handleToggleShowFhirQueries(event, newValue){
+    setShowFhirQueries(newValue);
+    Session.set('showFhirQueries', newValue);
+  }
   function openPage(url){
-    props.history.replace(url)
+    // history.replace(url)
+    window.location.href = url;
   }
 
   return(
@@ -91,7 +146,7 @@ export function PreferencesDialog(props){
       
       <FormControlLabel                
         control={<Checkbox checked={showServerStats} onChange={handleToggleServerStats} name="toggleShowExperimental" />}
-        label="Show server stats"
+        label="Show cursor stats"
       /><br />
       <FormControlLabel                
         control={<Checkbox checked={showExperimental} onChange={handleToggleShowExperimental} name="toggleShowExperimental" />}
@@ -105,25 +160,34 @@ export function PreferencesDialog(props){
         control={<Checkbox checked={showUrlPreview} onChange={handleToggleShowUrlPreview} name="toggleShowExperimental" />}
         label="Show URL preview"
       /><br />
-      <DynamicSpacer />      
-      <Button
-        variant="contained"
-        fullWidth
-        onClick={ openPage.bind(this, '/server-configuration')}
-      >Configure Server</Button>
-      <DynamicSpacer />
-      <Button
-        variant="contained"
-        fullWidth
-        onClick={ openPage.bind(this, '/udap-registration')}
-      >Register App</Button>
-      <DynamicSpacer />
-      {/* <Button
-        variant="contained"
-        fullWidth
-        onClick={ openPage.bind(this, '/verification-results')}
-      >Validation Queue</Button> */}
-      
+      <FormControlLabel                
+        control={<Checkbox checked={showFhirIds} onChange={handleToggleShowFhirIds} name="toggleShowFhirIds" />}
+        label="Show FHIR ids"
+      /><br />
+      <FormControlLabel                
+        control={<Checkbox checked={showSystemIds} onChange={handleToggleShowSystemIds} name="toggleShowSystemIds" />}
+        label="Show System ids"
+      /><br />
+      <FormControlLabel                
+        control={<Checkbox checked={showLatLng} onChange={handleToggleShowLatLng} name="toggleShowLatLng" />}
+        label="Show Lat Lng"
+      /><br />
+
+      <FormControlLabel                
+        control={<Checkbox checked={showPatientName} onChange={handleToggleShowPatientNames} name="toggleShowPatientName" />}
+        label="Show Patient Name(s)"
+      /><br />
+      <FormControlLabel                
+        control={<Checkbox checked={showSystemContexts} onChange={handleToggleShowSystemContexts} name="toggleShowPatientName" />}
+        label="Show System Contexts"
+      /><br />
+      <FormControlLabel                
+        control={<Checkbox checked={showFhirQueries} onChange={handleToggleShowFhirQueries} name="toggleShowPatientName" />}
+        label="Show FHIR Queries"
+      /><br />
+
+
+      <DynamicSpacer />            
     </DialogContent>
   )
 }

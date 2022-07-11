@@ -114,12 +114,22 @@ export function VhDirFooterButtons(props){
     Session.set('mainAppDialogTitle', "Preferences");
     Session.set('mainAppDialogMaxWidth', "sm");
   }
+  function toggleSearchNlm(){
+    Session.toggle('mainAppDialogOpen');
+
+    Session.set('mainAppDialogComponent', "SearchLibraryOfMedicineDialog");
+    Session.set('mainAppDialogTitle', "Search the National Library of Medicine");
+    Session.set('mainAppDialogMaxWidth', "md");
+  }
 
   
   return (
     <MuiThemeProvider theme={muiTheme}>
       <Button onClick={ togglePreferences.bind(this) } style={buttonStyles.west_button}>
         Preferences
+      </Button>      
+      <Button onClick={ toggleSearchNlm.bind(this) } style={buttonStyles.west_button}>
+        Search NLM
       </Button>      
     </MuiThemeProvider>
   );
@@ -1047,3 +1057,30 @@ export function AddCertificateDialogActions(props){
 }
 
 
+
+//============================================================================================================================
+// Library Of Medicine
+
+export function LibraryOfMedicineButtons(props){
+    // const buttonClasses = buttonStyles();
+  
+    console.log('LibraryOfMedicineButtons')
+  
+    function toggleNewCertificateDialog(){
+      Session.set('mainAppDialogOpen', true);
+  
+      Session.set('mainAppDialogTitle', "Add Certificate");
+      Session.set('mainAppDialogComponent', "NewCertificateDialog");
+      Session.set('mainAppDialogMaxWidth', "md");
+    }
+  
+    
+    return (
+      <MuiThemeProvider theme={muiTheme}  >
+        <Button onClick={ toggleNewCertificateDialog.bind(this) } style={buttonStyles.west_button}>
+          Fetch 
+        </Button>      
+        {props.children}
+      </MuiThemeProvider>
+    );
+}
