@@ -804,28 +804,13 @@ Meteor.methods({
     fetchWellKnownUdap: async function(wellKnownUdapUrl){
         console.log('fetchWellKnownUdap', wellKnownUdapUrl);
 
-        // let valueSetId = "2.16.840.1.114222.4.11.1066";
-        // let methodResult = null;
-
-        // let nlmApiKey = get(Meteor, 'settings.private.nationalLibraryOfMedicine.apiKey', '')
-
         return await HTTP.get(wellKnownUdapUrl)
-
-        // HTTP.get(wellKnownUdapUrl, function(error, result){
-        //     if(error){
-        //       console.log('handleFetchWellknownUdap.error', error)
-        //     }
-        //     if(result){
-        //       console.log('handleFetchWellknownUdap.result.data', get(result, 'data'))
-      
-        //       setUdapConfig(get(result, 'data'));
-              
-        //       if(Array.isArray(get(result, 'data.x5c'))){
-        //         console.log('x.509 cert: ' + result.data.x5c[0]);
-        //         setCertificate(result.data.x5c);          
-        //       }
-              
-        //     }
-        //   })
     },
+    sendSoftwareStatement: async function(options){
+        console.log('fetchWellKnownUdap', options);
+
+        return await HTTP.post(options.url, {
+            data: options.data
+        })
+    }
 })

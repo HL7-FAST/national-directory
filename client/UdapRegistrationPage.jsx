@@ -294,7 +294,7 @@ function UdapRegistrationPage(props){
     //     }
     //   }
     // })
-    
+
     Meteor.call('fetchWellKnownUdap', wellKnownUdapUrl, function(error, result){
       if(error){
         console.log('handleFetchWellknownUdap.error', error)
@@ -354,7 +354,8 @@ function UdapRegistrationPage(props){
 
     console.log('payload', payload)
 
-    HTTP.post(postUrl, {
+    Meteor.call('sendSoftwareStatement', {
+      url: registrationEndpoint,
       data: payload
     }, function(error, result){
       if(error){

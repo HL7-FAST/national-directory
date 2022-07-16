@@ -1,6 +1,7 @@
 import React from 'react';
 
 import MainPage from './client/MainPage';
+import FhirBasePage from './client/FhirBasePage';
 import UdapRegistrationPage from './client/UdapRegistrationPage';
 import ServerConfigurationPage from './client/ServerConfigurationPage';
 import CertificateStoragePage from './client/CertificateStoragePage';
@@ -78,6 +79,11 @@ let DynamicRoutes = [{
     path: '/oauth-clients',
     component: OauthClientsPage,
     requireAuth: true
+}, {
+  name: 'OauthClientsPage',
+  path: '/baseR4',
+  component: FhirBasePage,
+  requireAuth: true
 }]
 
 let SidebarWorkflows = [{
@@ -123,7 +129,7 @@ import {
   ValueSetsFooterButtons,
   VerificationResultsFooterButtons,
   LibraryOfMedicineButtons,
-  
+
   CertificatesButtons,
   AddCertificateDialogActions,
 
