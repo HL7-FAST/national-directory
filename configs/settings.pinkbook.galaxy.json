@@ -1,16 +1,7 @@
 {
   "public": {
-    "title": "National Care Directory",
+    "title": "Protected Women's Shelters",
     "fhirVersion": "4.0.1",
-    "socialmedia": {
-      "title": "National Care Directory",
-      "type": "article",
-      "url": "https://national-directory.meteorapp.com",
-      "image": "https://national-directory.meteorapp.com/packages/mitre_national-directory/assets/SocialMedia.jpg",
-      "description": "National Care Directory - a modern phone book and listing of healthcare providers in the US, using the latest interoperability standards.",
-      "site_name": "National Care Directory",
-      "app_id": "national-directory.mitre.us"
-    },
     "smartOnFhir": [{
       "vendor": "SmartHealth IT",
       "client_id": "my-client-id",
@@ -24,7 +15,7 @@
       "defaultVideo": "/VideoBackgrounds/GrayWaves.mp4",
       "backgroundImagePath": "/backgrounds/medical/Gradient.jpg",
       "palette": {
-        "primaryColor": "rgb(108, 183, 110)",
+        "primaryColor": "#E5537E",
         "primaryText": "rgba(255, 255, 255, 1) !important",
       
         "secondaryColor": "#fdb813",
@@ -36,7 +27,7 @@
         "errorColor": "rgb(128,20,60) !important",
         "errorText": "#ffffff !important",
       
-        "appBarColor": "#005b94",
+        "appBarColor": "repeating-linear-gradient( 135deg, rgba(226, 80, 152, 0.45), rgba(229, 83, 126, 0.45) 5px, rgba(204, 53, 140, 0.5) 10px, rgba(203, 34, 115, 0.5) 10px ), url(http://s3-us-west-2.amazonaws.com/s.cdpn.io/3/old_map_@2X.png)",
         "appBarTextColor": "#ffffff !important",
       
         "paperColor": "#ffffff !important",
@@ -46,11 +37,6 @@
         "background": "linear-gradient(45deg, rgb(108, 183, 110) 30%, rgb(150, 202, 144) 90%)",
 
         "nivoTheme": "red_grey"
-      }
-    },
-    "google": {
-      "analytics": {
-        "trackingId": "G-46NGX76231"
       }
     },
     "loggingThreshold": "debug",
@@ -142,6 +128,7 @@
           "/related-person",
           "/risk-assessments",
           "/service-requests",
+          "/subscriptions",
           "/vitals-tracking"
         ],
         "hiddenWorkflow": [
@@ -150,50 +137,39 @@
       }
     },
     "interfaces": {
-      "fhirRelay": {
-        "name": "FHIR Relay",
-        "status": "inactive",
-        "channel": {
-          "endpoint": "https://national-directory.meteorapp.com/baseR4"
-        }
-      },
-      "symptomaticFhirServer": {
-        "name": "FHIR Server",
+      "upstreamDirectory": {
+        "name": "National Directory",
         "status": "active",
         "channel": {
-          "endpoint": "https://national-directory.meteorapp.com/baseR4"
+          "endpoint": "https://national-directory.meteorapp.com/baseR4",
+          "path": "/Practitioner?address-state=RI&specialty=207R00000X"
         }
       },
       "oauthServer": {
         "name": "OAuth Server",
         "status": "active",
         "channel": {
-          "endpoint": "https://national-directory.meteorapp.com/"
+          "endpoint": "https://federated-directory.meteorapp.com/"
         }
       },
       "accountsServer": {      
         "name": "Accounts Server",
         "database": "meteor",
-        "host": "https://national-directory.meteorapp.com",
+        "host": "https://federated-directory.meteorapp.com",
         "port": 443
       }
     }
   },
-  "private": { 
+  "private": {    
     "debug": true,
-    "trace": true,   
+    "trace": true,
     "invitationCode": "MITRE",
     "clinicianInvitationCode": "MitreClinician",
     "enableCronAutomation": true,
     "enableServerStats": true,
-    "recordVersioningEnabled": true,
-    "nationalLibraryOfMedicine": {
-      "apiKey": "2fa4ee2c-0023-4c5a-a4f1-5ae0f8a1c8ba"
-    },
     "x509": {
-      "publicKey": "-----BEGIN PUBLIC KEY-----\r\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAi0IlmAWwsjhg9fMJfQgy\r\nvGrAGP4CRWbBFkIS+rJObUMcjkPnWQYIJxq7wKnc/po8S0Dro/7R8T8anNOtuki6\r\nsc7VSXFmhDpUhGq2kQbJfg+D8Tl6ZzZozSxW19YxWVaOpOKkEFl1I7hK2UcP3Qml\r\nt0/Yxkf+G2xZjwJZADGbU5ER5XwYslpezTfBeKV8tc6DITR1I5UaFIftw/ZXj1kB\r\ngI5QyPowhm+IngWRagHtOc/JBEN11G+vlHAdCrfKNLGRWlj/AGbK7I8vPVxHrp+z\r\nZRpHx9UR3QVTQLSJFn0YjQzQSIxChQ8/iW0cmJsu802MXi3ovo+OPoFMOHf12D6/\r\ntQIDAQAB\r\n-----END PUBLIC KEY-----\r\n",
-      "privateKey": "-----BEGIN RSA PRIVATE KEY-----\r\nMIIEpAIBAAKCAQEAi0IlmAWwsjhg9fMJfQgyvGrAGP4CRWbBFkIS+rJObUMcjkPn\r\nWQYIJxq7wKnc/po8S0Dro/7R8T8anNOtuki6sc7VSXFmhDpUhGq2kQbJfg+D8Tl6\r\nZzZozSxW19YxWVaOpOKkEFl1I7hK2UcP3Qmlt0/Yxkf+G2xZjwJZADGbU5ER5XwY\r\nslpezTfBeKV8tc6DITR1I5UaFIftw/ZXj1kBgI5QyPowhm+IngWRagHtOc/JBEN1\r\n1G+vlHAdCrfKNLGRWlj/AGbK7I8vPVxHrp+zZRpHx9UR3QVTQLSJFn0YjQzQSIxC\r\nhQ8/iW0cmJsu802MXi3ovo+OPoFMOHf12D6/tQIDAQABAoIBAHRMjbDkL6jnRLKi\r\nge4VhqmsTTmSCLuFEQRRsiAEAVNmlNaLBw5l5zEhNmO0eId4r5n5YdHX4eUj2knW\r\nzmOgkaolHiLzvbX4MNVVeZqsnGHW+03dvservOJ8gRpIG3aMvxwc2v98dkOaiYfj\r\nvO/QOsFYwaT2QtUMK88vGrz6sMmcRizrr5AOwlzXmbrez6QEPxxAmBZQbYJMds3M\r\naEi73xyCmpqLjD2jwh4PLWs8opVroXGRekShKzBRzLwxONEhctEiNfWKF1JTViGc\r\nfsnM+r5klvWfFrQzWhgHae+uJ5ba2E7vdSwk48rdmgOmuflBnKUFxHYEBMunht9p\r\nUTMq/RECgYEAxbrBrjx/Vs6g033xg0d6Y+XbQie2ET14BxJ75lCErxlZyCIw04Cl\r\nVAnpbWg7owdrqQ/hw72lA0aPD3sM9IEETIsEQDTZ6Xg4259zOGfLnJou+jQw7bRS\r\nrkH3Qq5BPgFXXNEOXbHSHuwPOxlD8T0WKEallPVZWgSi1Ek07Z0tXzsCgYEAtEwr\r\n+rXsm1BST3ZQKrxPR8XMimryOyyXjrYaao+UBMHwAW8FzNyN8Zcw34AvHBsplq2z\r\n58GcVLM5GB9m7w+MPz265w8Nq/suh5sN5YG1N0/7r6QKKWtsqSuPVZp3zUatul3q\r\nzOqdpjNaYMo7GDfkjkmzIJklKlSQ1OM7GLYeTc8CgYBx2uT1mD5W1OpEfcvYpQrz\r\nhQKo6EbtTHDV2a3gY9LTJIzPMejdkMEiUAbKie91I6u5kLyWQphG95Ue++Ls03GP\r\nRakv837a8fADfqARBat3xExypCTcay4Ey1U+XyqQMqOEfZiBGQh9572pcRXvThZ5\r\nIJzt1g0aSXsdM/43KH9cywKBgQCEE5zQDz8h06hIb6pwc/w73qlk6M1EDfmEYOBf\r\nGYjcJ1nzIuqD1TniNdhmkddw5nED4YF+D/W+koALrM1R6PjbRxRIuV1RlDLUwgBf\r\nFTK0L1J3q1qKVxiFoNRiaELEzLbtZGlh7ajJHKtjZiH+LsuudEzVX3q7VLG4UjFz\r\ne84dPwKBgQC/jvI8eKfeAmx9B9okgu8/0gyl13m8b6pGZrlL1kw/45azDOaemepZ\r\ncr40t6GNqKSW9/9EmfkfpP2Es0DsB5S7FLZ7G7l9QKHGcWJkcdgvTGX1TW5+wOAo\r\n8tcchy7yKw+2BjFmI8MDdyv6V2dimpcz2vveuipN4JLo+XkLnWZiUg==\r\n-----END RSA PRIVATE KEY-----\r\n",
-      "publicCertPem": "-----BEGIN CERTIFICATE-----\r\nMIIC3zCCAcegAwIBAgIBATANBgkqhkiG9w0BAQUFADBmMRIwEAYDVQQDEwltaXRy\r\nZS5vcmcxCzAJBgNVBAYTAlVTMREwDwYDVQQIEwhJbGxpbm9pczEQMA4GA1UEBxMH\r\nQ2hpY2FnbzEOMAwGA1UEChMFTUlUUkUxDjAMBgNVBAsTBU1JVFJFMB4XDTIyMDEx\r\nMTE5MTk1MloXDTIzMDExMTE5MTk1MlowADCCASIwDQYJKoZIhvcNAQEBBQADggEP\r\nADCCAQoCggEBAItCJZgFsLI4YPXzCX0IMrxqwBj+AkVmwRZCEvqyTm1DHI5D51kG\r\nCCcau8Cp3P6aPEtA66P+0fE/GpzTrbpIurHO1UlxZoQ6VIRqtpEGyX4Pg/E5emc2\r\naM0sVtfWMVlWjqTipBBZdSO4StlHD90JpbdP2MZH/htsWY8CWQAxm1OREeV8GLJa\r\nXs03wXilfLXOgyE0dSOVGhSH7cP2V49ZAYCOUMj6MIZviJ4FkWoB7TnPyQRDddRv\r\nr5RwHQq3yjSxkVpY/wBmyuyPLz1cR66fs2UaR8fVEd0FU0C0iRZ9GI0M0EiMQoUP\r\nP4ltHJibLvNNjF4t6L6Pjj6BTDh39dg+v7UCAwEAATANBgkqhkiG9w0BAQUFAAOC\r\nAQEAS1JU+8FeJ6LOyqPsq/Taw+9Se+7zQHICi/6FU2ebIP/SOF/AkOzgNaKCidMo\r\nYGrb5eC5OkvKCMl1wkc/xkUms5LLcgyWJjNSZhvkrRMYE2uZg0wCeu6x3A29vacv\r\nCNJ51JoVaTrk6HfKqD1tLNU9L2Kny0qHQ+gAND7b/uCDt3tU2X+LwgE17bYWkd6L\r\nu2enmofTFoaYciwDuI/iVJNvN+/DcyxmqItRsvj7nCWEKAKsi9XWGw8XaFvjzzTR\r\nuKzIjT7AEbdloY77omLHXW/FBgyRgW6Y2UuAmXKM6sasMAYcqX+q2+b7rdm15m+G\r\nKgsYor4VM71qVXx2a0vMb3PPag==\r\n-----END CERTIFICATE-----\r\n"
+      "publicKey": "-----BEGIN PUBLIC KEY-----\r\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApVWm5oKx94R8qFh5mnnD\r\nGS6B26j0ag+RYz0Pqj8zlrkV3C4AkFZeytvP47ax2VrEEx3TcMThTdfb2UE7UPRV\r\n4+aF9T+8i5odcYYssBNkoN0O43XByRp+kXeUR+13Ds+jDIg98tWwRWJOf9ZomGI2\r\n4hQ0ukwtISyWV9dmLNB4a5V/d0W9AA3PPLKJKAuR1myj2Sj69ZriGIrJmK7M35Og\r\n6nnTmK6z4N9225MCY2pJPfERpRHKmdE61Ou7D7qvdsZ7ro1D577YrVQVZFUlwLvm\r\nDgZg0ySiaOANWfz7G2095jJiSFzco9HyjhvO1wt7Wq6g+tVHRQvaAyyLYxk+xL1u\r\nKwIDAQAB\r\n-----END PUBLIC KEY-----\r\n",
+      "privateKey": "-----BEGIN RSA PRIVATE KEY-----\r\nMIIEpAIBAAKCAQEApVWm5oKx94R8qFh5mnnDGS6B26j0ag+RYz0Pqj8zlrkV3C4A\r\nkFZeytvP47ax2VrEEx3TcMThTdfb2UE7UPRV4+aF9T+8i5odcYYssBNkoN0O43XB\r\nyRp+kXeUR+13Ds+jDIg98tWwRWJOf9ZomGI24hQ0ukwtISyWV9dmLNB4a5V/d0W9\r\nAA3PPLKJKAuR1myj2Sj69ZriGIrJmK7M35Og6nnTmK6z4N9225MCY2pJPfERpRHK\r\nmdE61Ou7D7qvdsZ7ro1D577YrVQVZFUlwLvmDgZg0ySiaOANWfz7G2095jJiSFzc\r\no9HyjhvO1wt7Wq6g+tVHRQvaAyyLYxk+xL1uKwIDAQABAoIBABvsBy/Oyrd+jH7x\r\n0jegcK6ECDJMqlpvHqKf4VFjMxc1UtfIfRfjPkcMMGPIquiGR67izp6w4UwANITQ\r\nW3Akk4zVlbIBfZomAOr3OfzSiaARNT582KlZ7B4tD8HF/OFnd6XaLHwiUo6lN5Sn\r\nZSq3C4XK28zKqKR9nzZejkbrPisM4Yg079eWUP0+dFNKAHCCv8Mqu5Qvss7NEbVx\r\n14uQ/HoTIu0cTS5ARq0AXWvEMNf2PPlZiIgpz29nfaav4Rn3vtaqtg4UWrNY0EVK\r\nPykheDtF72zyKEuEuIwNNQ+tCKDXGjbLQrwQOBQVlyW9Cf3AP2Htmtl49zoOolor\r\nCWax+8ECgYEA+vZNPYKCwOe2Gg7+AEGKdF7Jd1yBMoS0q+BhF2GlnznbNVRs/SzF\r\njSATtJjfpJzFkY00VGH/k5GUAME62onoekrY9CaczgaKuLJ3XiCPOaJIwxYSEZDX\r\n2RWhv4ttfblVjckSmyWqr2wr2f38Ov/zaNvmHyUv+bDCNCYjYGR5b8kCgYEAqKdP\r\nGDojsu7zVLCLlfbhQQMmpNZdVyn/XiXDjiOGwSImOlcl/11I5CbXax3dJ+kUEkhh\r\nKlAwlk3Sedzxcy64m+7RKSfdpuxHkRq5gH40mUCTpISxHVdoPMLKC26kzCjMSoHw\r\nYnH3Dnt1BDi4SjB9qvqk2JRYNKEbIpOGq7pksFMCgYEAjbFGhvYK8PNiY3AXhPl8\r\nPJvPz+6Qm39Fqs0yxErDghTeaUvThVYj67wypAK0MnK5Maax5vq1nBHTqGFw4zZ9\r\n5Z4gxCiQ29nhtMo+jwx/ESFJR6xMY1KOK+kEu+ry1MsxPK5MLQClUAoY8Clwobcl\r\nLQ0K7obGgYmE/ICT9LaFwdECgYEAhAQTIb/A2fu5dX2MhiLuR9mTkkxKXER/pM6i\r\nuMyOWvfEPL6i+7WlrRHKZgrGZstH7tfBV0HWBpF8Q+/zAFp+H3FdQH34PwWNL8Rf\r\nmHkx6xRlfc5wZatZ6NYBGdnOHhGBeIEmDalv3mI9QsSzXT9/3yq7htz3/ppthy87\r\np4kL8AkCgYB6vQVJ5aA/KxSrDtXSbqc64TyzSSUN/FgqNs/OVhawgNHzTn4Wq7tJ\r\nults5BJMh3DEO5KAGo5djSIT3wCdvgj7h29uklA8ka163sGzAhVeOyWwxRIRg/KA\r\nhu9jc6O+3DF9KnjH1I99as/rQrOCzfzJFzk2avBclLoldYrP8eO5Vg==\r\n-----END RSA PRIVATE KEY-----\r\n"
     },
     "fhir": {
       "disableOauth": true,
@@ -209,34 +185,34 @@
       "rest": {
         "AuditEvent": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "delete"],
+          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
           "search": true,
           "publication": true,
-          "versioning": "no-version"
+          "versioning": "versioned"
         },
         "Bundle": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true
         },
         "CareTeam": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "CodeSystem": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "Communication": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
@@ -249,14 +225,14 @@
         },
         "Endpoint": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete"],
+          "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "HealthcareService": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
@@ -270,35 +246,35 @@
         },
         "Location": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "Organization": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "OrganizationAffiliation": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "Practitioner": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "PractitionerRole": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
@@ -311,21 +287,21 @@
         },
         "SearchParameter": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "Task": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "interactions": ["read", "create", "update", "delete", "history-type", "history-instance"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
         },
         "StructureDefinition": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
@@ -334,18 +310,17 @@
           "disableOauth": true,
           "interactions": ["read", "create", "update", "delete"],
           "search": true,
-          "publication": true,
-          "versioning": "no-version"
+          "publication": true
         },
         "ValueSet": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true
         },
         "VerificationResult": {
           "disableOauth": true,
-          "interactions": ["read", "create", "update", "patch", "delete", "history-type", "history-instance", "vread"],
+          "interactions": ["read", "create", "update", "delete"],
           "search": true,
           "publication": true,
           "versioning": "versioned"
@@ -367,9 +342,9 @@
   },
   "galaxy.meteor.com": {
     "env": {
-      "ROOT_URL": "https://national-directory.meteorapp.com",
-      "MONGO_URL": "mongodb+srv://healthadmin:lnpyjNdtjcvXL9iR@vhdir.egr2m.mongodb.net/meteor?retryWrites=true&w=majority",
-      "MONGO_OPLOG_URL": "mongodb+srv://oplog:LpUqxEliCZ1HXg54@vhdir.egr2m.mongodb.net/local?retryWrites=true&w=majority&authSource=admin&ssl=true&replicaSet=vhdir-shard-00-02",
+      "ROOT_URL": "https://federated-dir.meteorapp.com",
+      "MONGO_URL": "mongodb+srv://healthadmin:GhrKAVK0Q5Tgw7U5@federateddircluster.k5gby.mongodb.net/meteor?retryWrites=true&w=majority",
+      "MONGO_OPLOG_URL": "mongodb+srv://oplog:XZ61u4vsmZo5KsdK@federateddircluster.k5gby.mongodb.net/local?retryWrites=true&w=majority&authSource=admin&ssl=true&replicaSet=federateddircluster-shard-00-01",
       "NODE_ENV": "production",
       "DEBUG": 1,
       "TRACE": 0,

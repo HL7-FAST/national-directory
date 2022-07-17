@@ -168,7 +168,7 @@ Session.setDefault('showUrlPreview', false);
 Session.setDefault('showServerStats', true);
 Session.setDefault('dialogReturnValue', 'MainSearch.state');
 
-
+Session.setDefault('MainSearch.defaultDirectoryQuery', get(Meteor, 'settings.public.interfaces.upstreamDirectory.channel.path', ""));
 
 function MainPage(props){
   const classes = useStyles();
@@ -185,6 +185,8 @@ function MainPage(props){
   let [ searchTerm, setSearchTerm ] = useState('');
   let [ searchCount, setSearchCount ] = useState(1000);
 
+  let [ defaultDirectoryQuery, setDefaultDirectoryQuery ] = useState(get(Meteor, 'settings.public.interfaces.upstreamDirectory.channel.path', ""));
+  
   let [ searchLimit, setSearchLimit ] = useState(1000);
   let [ matchedEndpoints, setMatchedEndpoints ] = useState([]);
   let [ matchedOrganizations, setMatchedOrganizations ] = useState([]);
@@ -450,6 +452,7 @@ function MainPage(props){
   function openPage(url){
     props.history.replace(url)
   }
+  
 
   //----------------------------------------------------------------------
   // Page Styling 
@@ -734,6 +737,10 @@ function MainPage(props){
     setSearchTerm(event.currentTarget.value); 
     Session.set('MainSearch.name', event.currentTarget.value);   
   }
+  function handleChangeSearchQuery(event){
+    setDefaultDirectoryQuery(event.currentTarget.value); 
+    Session.set('MainSearch.defaultDirectoryQuery', event.currentTarget.value);   
+  }
   function handleChangeCount(event){
     setSearchCount(event.currentTarget.value);    
   }
@@ -980,6 +987,7 @@ function MainPage(props){
         </CardContent>
       </StyledCard>
     }
+    
 
     if(matchedInsurancePlans.length > 0){
       let hideInsurancePlanPagination = true;
@@ -1023,55 +1031,6 @@ function MainPage(props){
     </Grid>
   } else {
     mainContent = <div style={{textAlign: 'center', width: '100%'}}><CardHeader title="No Search Results" /></div>
-    
-    // <Grid container spacing={1} justify="center" style={{marginBottom: '20px'}}>
-    //   <Grid item xs={12} sm={12} style={{marginTop: '20px'}} >
-    //     <StyledCard margin={20} style={{marginBottom: '20px', width: '100%'}}>
-    //       <CardHeader title="Getting Started" />
-    //       <CardContent style={{marginLeft: '20px', marginRight: '20px'}}>
-    //         <h4>About</h4>
-    //         <p>
-    //           This server implements the <a href="https://build.fhir.org/ig/HL7/fhir-directory-exchange/index.html" target="_blank">National Directory Implementation Guide</a>.  It is best viewed in Chrome or Safari, and on mobile devices.  
-    //         </p>
-    //         <h4>API Connectivity</h4>
-    //         <code>
-    //           GET <a href="https://vhdir.meteorapp.com/baseR4/metadata" target="_blank">https://vhdir.meteorapp.com/baseR4/metadata</a>  <br />
-    //           GET <a href="https://vhdir.meteorapp.com/baseR4/Organization" target="_blank">https://vhdir.meteorapp.com/baseR4/Organization</a> <br />
-    //           GET <a href="https://vhdir.meteorapp.com/baseR4/Endpoint" target="_blank">https://vhdir.meteorapp.com/baseR4/Endpoint</a> <br />
-    //           GET <a href="https://vhdir.meteorapp.com/baseR4/HealthcareService" target="_blank">https://vhdir.meteorapp.com/baseR4/HealthcareService</a> <br />
-    //         </code>
-    //         <h4>Contact Us</h4>
-    //         <p>
-    //           To request an account to the system, email: <a href="mailto://awatson@mitre.org">awatson@mitre.org</a>
-    //         </p>
-    //       </CardContent>
-    //     </StyledCard>
-    //   </Grid>
-      {/* <Grid item xs={12} sm={6} style={{marginTop: '20px'}}>
-        <StyledCard margin={20} style={{marginBottom: '20px', width: '100%'}}>
-          <CardHeader title="Workflows" />
-          <CardContent>
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={ openPage.bind(this, '/server-configuration')}
-            >Configure Server</Button>
-            <DynamicSpacer />
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={ openPage.bind(this, '/udap-registration')}
-            >Register App</Button>
-            <DynamicSpacer />
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={ openPage.bind(this, '/verification-results')}
-            >Validation Queue</Button>
-          </CardContent>
-        </StyledCard>
-      </Grid>
-    </Grid> */}
   }
 
   let noResults;
@@ -1532,8 +1491,25 @@ function MainPage(props){
   let urlPreview;
   if(showUrlPreview){
     urlPreview = <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} >
-      <CardHeader title="Urls Being Used" style={{paddingBottom: '0px', marginBottom: '0px', marginTop: '0px', userSelect: 'none'}}  />
+      <CardHeader title="URLS Being Used" style={{paddingBottom: '0px', marginBottom: '0px', marginTop: '0px', userSelect: 'none'}}  />
       <CardContent>
+        <Grid container spacing={1} justify="center">
+          <Grid item xs={12}>
+            <FormControl style={{width: '100%', marginTop: '0px', marginBottom: '20px'}}>
+              <InputLabel className={classes.label} shrink={true} >Search Query</InputLabel>
+              <Input
+                id="searchQuery"
+                name="searchQuery"
+                className={classes.input}   
+                value={defaultDirectoryQuery}
+                onChange={handleChangeSearchQuery.bind(this)}
+                fullWidth    
+                type="text"
+                placeholder="/Practitioners?address-state=MA"          
+                />
+            </FormControl>                    
+          </Grid>
+        </Grid>
         <Grid container justify="center" style={{marginBottom: '0px'}}>
           <Grid disabled item xs={12} container spacing={3} style={{padding: '0px', margin: '0px', fontSize: '120%'}}>
             <div style={{width: '100%'}} onClick={openExternalPage.bind(this, practitionerUrlWithParams)}>GET {practitionerUrlWithParams}</div><br />
@@ -1646,7 +1622,7 @@ function MainPage(props){
         <Grid container justify="center" style={{marginBottom: '0px'}}>
           <Grid item xs={12}>
             <StyledCard margin={20} style={{width: '100%', cursor: 'pointer'}} >
-              <CardHeader title="Search Parameters" />
+              <CardHeader title="Search Directory" />
               <CardContent>
                 <Grid container spacing={1} justify="center">
                   <Grid item xs={10}>

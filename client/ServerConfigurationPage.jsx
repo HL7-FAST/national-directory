@@ -88,7 +88,6 @@ const useStyles = makeStyles(theme => ({
 
 
 
-
 function ServerConfigurationPage(props){
   const classes = useStyles();
 
@@ -105,6 +104,9 @@ function ServerConfigurationPage(props){
   let [ publicCertPem, setPublicCertPem ] = useState("");
 
   let [checked, setChecked] = React.useState(true);
+  let [defaultDirectoryQuery, setDefaultDirectoryQuery] = React.useState(get(Meteor, 'settings.public.interfaces.upstreamDirectory.channel.path', ""));
+  
+
   let handleChange = (event) => {
     setChecked(event.target.checked);
   };
@@ -133,6 +135,9 @@ function ServerConfigurationPage(props){
     return Session.get('SubscriptionChannelResourceType');
   }, []);
 
+  defaultDirectoryQuery = useTracker(function(){
+    return Session.get('MainSearch.defaultDirectoryQuery');
+  }, []);
 
   function openExternalPage(url){
     logger.debug('client.app.layout.ServerConfigurationPage.openExternalPage', url);
@@ -326,6 +331,26 @@ function ServerConfigurationPage(props){
       }
       if(result){
         console.log('result', result)
+      }
+    })
+  }
+
+  function fetchDefaultQuery(){
+    
+    let upstreamDirectory = get(Meteor, 'settings.public.interfaces.upstreamDirectory.channel.endpoint', '');
+    console.log('------------------------------------------');
+    console.log('Fetch Default Query');
+    console.log('');
+    console.log('FHIR Server Base: ', upstreamDirectory);    
+    console.log('Default Query:    ', defaultDirectoryQuery);
+    console.log('');
+
+    Meteor.call('fetchDefaultDirectoryQuery', function(error, result){
+      if(error){
+        alert(error.message)
+      }
+      if(result){
+        console.log('result', result);
       }
     })
   }
@@ -534,14 +559,15 @@ function ServerConfigurationPage(props){
     onClick={ handleSyncUpstreamDirectory.bind(this) }
   >Subscribe to Upstream Directory</Button>
 
+  let fetchDefaultDirectoryQueryButton = <Button variant="contained" fullWidth onClick={fetchDefaultQuery.bind(this)}>Fetch Default Query</Button>
+
   let upstreamServer = get(Meteor, 'settings.public.interfaces.upstreamDirectory.channel.endpoint', '')
   let upstreamServerElements = <StyledCard margin={20} style={{width: '100%'}}  >
       <CardHeader title="Upstream Directory" />
       <CardContent>
             
         <Grid container spacing={3} justify="center" style={{paddingTop: '20px'}}>
-          <Grid item xs={12} container spacing={3} style={{padding: '0px', margin: '0px'}}>
-            <Grid item xs={8}>
+          <Grid item xs={12} spacing={3}>
               <TextField
                 label="Upstream Directory"
                 fullWidth={true}
@@ -551,37 +577,51 @@ function ServerConfigurationPage(props){
                 style={{marginBottom: '10px'}}
                 disabled={isDisabled}
               />         
-            </Grid>
-            <Grid item xs={4}>
-              <FormControl style={{width: '100%', marginTop: '0px'}}>
-                <InputLabel className={classes.label}>Resource Type</InputLabel>
-                <Input
-                  id="resourceType"
-                  name="resourceType"
-                  className={classes.input}   
-                  value={subscriptionChannelResourceType}
-                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                  // onChange={updateField.bind(this, 'type[0].text')}
-                  fullWidth    
-                  type="text"
-                  placeholder="Organization"
-                  disabled={isDisabled}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle type select"
-                        onClick={ handleOpenResourceTypes.bind(this) }
-                      >
-                        <SearchIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }           
-                />
-              </FormControl>  
-            </Grid>
+              <TextField
+                label="Default Query"
+                fullWidth={true}
+                id="defaultDirectoryQuery"
+                type="defaultDirectoryQuery"
+                value={defaultDirectoryQuery}
+                style={{marginBottom: '10px'}}
+                disabled={isDisabled}
+              />              
           </Grid>
+        </Grid>
 
-          
+        { fetchDefaultDirectoryQueryButton }
+        <DynamicSpacer />
+        <Grid>
+          <Grid item xs={12}>
+            <FormControl style={{width: '100%', marginTop: '40px', marginBottom: '0px'}}>
+              <InputLabel shrink={true} className={classes.label}>Resource Type</InputLabel>
+              <Input
+                id="resourceType"
+                name="resourceType"
+                className={classes.input}   
+                value={subscriptionChannelResourceType}
+                // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
+                // onChange={updateField.bind(this, 'type[0].text')}
+                fullWidth    
+                type="text"
+                placeholder="Organization"
+                disabled={isDisabled}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle type select"
+                      onClick={ handleOpenResourceTypes.bind(this) }
+                    >
+                      <SearchIcon />
+                    </IconButton>
+                  </InputAdornment>
+                }           
+              />
+            </FormControl>  
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={3} justify="center" style={{paddingTop: '00px'}}>
           <Grid item xs={12} style={{paddingTop: '20px', paddingBottom: '20px'}}>
             <FormControlLabel
               control={<Checkbox checked={true} onChange={handleChange} />}
@@ -614,6 +654,8 @@ function ServerConfigurationPage(props){
             />
           </Grid>
         </Grid>
+
+
         <DynamicSpacer height={40} />
 
         { upstreamServerSyncButton }
