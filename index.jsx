@@ -6,8 +6,9 @@ import UdapRegistrationPage from './client/UdapRegistrationPage';
 import ServerConfigurationPage from './client/ServerConfigurationPage';
 import CertificateStoragePage from './client/CertificateStoragePage';
 import OauthClientsPage from './client/OauthClientsPage';
-import NewCertificateDialog from './client/NewCertificateDialog';
+import BackendServicesConfigPage from './client/BackendServicesConfigPage';
 
+import NewCertificateDialog from './client/NewCertificateDialog';
 import SearchValueSetsDialog from './client/SearchValueSetsDialog';
 import SearchStatesDialog from './client/SearchStatesDialog';
 import SearchResourceTypesDialog from './client/SearchResourceTypesDialog';
@@ -84,7 +85,13 @@ let DynamicRoutes = [{
   path: '/baseR4',
   component: FhirBasePage,
   requireAuth: true
-}]
+}, {
+  name: 'BackendServicesConfigPage',
+  path: '/backend-services-config',
+  component: BackendServicesConfigPage,
+  requireAuth: true
+}
+]
 
 let SidebarWorkflows = [{
   'primaryText': 'Configure Server',
@@ -102,6 +109,10 @@ let SidebarWorkflows = [{
   'primaryText': 'OAuth Clients',
   'to': '/oauth-clients',
   'href': '/oauth-clients'
+}, {
+  'primaryText': 'Backend Services',
+  'to': '/backend-services-config',
+  'href': '/backend-services-config'
 }]
 
 

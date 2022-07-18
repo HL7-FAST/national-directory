@@ -102,3 +102,41 @@ WITH INDICES
 
 
 
+
+// Endpoints
+```
+db.Organizations.find().forEach(function(org, index){
+  print(index)
+  let newOrg = org;
+  let endpoint = db.Endpoints.findOne({id: org.id});
+
+  if(endpoint && endpoint.address){
+    if(newOrg.telecom){
+      newOrg.telecom.push({
+        system: "email",
+        use: "work",
+        value: endpoint.address
+      })
+      db.Organizations.updateOne({_id: org._id}, {$set: newOrg})
+    }
+  }
+})
+
+
+db.Practitioners.find().forEach(function(org, index){
+  print(index)
+  let newPractitioner = org;
+  let endpoint = db.Endpoints.findOne({id: org.id});
+
+  if(endpoint && endpoint.address){
+    if(newPractitioner.telecom){
+      newPractitioner.telecom.push({
+        system: "email",
+        use: "work",
+        value: endpoint.address
+      })
+      db.Practitioners.updateOne({_id: org._id}, {$set: newPractitioner})
+    }
+  }
+})
+```

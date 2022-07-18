@@ -149,13 +149,13 @@
         "name": "OAuth Server",
         "status": "active",
         "channel": {
-          "endpoint": "https://federated-directory.meteorapp.com/"
+          "endpoint": "https://federated-dir.meteorapp.com/"
         }
       },
       "accountsServer": {      
         "name": "Accounts Server",
         "database": "meteor",
-        "host": "https://federated-directory.meteorapp.com",
+        "host": "https://federated-dir.meteorapp.com",
         "port": 443
       }
     }
@@ -181,7 +181,7 @@
       "fhirPath": "baseR4",
       "autopublishSubscriptions": false,
       "autoGenerateSubscriptions": true,
-      "publicationLimit": 1000,
+      "publicationLimit": 10000,
       "rest": {
         "AuditEvent": {
           "disableOauth": true,

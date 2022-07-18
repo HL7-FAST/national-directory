@@ -61,7 +61,7 @@ import forge from 'node-forge';
 
 let pki = forge.pki;
 
-// import { LayoutHelpers } from 'clinical:hl7-fhir-data-infrastructure';
+import { SubscriptionsTable } from 'meteor/clinical:hl7-fhir-data-infrastructure';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -471,39 +471,42 @@ function ServerConfigurationPage(props){
   }
 
   let generateCertElems;
-  if(!serverHasPublicCert){
-    generateCertElems = <StyledCard margin={20} style={{width: '100%', fontSize: '80%'}}  >
-      <CardHeader title="Generate Cert" subheader="No X.509 certificates were detected on the server. You will want to generate the certificate and then copy it to the Meteor settings file. " />
-      <CardContent >
-        <TextField
-          label="Public Cert"
-          fullWidth={true}
-          id="publicCert"
-          type="publicCert"
-          value={JSON.stringify(publicCertPem)}
-          style={{marginBottom: '10px'}}
-          multiline
-          InputProps={{
-            style: {
-              fontSize: '120%',
-              fontFamily: 'monospace'
-            }
-          }}
-        />
-        
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleGenerateCert.bind(this)}
-        >Generate Cert</Button>
-      </CardContent>
-    </StyledCard>
-  }
-
   let initSampleDataElements;
   let isDisabled = true;
   if(currentUser){
     isDisabled = false;
+
+    if(!serverHasPublicCert){
+      generateCertElems = <StyledCard margin={20} style={{width: '100%', fontSize: '80%'}}  >
+        <CardHeader title="Generate Cert" subheader="No X.509 certificates were detected on the server. You will want to generate the certificate and then copy it to the Meteor settings file. " />
+        <CardContent >
+          <TextField
+            label="Public Cert"
+            fullWidth={true}
+            id="publicCert"
+            type="publicCert"
+            value={JSON.stringify(publicCertPem)}
+            style={{marginBottom: '10px'}}
+            multiline
+            InputProps={{
+              style: {
+                fontSize: '120%',
+                fontFamily: 'monospace'
+              }
+            }}
+            disabled={isDisabled}
+          />
+          
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleGenerateCert.bind(this)}
+            disabled={isDisabled}
+          >Generate Cert</Button>
+        </CardContent>
+      </StyledCard>
+    }
+  
     initSampleDataElements = <StyledCard margin={20} style={{marginBottom: '20px', width: '100%'}}>
       <CardContent>        
         <Button
@@ -557,9 +560,10 @@ function ServerConfigurationPage(props){
     variant="contained"
     fullWidth
     onClick={ handleSyncUpstreamDirectory.bind(this) }
+    disabled={isDisabled}
   >Subscribe to Upstream Directory</Button>
 
-  let fetchDefaultDirectoryQueryButton = <Button variant="contained" fullWidth onClick={fetchDefaultQuery.bind(this)}>Fetch Default Query</Button>
+  let fetchDefaultDirectoryQueryButton = <Button variant="contained" fullWidth onClick={fetchDefaultQuery.bind(this)} disabled={isDisabled}>Fetch Default Query</Button>
 
   let upstreamServer = get(Meteor, 'settings.public.interfaces.upstreamDirectory.channel.endpoint', '')
   let upstreamServerElements = <StyledCard margin={20} style={{width: '100%'}}  >
@@ -591,75 +595,90 @@ function ServerConfigurationPage(props){
 
         { fetchDefaultDirectoryQueryButton }
         <DynamicSpacer />
-        <Grid>
-          <Grid item xs={12}>
-            <FormControl style={{width: '100%', marginTop: '40px', marginBottom: '0px'}}>
-              <InputLabel shrink={true} className={classes.label}>Resource Type</InputLabel>
-              <Input
-                id="resourceType"
-                name="resourceType"
-                className={classes.input}   
-                value={subscriptionChannelResourceType}
-                // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
-                // onChange={updateField.bind(this, 'type[0].text')}
-                fullWidth    
-                type="text"
-                placeholder="Organization"
+      </CardContent>
+    </StyledCard>
+
+  let subscribeUpstreamCard = <StyledCard>
+    <CardHeader title="Subscribe Upstream" />
+    <CardContent>
+      <Grid container>
+            <Grid item xs={12}>
+              <FormControl style={{width: '100%', marginTop: '40px', marginBottom: '0px'}}>
+                <InputLabel shrink={true} className={classes.label}>Resource Type</InputLabel>
+                <Input
+                  id="resourceType"
+                  name="resourceType"
+                  className={classes.input}   
+                  value={subscriptionChannelResourceType}
+                  // value={FhirUtilities.pluckCodeableConcept(get(activeHealthcareService, 'type[0]'))}
+                  // onChange={updateField.bind(this, 'type[0].text')}
+                  fullWidth    
+                  type="text"
+                  placeholder="Organization"
+                  disabled={isDisabled}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle type select"
+                        onClick={ handleOpenResourceTypes.bind(this) }
+                      >
+                        <SearchIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  }           
+                />
+              </FormControl>  
+            </Grid>
+          </Grid>
+
+          <Grid container spacing={3} justify="center" style={{paddingTop: '00px'}}>
+            <Grid item xs={12} style={{paddingTop: '20px', paddingBottom: '20px'}}>
+              <FormControlLabel
+                control={<Checkbox checked={true} onChange={handleChange} />}
+                label="Realtime"
                 disabled={isDisabled}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle type select"
-                      onClick={ handleOpenResourceTypes.bind(this) }
-                    >
-                      <SearchIcon />
-                    </IconButton>
-                  </InputAdornment>
-                }           
               />
-            </FormControl>  
+              <FormControlLabel
+                control={<Checkbox checked={false} onChange={handleChange} />}
+                label="Daily"
+                disabled={true}
+                // disabled={isDisabled}
+              />
+              <FormControlLabel
+                control={<Checkbox checked={false} onChange={handleChange} />}
+                label="Weekly"
+                disabled={true}
+                // disabled={isDisabled}
+              />
+              <FormControlLabel
+                control={<Checkbox checked={false} onChange={handleChange} />}
+                label="Monthly"
+                disabled={true}
+                // disabled={isDisabled}
+              />
+              <FormControlLabel
+                control={<Checkbox checked={false} onChange={handleChange} />}
+                label="Last Updated"
+                disabled={true}
+                // disabled={isDisabled}
+              />
+            </Grid>
           </Grid>
-        </Grid>
-
-        <Grid container spacing={3} justify="center" style={{paddingTop: '00px'}}>
-          <Grid item xs={12} style={{paddingTop: '20px', paddingBottom: '20px'}}>
-            <FormControlLabel
-              control={<Checkbox checked={true} onChange={handleChange} />}
-              label="Realtime"
-              disabled={isDisabled}
-            />
-            <FormControlLabel
-              control={<Checkbox checked={false} onChange={handleChange} />}
-              label="Daily"
-              disabled={true}
-              // disabled={isDisabled}
-            />
-            <FormControlLabel
-              control={<Checkbox checked={false} onChange={handleChange} />}
-              label="Weekly"
-              disabled={true}
-              // disabled={isDisabled}
-            />
-            <FormControlLabel
-              control={<Checkbox checked={false} onChange={handleChange} />}
-              label="Monthly"
-              disabled={true}
-              // disabled={isDisabled}
-            />
-            <FormControlLabel
-              control={<Checkbox checked={false} onChange={handleChange} />}
-              label="Last Updated"
-              disabled={true}
-              // disabled={isDisabled}
-            />
-          </Grid>
-        </Grid>
 
 
-        <DynamicSpacer height={40} />
+          <DynamicSpacer height={40} />
 
-        { upstreamServerSyncButton }
+          { upstreamServerSyncButton }
+    </CardContent>
+  </StyledCard>
 
+  let subscriptionsCard = <StyledCard>
+      <CardHeader title="Subscriptions" />
+      <CardContent>
+        <SubscriptionsTable
+            hideContact={true}
+            hideEnd={true}
+        />
       </CardContent>
     </StyledCard>
 
@@ -668,15 +687,17 @@ function ServerConfigurationPage(props){
       
       <Container maxWidth="lg" style={{paddingBottom: '80px'}}>
         <Grid container spacing={3} justify="center" style={{marginBottom: '20px'}}>
-          <Grid item xs={6} sm={6}>
+          <Grid item xs={8} sm={8}>
             { serverPrivateKeyElems }
             { serverPublicKeyElems }
             { serverPublicCertElems }
             { generateKeyElems }
             { generateCertElems }
-          </Grid>
-          <Grid item xs={6} sm={6}>
             { upstreamServerElements }
+            <DynamicSpacer />
+            { subscribeUpstreamCard }
+            <DynamicSpacer />
+            { subscriptionsCard }
             { initSampleDataElements }
           </Grid>
         </Grid>
