@@ -24,7 +24,7 @@ db.Practitioners.find({id: '1154324382'}, {}).forEach(function(doc){
 })
 ```
 
-```
+```js
 db.Practitioners.find({id: '1154324382'}, {}).forEach(function(doc){
     let endpointAddress = db.Endpoints.findOne({id: doc.id}).address;
     if(endpointAddress){
@@ -52,7 +52,7 @@ db.Practitioners.find({id: '1154324382'}, {}).forEach(function(doc){
 ```
 
 
-```
+```js
 let count = 0;
 db.Endpoints.find({}, {}).forEach(function(doc, index){
     count++;
@@ -104,7 +104,7 @@ WITH INDICES
 
 
 // Endpoints
-```
+```js
 db.Organizations.find().forEach(function(org, index){
   print(index)
   let newOrg = org;
@@ -139,4 +139,42 @@ db.Practitioners.find().forEach(function(org, index){
     }
   }
 })
+
+db.Endpoints.find({'connectionType.code': "direct-project"}).forEach(function(record){
+
+})
+db.Endpoints.updateMany({'connectionType.code': "FHIR"}, {$set: {'connectionType.code': 'hl7-fhir-rest'}})
+
+
+
+db.Endpoints.find({'connectionType.code': "hl7-fhir-rest"}).forEach(function(record){
+  let matchedOrg = db.Organizations.findOne({id: record.id});
+  if(matchedOrg){
+    db.Endpoints.updateOne({_id: record._id}, {$set: {managingOrganization: {
+      reference: "Organization/" + record.id,
+      display: matchedOrg.name
+    }}})
+  }
+})
+
+
+db.Endpoints.find({'connectionType.code': "hl7-fhir-rest", "address": {$regex: "@"}}).forEach(function(record){
+  db.Endpoints.updateOne({_id: record._id}, {$set: {'connectionType.code': 'direct-project', 'connectionType.display': 'Direct Project'}});
+})
+
+db.HealthcareServices.deleteMany({resourceType: "Location"})
+
+
+db.Locations.find({id: {$regex: "BPS"}}).forEach(function(record){
+  if(record){
+    if(record.address){
+      if(record.address.state){
+        db.Locations.updateOne({_id: record._id}, {$set: {'address.state': (record.address.state).trim() }})
+      }
+    }
+  }
+})
+
 ```
+
+

@@ -119,7 +119,13 @@ const useStyles = makeStyles(theme => ({
     marginTop: '20px', 
     marginBottom: '20px',
     textAlign: 'left'
-  }
+  },
+  inputRoot: {
+    '&$disabled': {
+      color:'#222222'
+    },
+  },
+  disabled: {}
 }));
 
 
@@ -295,9 +301,26 @@ function MainPage(props){
   let searchInsurancePlan = useTracker(function(){
     return Session.get('MainSearch.insurancePlan');
   }, [])
-
+  let hasRestrictions = useTracker(function(){
+    if(Session.get('currentUser')){
+      return false;
+    } else {
+      return true;
+    }
+  }, [])
   
+  //----------------------------------------------------------------------
+  // Custom Styling  
 
+  let customInputProps = {
+    classes:{
+      root: classes.inputRoot,
+      disabled: classes.disabled
+    }
+  };
+  let customInputLabelProps = {
+    shrink: true
+  }
 
   //----------------------------------------------------------------------
   // Urls  
@@ -308,7 +331,7 @@ function MainPage(props){
   let endpointUrl = baseUrl + "/Endpoint?_count=" + searchCount;
   let healthcareServiceUrl = baseUrl + "/HealthcareService?_count=" + searchCount;
   let locationUrl = baseUrl + "/Location?_count=" + searchCount;
-  let insurancePlanUrl = baseUrl + "/InsurancePlan?_count=" + searchCount;
+  // let insurancePlanUrl = baseUrl + "/InsurancePlan?_count=" + searchCount;
 
 
 
@@ -422,23 +445,39 @@ function MainPage(props){
         returnUrl = returnUrl + '&name=' + Session.get('MainSearch.name');
       }  
     }
+    if(Session.get('MainSearch.city')){
+      returnUrl = returnUrl + '&location.address-city=' + Session.get('MainSearch.city');
+      // returnUrl = returnUrl + '&providedBy.address-city=' + Session.get('MainSearch.city');
+    }
+    if(Session.get('MainSearch.state')){
+      returnUrl = returnUrl + '&location.address-state=' + get(Session.get('MainSearch.state'), 'code');
+      // returnUrl = returnUrl + '&providedBy.address-state=' + get(Session.get('MainSearch.state'), 'code');
+    }
+    if(Session.get('MainSearch.postalCode')){
+      returnUrl = returnUrl + '&location.address-postalcode=' + Session.get('MainSearch.postalCode');
+      // returnUrl = returnUrl + '&providedBy.address-postalcode=' + Session.get('MainSearch.postalCode');
+    }
+    // if(Session.get('MainSearch.country')){
+    //   returnUrl = returnUrl + '&location.address-country=' + get(Session.get('MainSearch.country'), 'code');
+    // }
+
     return returnUrl;
   }, [])
 
-  let insurancePlanUrlWithParams = useTracker(function(){
-    let returnUrl = insurancePlanUrl;
-    if(Session.get('MainSearch.insurancePlan')){
-      returnUrl = returnUrl + '&specialty=' + get(Session.get('MainSearch.insurancePlan'), 'code');
-    }
-    if(onlyShowMatched){
-      returnUrl = returnUrl + '&name'
-    } else {
-      if(Session.get('MainSearch.name')){
-        returnUrl = returnUrl + '&name=' + Session.get('MainSearch.name');
-      }  
-    }
-    return returnUrl;
-  }, [])
+  // let insurancePlanUrlWithParams = useTracker(function(){
+  //   let returnUrl = insurancePlanUrl;
+  //   if(Session.get('MainSearch.insurancePlan')){
+  //     returnUrl = returnUrl + '&specialty=' + get(Session.get('MainSearch.insurancePlan'), 'code');
+  //   }
+  //   if(onlyShowMatched){
+  //     returnUrl = returnUrl + '&name'
+  //   } else {
+  //     if(Session.get('MainSearch.name')){
+  //       returnUrl = returnUrl + '&name=' + Session.get('MainSearch.name');
+  //     }  
+  //   }
+  //   return returnUrl;
+  // }, [])
 
 
 
@@ -554,7 +593,7 @@ function MainPage(props){
     console.log('practitionerUrlWithParams', practitionerUrlWithParams);
     HTTP.get(practitionerUrlWithParams, function(error, result){
       if(error){
-        console.error('error', error)
+        console.error('error', error) 
       }
       if(result){
         console.log('result', JSON.parse(get(result, 'content')));
@@ -629,31 +668,31 @@ function MainPage(props){
       }
     })
 
-    console.log('insurancePlanUrlWithParams', insurancePlanUrlWithParams);
-    HTTP.get(insurancePlanUrlWithParams, function(error, result){
-      if(error){
-        console.error('error', error)
-      }
-      if(result){
-        console.log('result', JSON.parse(get(result, 'content')));
+    // console.log('insurancePlanUrlWithParams', insurancePlanUrlWithParams);
+    // HTTP.get(insurancePlanUrlWithParams, function(error, result){
+    //   if(error){
+    //     console.error('error', error)
+    //   }
+    //   if(result){
+    //     console.log('result', JSON.parse(get(result, 'content')));
 
-        let parsedContent = JSON.parse(get(result, 'content'));
-        if(get(parsedContent, 'total') === 0){
-          // setShowNoResults(true);
-        } else {
-          let entryArray = get(parsedContent, 'entry');
-          if(Array.isArray(entryArray)){
-            let insurancePlanArray = entryArray.map(function(entry){
-              return entry.resource;
-            })        
-            setMatchedInsurancePlans(insurancePlanArray)
-            console.log('insurancePlanArray', insurancePlanArray)  
-            setShowSearchResults(true);
-            // setShowNoResults(false);
-          }  
-        }
-      }
-    })
+    //     let parsedContent = JSON.parse(get(result, 'content'));
+    //     if(get(parsedContent, 'total') === 0){
+    //       // setShowNoResults(true);
+    //     } else {
+    //       let entryArray = get(parsedContent, 'entry');
+    //       if(Array.isArray(entryArray)){
+    //         let insurancePlanArray = entryArray.map(function(entry){
+    //           return entry.resource;
+    //         })        
+    //         setMatchedInsurancePlans(insurancePlanArray)
+    //         console.log('insurancePlanArray', insurancePlanArray)  
+    //         setShowSearchResults(true);
+    //         // setShowNoResults(false);
+    //       }  
+    //     }
+    //   }
+    // })
 
     console.log('healthcareServiceUrlWithParams', healthcareServiceUrlWithParams);
     HTTP.get(healthcareServiceUrlWithParams, function(error, result){
@@ -698,7 +737,7 @@ function MainPage(props){
     setMatchedOrganizations([]);
     setMatchedPractitioners([]);
     setMatchedLocations([]);
-    setMatchedHealtcareServices([]);
+    setMatchedHealthcareServices([]);
     setMatchedInsurancePlans([]);
 
     // setShowNoResults(false);
@@ -752,7 +791,9 @@ function MainPage(props){
     Session.set('mainAppDialogComponent', "SearchStatesDialog");
     Session.set('lastUpdated', new Date());
     Session.set('mainAppDialogMaxWidth', "md");
-    Session.set('mainAppDialogOpen', true);
+    Meteor.setTimeout(function(){
+      Session.set('mainAppDialogOpen', true);
+    }, 200)
   }  
   function handleOpenStateDialog(){
     Session.set('selectedValueSet', 'us-core-usps-state');
@@ -760,8 +801,10 @@ function MainPage(props){
     Session.set('mainAppDialogComponent', "SearchValueSetsDialog");
     Session.set('lastUpdated', new Date());
     Session.set('mainAppDialogMaxWidth', "md");
-    Session.set('mainAppDialogOpen', true);
     Session.set('dialogReturnValue', 'MainSearch.state');
+    Meteor.setTimeout(function(){
+      Session.set('mainAppDialogOpen', true);
+    }, 200)
   }  
   function handleOpenCountryDialog(){
     Session.set('selectedValueSet', 'country');
@@ -769,8 +812,10 @@ function MainPage(props){
     Session.set('mainAppDialogComponent', "SearchValueSetsDialog");
     Session.set('lastUpdated', new Date());
     Session.set('mainAppDialogMaxWidth', "md");
-    Session.set('mainAppDialogOpen', true);
     Session.set('dialogReturnValue', 'MainSearch.country');
+    Meteor.setTimeout(function(){
+      Session.set('mainAppDialogOpen', true);
+    }, 200)
   }  
 
   function handlePractitionerSpecialtyDialog(){
@@ -780,27 +825,21 @@ function MainPage(props){
     // Session.set('mainAppDialogComponent', "SearchLibraryOfMedicineDialog");
     Session.set('lastUpdated', new Date());
     Session.set('mainAppDialogMaxWidth', "md");
-    Session.set('mainAppDialogOpen', true);
     Session.set('dialogReturnValue', 'MainSearch.practitionerSpecialty');
+    Meteor.setTimeout(function(){
+      Session.set('mainAppDialogOpen', true);
+    }, 200)
   }  
-  // function handlePractitionerQualificationDialog(){
-  //   Session.set('selectedValueSet', 'c80-practice-codes');
-  //   Session.set('mainAppDialogTitle', "Search by Practitioner Qualification");
-  //   Session.set('mainAppDialogComponent', "SearchValueSetsDialog");
-  //   Session.set('lastUpdated', new Date());
-  //   Session.set('mainAppDialogMaxWidth', "md");
-  //   Session.set('mainAppDialogOpen', true);
-  //   Session.set('dialogReturnValue', 'MainSearch.practitionerQualification');
-  // }  
-
   function handleHealthcareServiceDialog(){
     Session.set('selectedValueSet', '2.16.840.1.114222.4.11.1066');
     Session.set('mainAppDialogTitle', "Search Healthcare Service");
     Session.set('mainAppDialogComponent', "SearchValueSetsDialog");
     Session.set('lastUpdated', new Date());
     Session.set('mainAppDialogMaxWidth', "md");
-    Session.set('mainAppDialogOpen', true);
     Session.set('dialogReturnValue', 'MainSearch.healthcareService');
+    Meteor.setTimeout(function(){
+      Session.set('mainAppDialogOpen', true);
+    }, 200)
   }  
   function handleInsurancePlanDialog(){
     Session.set('selectedCodeSystem', 'insurance-plan-type');
@@ -808,18 +847,21 @@ function MainPage(props){
     Session.set('mainAppDialogComponent', "SearchCodeSystemDialog");
     Session.set('lastUpdated', new Date());
     Session.set('mainAppDialogMaxWidth', "md");
-    Session.set('mainAppDialogOpen', true);
     Session.set('dialogReturnValue', 'MainSearch.insurancePlan');
+    Meteor.setTimeout(function(){
+      Session.set('mainAppDialogOpen', true);
+    }, 200)
   }  
-
   function handleEndpointDialog(){
     Session.set('selectedCodeSystem', 'endpoint-connection-type');
     Session.set('mainAppDialogTitle', "Search Endpoint Types");
     Session.set('mainAppDialogComponent', "SearchCodeSystemDialog");
     Session.set('lastUpdated', new Date());
     Session.set('mainAppDialogMaxWidth', "md");
-    Session.set('mainAppDialogOpen', true);
     Session.set('dialogReturnValue', 'MainSearch.endpointType');
+    Meteor.setTimeout(function(){
+      Session.set('mainAppDialogOpen', true);
+    }, 200)
   }  
   function handleSecurityDialog(){
     Session.set('selectedValueSet', '');
@@ -827,11 +869,19 @@ function MainPage(props){
     Session.set('mainAppDialogComponent', "SearchValueSetsDialog");
     Session.set('lastUpdated', new Date());
     Session.set('mainAppDialogMaxWidth', "md");
-    Session.set('mainAppDialogOpen', true);
     Session.set('dialogReturnValue', 'MainSearch.securityDialog');
+    Meteor.setTimeout(function(){
+      Session.set('mainAppDialogOpen', true);
+    }, 200)
   }  
 
-
+  function enableRestrictionGui(hasRestrictions){
+    let result = false;
+    if(get(Meteor, 'settings.public.defaults.enableAccessRestrictions')){
+      result = hasRestrictions;
+    }
+    return result;
+  }
 
 
 
@@ -900,6 +950,7 @@ function MainPage(props){
             hideActionIcons={true}
             hideIdentifier={true}
             hideEmail={true}
+            hasRestrictions={enableRestrictionGui(hasRestrictions)}
             count={matchedOrganizations.length}
             page={organizationPageIndex}
             onSetPage={function(index){
@@ -927,6 +978,9 @@ function MainPage(props){
             hideEmail={true}
             hideQualification={true}
             hideQualificationCode={true}
+            hideIssuer={true}
+            hideSpecialty={false}
+            hasRestrictions={enableRestrictionGui(hasRestrictions)}
             count={matchedPractitioners.length}
             page={practitionerPageIndex}
             onSetPage={function(index){
@@ -953,6 +1007,8 @@ function MainPage(props){
             hideActionIcons={true}
             hideLatitude={true}
             hideLongitude={true}
+            hideCountry={true}
+            hideType={true}
             count={matchedLocations.length}
             page={locationPageIndex}
             onSetPage={function(index){
@@ -978,6 +1034,8 @@ function MainPage(props){
             hideBarcode={true}
             rowsPerPage={5}
             hideActionIcons={true}
+            hideCategory={true}
+            hideType={true}
             count={matchedHealthcareServices.length}
             page={healthcareServicePageIndex}
             onSetPage={function(index){
@@ -1044,7 +1102,7 @@ function MainPage(props){
     <Grid disabled  item xs={12} container spacing={3} style={{padding: '0px', margin: '0px'}}>
       <Grid item xs={3}>
         <FormControl style={{width: '100%', marginTop: '0px'}}>
-          <InputLabel className={classes.label}>City</InputLabel>
+          <InputLabel className={classes.label} shrink={true}>City</InputLabel>
           <Input
             id="city"
             name="city"
@@ -1053,7 +1111,7 @@ function MainPage(props){
             onChange={updateCity.bind(this)}
             fullWidth    
             type="text"
-            placeholder="Chicago"          
+            // placeholder="Chicago"          
           />
         </FormControl>
       </Grid>
@@ -1067,15 +1125,20 @@ function MainPage(props){
             value={get(searchState, 'display')}
             fullWidth    
             type="text"
-            placeholder="Illinois"
+            // placeholder="Illinois"
+            disabled={true}
             onKeyDown= {(e) => {
               if (e.key === 'Backspace') {
                 Session.set('MainSearch.state', null);
                 // Session.set('MainSearch.state', {code: '', display: ''});
               }
             }}
+            classes={{
+              root: classes.inputRoot,
+              disabled: classes.disabled
+            }}
             endAdornment={
-              <InputAdornment position="end">
+              <InputAdornment position="end" disabled={false}>
                 <IconButton
                   aria-label="toggle type select"
                   onClick={ handleOpenStateDialog.bind(this) }
@@ -1098,7 +1161,7 @@ function MainPage(props){
             onChange={updatePostalCode.bind(this)}
             fullWidth    
             type="text"
-            placeholder="60618"          
+            // placeholder="60618"          
           />
         </FormControl>
       </Grid>
@@ -1112,15 +1175,20 @@ function MainPage(props){
             value={get(searchCountry, 'display')}
               
             type="text"
-            placeholder="USA"
+            // placeholder="USA"
+            disabled={true}
             onKeyDown= {(e) => {
               if (e.key === 'Backspace') {
                 Session.set('MainSearch.country', null);
                 // Session.set('MainSearch.country', {code: '', display: ''});
               }
             }}
+            classes={{
+              root: classes.inputRoot,
+              disabled: classes.disabled
+            }}
             endAdornment={
-              <InputAdornment position="end">
+              <InputAdornment position="end" disabled={false}>
                 <IconButton
                   aria-label="toggle type select"
                   onClick={ handleOpenCountryDialog.bind(this) }
@@ -1144,14 +1212,19 @@ function MainPage(props){
             value={get(searchPractitionerSpecialty, 'display')}
             fullWidth    
             type="text"
-            placeholder="Cardiologist"
+            // placeholder="Cardiologist"
+            disabled={true}
             onKeyDown= {(e) => {
               if (e.key === 'Backspace') {
                 Session.set('MainSearch.practitionerSpecialty', null);
               }
             }}
+            classes={{
+              root: classes.inputRoot,
+              disabled: classes.disabled
+            }}
             endAdornment={
-              <InputAdornment position="end">
+              <InputAdornment position="end" disabled={false}>
                 <IconButton
                   aria-label="toggle type select"
                   onClick={ handlePractitionerSpecialtyDialog.bind(this) }
@@ -1197,14 +1270,19 @@ function MainPage(props){
             className={classes.input}   
             value={get(searchEndpointType, 'display')}    
             type="text"
-            placeholder="HL7 FHIR"
+            // placeholder="HL7 FHIR"
+            disabled={true}
             onKeyDown= {(e) => {
               if (e.key === 'Backspace') {
                 Session.set('MainSearch.endpointType', null);
               }
             }}
+            classes={{
+              root: classes.inputRoot,
+              disabled: classes.disabled
+            }}
             endAdornment={
-              <InputAdornment position="end">
+              <InputAdornment position="end" disabled={false}>
                 <IconButton
                   aria-label="toggle type select"
                   onClick={ handleEndpointDialog.bind(this) }
@@ -1228,14 +1306,19 @@ function MainPage(props){
             value={get(searchHealthcareService, 'display')}
             fullWidth    
             type="text"
-            placeholder="Physical Therapy"
+            // placeholder="Physical Therapy"
+            disabled={true}
             onKeyDown= {(e) => {
               if (e.key === 'Backspace') {
                 Session.set('MainSearch.healthcareService', null);
               }
             }}
+            classes={{
+              root: classes.inputRoot,
+              disabled: classes.disabled
+            }}
             endAdornment={
-              <InputAdornment position="end">
+              <InputAdornment position="end" disabled={false}>
                 <IconButton
                   aria-label="toggle type select"
                   onClick={ handleHealthcareServiceDialog.bind(this) }
@@ -1257,14 +1340,19 @@ function MainPage(props){
             value={get(searchInsurancePlan, 'display')}
             fullWidth    
             type="text"
-            placeholder="BCBS PPO Silver"
+            // placeholder="BCBS PPO Silver"
+            disabled={true}
             onKeyDown= {(e) => {
               if (e.key === 'Backspace') {
                 Session.set('MainSearch.insurancePlan', null);
               }
             }}
+            classes={{
+              root: classes.inputRoot,
+              disabled: classes.disabled
+            }}
             endAdornment={
-              <InputAdornment position="end">
+              <InputAdornment position="end" disabled={false}>
                 <IconButton
                   aria-label="toggle type select"
                   onClick={ handleInsurancePlanDialog.bind(this) }
@@ -1427,7 +1515,7 @@ function MainPage(props){
                   // onChange={updateField.bind(this, 'type[0].text')}
                   fullWidth    
                   type="text"
-                  placeholder="Blue Cross Blue Shield"
+                  // placeholder="Blue Cross Blue Shield"
                   disabled={true}
                   // disabled={isDisabled}
                   endAdornment={
@@ -1454,7 +1542,7 @@ function MainPage(props){
                   // onChange={updateField.bind(this, 'type[0].text')}
                   fullWidth    
                   type="text"
-                  placeholder="Sports Injury Specialists"
+                  // placeholder="Sports Injury Specialists"
                   disabled={true}
                   // disabled={isDisabled}
                   endAdornment={
@@ -1479,13 +1567,13 @@ function MainPage(props){
   }
 
 
-  // let orgUrlPreview = "http://localhost:3000/baseR4/Organization";
-  // let practitionerUrlPreview = "http://localhost:3000/baseR4/Practitioner";
+  let orgUrlPreview = "http://localhost:3000/baseR4/Organization";
+  let practitionerUrlPreview = "http://localhost:3000/baseR4/Practitioner";
   
   // let endpointUrlWithParams = "http://localhost:3000/baseR4/Endpoint";
   // let locationUrlWithParams = "http://localhost:3000/baseR4/Location";
   // let healthcareServiceUrlWithParams = "http://localhost:3000/baseR4/HealthcareService";
-  // let insurancePlanUrlWithParams = "http://localhost:3000/baseR4/InsurancePlan";
+  let insurancePlanUrlWithParams = "http://localhost:3000/baseR4/InsurancePlan";
   
 
   let urlPreview;
@@ -1628,7 +1716,7 @@ function MainPage(props){
                   <Grid item xs={10}>
                     <TextField 
                       label="Name"
-                      placeholder="St. James Hospital"
+                      // placeholder="St. James Hospital"
                       onChange={handleChangeSearchTerm.bind(this)}
                       value={searchTerm}
                       InputLabelProps={{
