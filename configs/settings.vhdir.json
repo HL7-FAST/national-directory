@@ -36,13 +36,13 @@
         "errorColor": "rgb(128,20,60) !important",
         "errorText": "#ffffff !important",
       
-        "appBarColor": "#005b94",
+        "appBarColor": "repeating-linear-gradient( 135deg, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45) 5px, rgba(0, 0, 0, 0.5) 10px, rgba(0, 0, 0, 0.5) 10px )",
         "appBarTextColor": "#ffffff !important",
       
         "paperColor": "#ffffff !important",
         "paperTextColor": "rgba(0, 0, 0, 1) !important",
       
-        "backgroundCanvas": "#e6e6e6",
+        "backgroundCanvas": "#06e6e6",
         "background": "linear-gradient(45deg, rgb(108, 183, 110) 30%, rgb(150, 202, 144) 90%)",
 
         "nivoTheme": "red_grey"

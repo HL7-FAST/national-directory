@@ -36,7 +36,7 @@
         "errorColor": "rgb(128,20,60) !important",
         "errorText": "#ffffff !important",
       
-        "appBarColor": "#005b94",
+        "appBarColor": "repeating-linear-gradient( 135deg, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45) 5px, rgba(0, 0, 0, 0.5) 10px, rgba(0, 0, 0, 0.5) 10px )",
         "appBarTextColor": "#ffffff !important",
       
         "paperColor": "#ffffff !important",

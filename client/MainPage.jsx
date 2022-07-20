@@ -433,6 +433,19 @@ function MainPage(props){
     return returnUrl;
   }, [])
 
+  function pluckCode(sessionObject){
+    let code = get(sessionObject, 'code');
+    if(code){
+      if(code.length > 0){      
+        return true;
+      } else {
+        return false;
+      }  
+    } else {
+      return false;
+    }
+  }
+
   let healthcareServiceUrlWithParams = useTracker(function(){
     let returnUrl = healthcareServiceUrl;
     if(Session.get('MainSearch.healthcareService')){
@@ -445,15 +458,15 @@ function MainPage(props){
         returnUrl = returnUrl + '&name=' + Session.get('MainSearch.name');
       }  
     }
-    if(Session.get('MainSearch.city')){
+    if(pluckCode(Session.get('MainSearch.city'))){
       returnUrl = returnUrl + '&location.address-city=' + Session.get('MainSearch.city');
       // returnUrl = returnUrl + '&providedBy.address-city=' + Session.get('MainSearch.city');
     }
-    if(Session.get('MainSearch.state')){
+    if(pluckCode(Session.get('MainSearch.state'))){
       returnUrl = returnUrl + '&location.address-state=' + get(Session.get('MainSearch.state'), 'code');
       // returnUrl = returnUrl + '&providedBy.address-state=' + get(Session.get('MainSearch.state'), 'code');
     }
-    if(Session.get('MainSearch.postalCode')){
+    if(pluckCode(Session.get('MainSearch.postalCode'))){
       returnUrl = returnUrl + '&location.address-postalcode=' + Session.get('MainSearch.postalCode');
       // returnUrl = returnUrl + '&providedBy.address-postalcode=' + Session.get('MainSearch.postalCode');
     }
@@ -744,6 +757,7 @@ function MainPage(props){
     setShowSearchResults(true);
 
     Session.set('MainSearch.city', '');
+
     Session.set('MainSearch.state', {display: '', code: ''});
     Session.set('MainSearch.postalCode', '');
     Session.set('MainSearch.country', {display: '', code: ''});
@@ -753,6 +767,16 @@ function MainPage(props){
     Session.set('MainSearch.insurancePlan', {display: '', code: ''});
     Session.set('MainSearch.securityDialog', {display: '', code: ''});
     Session.set('MainSearch.endpointType', {display: '', code: ''});
+
+    // Session.set('MainSearch.state', null);
+    // Session.set('MainSearch.postalCode', null);
+    // Session.set('MainSearch.country', null);
+    // Session.set('MainSearch.practitionerSpecialty', null);
+    // Session.set('MainSearch.practitionerQualification', null);
+    // Session.set('MainSearch.healthcareService', null);
+    // Session.set('MainSearch.insurancePlan', null);
+    // Session.set('MainSearch.securityDialog', null);
+    // Session.set('MainSearch.endpointType', null);
   }
   function handleFuzzySubscribe(){
     console.log('Conducting fuzzy subscribe...');
@@ -1026,7 +1050,7 @@ function MainPage(props){
         hideHealthcareServicePagination = false;
       }
       healthcareServiceResultsCard = <StyledCard margin={20} style={{marginTop: '0px', paddingTop: '0px', marginBottom: '20px', width: '100%'}}>    
-        <CardHeader title={matchedHealthcareServices.length + " HealthcareServices"} subheader={healthcareServiceUrlWithParams} style={{marginBottom: '0px', paddingBottom: '0px'}} />
+        <CardHeader title={matchedHealthcareServices.length + " Healthcare Services"} subheader={healthcareServiceUrlWithParams} style={{marginBottom: '0px', paddingBottom: '0px'}} />
         <CardContent style={{marginTop: '0px', marginLeft: '20px', marginRight: '20px'}}>
           <HealthcareServicesTable 
             healthcareServices={matchedHealthcareServices}
@@ -1036,6 +1060,7 @@ function MainPage(props){
             hideActionIcons={true}
             hideCategory={true}
             hideType={true}
+            hideLocation={true}
             count={matchedHealthcareServices.length}
             page={healthcareServicePageIndex}
             onSetPage={function(index){
