@@ -45,10 +45,18 @@ import base64url from 'base64-url';
         let httpHeaders = { "headers": {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-
-            // this needs to be connected to the OAuthClients connection
-            'Authorization': "Basic " + base64url.encode("system:1234567890")
         }};
+
+        if(get(Meteor, 'settings.private.fhir.backendServices.basicAuthToken')){
+            httpHeaders["Authorization"] = "Basic " + base64url.encode(get(Meteor, 'settings.private.fhir.backendServices.basicAuthToken'));
+        } else {
+
+            // TODO:  add OAuthClients SMART on FHIR connectivity
+
+            // TODO:  add JWT access
+
+            // TODO:  add UDAP connection
+        }
 
         if(get(doc, 'id')){
             let observationURL = get(Meteor, 'settings.public.interfaces.fhirRelay.channel.endpoint', Meteor.absoluteUrl()) + '/Observation/' + get(doc, 'id');

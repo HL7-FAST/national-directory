@@ -31,7 +31,8 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { get } from 'lodash';
+import { get, indexOf } from 'lodash';
+
 import { DynamicSpacer, PageCanvas, StyledCard } from 'fhir-starter';
 
 import SearchIcon from '@material-ui/icons/Search';
