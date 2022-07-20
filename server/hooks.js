@@ -11,7 +11,7 @@ import {
     Subscriptions
 } from 'meteor/clinical:hl7-fhir-data-infrastructure';
 
-
+import base64url from 'base64-url';
 
 
 // // turn on/off the relay service and ADT feeds
@@ -44,7 +44,10 @@ import {
 
         let httpHeaders = { "headers": {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'          
+            'Access-Control-Allow-Origin': '*',
+
+            // this needs to be connected to the OAuthClients connection
+            'Authorization': "Basic " + base64url.encode("system:1234567890")
         }};
 
         if(get(doc, 'id')){

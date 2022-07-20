@@ -112,10 +112,19 @@ export function ValueSetSelection(props){
   }
 
   function handleClickRow(index){
-    let selectedValue = get(valueSet, 'compose.include.0.concept.' + index);
-    setSelectedValue(selectedValue);
+    console.log("handleClickRow", index)
+    console.log("valueSet", valueSet)
+    
 
-    console.log(selectedValue);
+    let selectedValue;
+    if(get(valueSet, 'compose')){
+      selectedValue = get(valueSet, 'compose.include.0.concept.' + index);
+    } else if (get(valueSet, 'expansion')){
+      selectedValue = get(valueSet, 'expansion.contains.' + index);
+    }
+    console.log("selectedValue", selectedValue);
+
+    setSelectedValue(selectedValue); 
 
     if(typeof onSelection === "function"){
       onSelection(selectedValue)
@@ -155,7 +164,7 @@ export function ValueSetSelection(props){
 
   if(get(valueSet, 'expansion.contains')){
     expansionContains = get(valueSet, 'expansion.contains');
-    console.log('expansionContains', expansionContains)
+    // console.log('expansionContains', expansionContains)
   
     if(Array.isArray(expansionContains)){
       expansionContains.forEach(function(concept, conceptIndex){        

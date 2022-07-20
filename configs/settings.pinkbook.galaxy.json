@@ -143,7 +143,10 @@
         "status": "active",
         "channel": {
           "endpoint": "https://national-directory.meteorapp.com/baseR4",
-          "path": "/Practitioner?address-state=RI&specialty=207R00000X"
+          "paths": [
+            "/Organization?address-state=RI,CT,MA&specialty=163WW0101X,282NW0100X,363LW0102X,364SW0102X",
+            "/Practitioner?address-state=RI,CT,MA&specialty=163WW0101X,363LW0102X,364SW0102X"
+          ]
         }
       },
       "oauthServer": {

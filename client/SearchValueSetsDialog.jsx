@@ -124,6 +124,7 @@ export function SearchValueSetsDialog(props){
         hideTable={false}
         hideConcepts={false} 
         onSelection={function(selectedValue){
+          console.log('onSelection', selectedValue)
           Session.set(Session.get('dialogReturnValue'), selectedValue);
           Session.set('mainAppDialogOpen', false);
         }}        

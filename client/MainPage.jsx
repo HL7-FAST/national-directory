@@ -82,7 +82,7 @@ import Carousel from 'react-multi-carousel';
 
 import { useTracker } from 'meteor/react-meteor-data';
 
-import { LayoutHelpers, EndpointsTable, OrganizationsTable, PractitionersTable, LocationsTable, HealthcareServicesTable, InsurancePlansTable } from 'meteor/clinical:hl7-fhir-data-infrastructure';
+import { LayoutHelpers, EndpointsTable, OrganizationsTable, PractitionersTable, LocationsTable, HealthcareServicesTable, InsurancePlansTable, ValueSets } from 'meteor/clinical:hl7-fhir-data-infrastructure';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -174,7 +174,7 @@ Session.setDefault('showUrlPreview', false);
 Session.setDefault('showServerStats', true);
 Session.setDefault('dialogReturnValue', 'MainSearch.state');
 
-Session.setDefault('MainSearch.defaultDirectoryQuery', get(Meteor, 'settings.public.interfaces.upstreamDirectory.channel.path', ""));
+Session.setDefault('MainSearch.defaultDirectoryQuery', get(Meteor, 'settings.public.interfaces.upstreamDirectory.channel.paths[0]', ""));
 
 function MainPage(props){
   const classes = useStyles();
@@ -191,7 +191,7 @@ function MainPage(props){
   let [ searchTerm, setSearchTerm ] = useState('');
   let [ searchCount, setSearchCount ] = useState(1000);
 
-  let [ defaultDirectoryQuery, setDefaultDirectoryQuery ] = useState(get(Meteor, 'settings.public.interfaces.upstreamDirectory.channel.path', ""));
+  let [ defaultDirectoryQuery, setDefaultDirectoryQuery ] = useState(get(Meteor, 'settings.public.interfaces.upstreamDirectory.channel.paths[0]', ""));
   
   let [ searchLimit, setSearchLimit ] = useState(1000);
   let [ matchedEndpoints, setMatchedEndpoints ] = useState([]);
@@ -308,6 +308,12 @@ function MainPage(props){
       return true;
     }
   }, [])
+
+
+  let specialtyValueSet = useTracker(function(){
+    return ValueSets.findOne({id: '2.16.840.1.114222.4.11.1066'});
+  }, [])
+  
   
   //----------------------------------------------------------------------
   // Custom Styling  
@@ -1010,6 +1016,7 @@ function MainPage(props){
             onSetPage={function(index){
               setPractitionerPageIndex(index)
             }}
+            specialtyValueSet={specialtyValueSet}
           />
         </CardContent>
       </StyledCard>

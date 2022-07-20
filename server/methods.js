@@ -894,10 +894,112 @@ Meteor.methods({
             data: options.data
         })
     },
-    fetchDefaultDirectoryQuery: function(){
+    fetchDefaultDirectoryQuery: async function(){
 
         let upstreamDirectory = get(Meteor, 'settings.public.interfaces.upstreamDirectory.channel.endpoint', '');
         let defaultDirectoryQuery = get(Meteor, 'settings.public.interfaces.upstreamDirectory.channel.path', '');
+
+        
+        function fetchData(upstreamDirectory, path){
+            return HTTP.get(upstreamDirectory + path + "&_count=10000", function(error, result){
+                if(error){
+                  console.error('error', error)
+                }
+                if(result){      
+                  let parsedContent = JSON.parse(get(result, 'content'));
+                  if(parsedContent){
+                    console.log('Bundle.total:        ', get(parsedContent, 'total'));
+                    if(Array.isArray(parsedContent.entry)){
+                        console.log('Bundle.entry.length: ', parsedContent.entry.length);
+    
+                       
+                        if(get(parsedContent, 'resourceType') === "Bundle"){
+                            console.log('Received a Bundle to proxy insert.')
+                            if(Array.isArray(parsedContent.entry)){
+                              // looping through each of the Bundle entries
+                              parsedContent.entry.forEach(function(proxyInsertEntry){
+                                if(get(proxyInsertEntry, 'resource')){
+                                  // we are running this, assuming that PubSub is in place and synchronizing data cursors
+                                  console.log('ProxyInsert - Received a proxy request for a ' + get(proxyInsertEntry, 'resource.resourceType'))
+                      
+                                  let response = false;
+                                  // console.log('Collections', Collections)
+                                  
+                                  // console.log('FhirUtilities.pluralizeResourceName: ' + FhirUtilities.pluralizeResourceName(get(proxyInsertEntry, 'resource.resourceType')))
+                                  // the cursor appears to exist
+                                  if(typeof Collections[FhirUtilities.pluralizeResourceName(get(proxyInsertEntry, 'resource.resourceType'))] === "object"){
+                      
+                                    // there doesnt seem to be a pre-existing record
+                                    if(!Collections[FhirUtilities.pluralizeResourceName(get(proxyInsertEntry, 'resource.resourceType'))].findOne({_id: proxyInsertEntry.resource._id})){
+                                      console.log('Couldnt find record.  Inserting.')
+                      
+                                      // lets try to insert the record
+                                      response = Collections[FhirUtilities.pluralizeResourceName(get(proxyInsertEntry, 'resource.resourceType'))].insert(proxyInsertEntry.resource, {validate: false, filter: false}, function(error){
+                                        if(error) {
+                                          console.log('window(FhirUtilities.pluralizeResourceName(resource.resourceType)).insert.error', error)
+                                        }                    
+                                      });   
+                                    } else {
+                                      console.log('Found a pre-existing copy of the record.  Thats weird and probably shouldnt be happening.');
+                                    }  
+                                  } else {
+                                    console.log('Cursor doesnt appear to exist');
+                                  }
+                      
+                                  return response;  
+                                } else {
+                                  console.log('Received a request for a proxy insert, but no FHIR resource was attached to the received parameters object!');
+                                }
+                              })
+                            } else {
+                              console.log("Bundle does not seem to have an array of entries.")
+                            }
+                          } else {
+                            // just a single resource, no need to loop through anything
+                      
+                            if(typeof Collections[FhirUtilities.pluralizeResourceName(get(parsedContent, 'resource.resourceType'))] === "object"){
+                      
+                              // there doesnt seem to be a pre-existing record
+                              if(!Collections[FhirUtilities.pluralizeResourceName(get(parsedContent, 'resource.resourceType'))].findOne({_id: parsedContent.resource._id})){
+                                console.log('Couldnt find record; add a ' + FhirUtilities.pluralizeResourceName(get(parsedContent, 'resource.resourceType')) + ' to the database.')
+                      
+                                // lets try to insert the record
+                                response = Collections[FhirUtilities.pluralizeResourceName(get(parsedContent, 'resource.resourceType'))].insert(parsedContent.resource, {validate: false, filter: false}, function(error){
+                                  if(error) {
+                                    console.log('window(FhirUtilities.pluralizeResourceName(resource.resourceType)).insert.error', error)
+                                  }                    
+                                });   
+                              } else {
+                                console.log('Found a pre-existing copy of the record.  Thats weird and probably shouldnt be happening.');
+                              }  
+                            } else {
+                              console.log('Cursor doesnt appear to exist');
+                            }
+                          }  
+    
+    
+                    }  
+                  }
+          
+                  // if(get(parsedContent, 'total') === 0){
+                  //   // setShowNoResults(true);
+                  // } else {
+                  //   let entryArray = get(parsedContent, 'entry');
+                  //   if(Array.isArray(entryArray)){
+                  //     let practitionerArray = entryArray.map(function(entry){
+                  //       return entry.resource;
+                  //     })        
+                  //     setMatchedPractitioners(practitionerArray)
+                  //     console.log('practitionerArray', practitionerArray)  
+                  //     setShowSearchResults(true);
+                  //     // setShowNoResults(false);
+                  //   }  
+                  // }
+                }
+            })
+    
+        }
+
 
         console.log('------------------------------------------');
         console.log('Fetch Default Query');
@@ -906,101 +1008,13 @@ Meteor.methods({
         console.log('Default Query:    ', defaultDirectoryQuery);
         console.log('');
 
-        HTTP.get(upstreamDirectory + defaultDirectoryQuery + "&_count=10000", function(error, result){
-            if(error){
-              console.error('error', error)
-            }
-            if(result){      
-              let parsedContent = JSON.parse(get(result, 'content'));
-              if(parsedContent){
-                console.log('Bundle.total:        ', get(parsedContent, 'total'));
-                if(Array.isArray(parsedContent.entry)){
-                    console.log('Bundle.entry.length: ', parsedContent.entry.length);
-
-                   
-                    if(get(parsedContent, 'resourceType') === "Bundle"){
-                        console.log('Received a Bundle to proxy insert.')
-                        if(Array.isArray(parsedContent.entry)){
-                          // looping through each of the Bundle entries
-                          parsedContent.entry.forEach(function(proxyInsertEntry){
-                            if(get(proxyInsertEntry, 'resource')){
-                              // we are running this, assuming that PubSub is in place and synchronizing data cursors
-                              console.log('ProxyInsert - Received a proxy request for a ' + get(proxyInsertEntry, 'resource.resourceType'))
-                  
-                              let response = false;
-                              // console.log('Collections', Collections)
-                              
-                              // console.log('FhirUtilities.pluralizeResourceName: ' + FhirUtilities.pluralizeResourceName(get(proxyInsertEntry, 'resource.resourceType')))
-                              // the cursor appears to exist
-                              if(typeof Collections[FhirUtilities.pluralizeResourceName(get(proxyInsertEntry, 'resource.resourceType'))] === "object"){
-                  
-                                // there doesnt seem to be a pre-existing record
-                                if(!Collections[FhirUtilities.pluralizeResourceName(get(proxyInsertEntry, 'resource.resourceType'))].findOne({_id: proxyInsertEntry.resource._id})){
-                                  console.log('Couldnt find record.  Inserting.')
-                  
-                                  // lets try to insert the record
-                                  response = Collections[FhirUtilities.pluralizeResourceName(get(proxyInsertEntry, 'resource.resourceType'))].insert(proxyInsertEntry.resource, {validate: false, filter: false}, function(error){
-                                    if(error) {
-                                      console.log('window(FhirUtilities.pluralizeResourceName(resource.resourceType)).insert.error', error)
-                                    }                    
-                                  });   
-                                } else {
-                                  console.log('Found a pre-existing copy of the record.  Thats weird and probably shouldnt be happening.');
-                                }  
-                              } else {
-                                console.log('Cursor doesnt appear to exist');
-                              }
-                  
-                              return response;  
-                            } else {
-                              console.log('Received a request for a proxy insert, but no FHIR resource was attached to the received parameters object!');
-                            }
-                          })
-                        } else {
-                          console.log("Bundle does not seem to have an array of entries.")
-                        }
-                      } else {
-                        // just a single resource, no need to loop through anything
-                  
-                        if(typeof Collections[FhirUtilities.pluralizeResourceName(get(parsedContent, 'resource.resourceType'))] === "object"){
-                  
-                          // there doesnt seem to be a pre-existing record
-                          if(!Collections[FhirUtilities.pluralizeResourceName(get(parsedContent, 'resource.resourceType'))].findOne({_id: parsedContent.resource._id})){
-                            console.log('Couldnt find record; add a ' + FhirUtilities.pluralizeResourceName(get(parsedContent, 'resource.resourceType')) + ' to the database.')
-                  
-                            // lets try to insert the record
-                            response = Collections[FhirUtilities.pluralizeResourceName(get(parsedContent, 'resource.resourceType'))].insert(parsedContent.resource, {validate: false, filter: false}, function(error){
-                              if(error) {
-                                console.log('window(FhirUtilities.pluralizeResourceName(resource.resourceType)).insert.error', error)
-                              }                    
-                            });   
-                          } else {
-                            console.log('Found a pre-existing copy of the record.  Thats weird and probably shouldnt be happening.');
-                          }  
-                        } else {
-                          console.log('Cursor doesnt appear to exist');
-                        }
-                      }  
-
-
-                }  
-              }
-      
-              // if(get(parsedContent, 'total') === 0){
-              //   // setShowNoResults(true);
-              // } else {
-              //   let entryArray = get(parsedContent, 'entry');
-              //   if(Array.isArray(entryArray)){
-              //     let practitionerArray = entryArray.map(function(entry){
-              //       return entry.resource;
-              //     })        
-              //     setMatchedPractitioners(practitionerArray)
-              //     console.log('practitionerArray', practitionerArray)  
-              //     setShowSearchResults(true);
-              //     // setShowNoResults(false);
-              //   }  
-              // }
-            }
-          })
+        let paths = get(Meteor, 'settings.public.interfaces.upstreamDirectory.channel.paths');
+        if(Array.isArray(paths)){
+            paths.forEach(function(path){
+                fetchData(upstreamDirectory, path);
+            })
+        } else {
+            fetchData(upstreamDirectory, defaultDirectoryQuery);
+        }
     }
 })
