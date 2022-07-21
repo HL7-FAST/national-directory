@@ -85,6 +85,9 @@ import { useTracker } from 'meteor/react-meteor-data';
 
 import { LayoutHelpers, EndpointsTable, OrganizationsTable, PractitionersTable, LocationsTable, HealthcareServicesTable, InsurancePlansTable, ValueSets } from 'meteor/clinical:hl7-fhir-data-infrastructure';
 
+import base64url from 'base64-url';
+
+
 const useStyles = makeStyles(theme => ({
   root: {
     maxWidth: 345,
@@ -234,7 +237,9 @@ function MainPage(props){
   // Startup / End
   
   useEffect(function(){
-    HTTP.get('/stats', function(error, result){
+    HTTP.get('/stats', {
+      headers: httpHeaders
+  }, function(error, result){
       if(result){
         let parsedContent = JSON.parse(result.content);
         console.log(parsedContent);
@@ -347,13 +352,13 @@ function MainPage(props){
     if(Session.get('MainSearch.city')){
       returnUrl = returnUrl + '&address-city=' + Session.get('MainSearch.city');
     }
-    if(Session.get('MainSearch.state')){
+    if(get(Session.get('MainSearch.state'), 'code')){
       returnUrl = returnUrl + '&address-state=' + get(Session.get('MainSearch.state'), 'code');
     }
     if(Session.get('MainSearch.postalCode')){
       returnUrl = returnUrl + '&address-postalcode=' + Session.get('MainSearch.postalCode');
     }
-    if(Session.get('MainSearch.country')){
+    if(get(Session.get('MainSearch.country'), 'code')){
       returnUrl = returnUrl + '&address-country=' + get(Session.get('MainSearch.country'), 'code');
     }
     if(onlyShowMatched){
@@ -373,17 +378,17 @@ function MainPage(props){
     if(Session.get('MainSearch.city')){
       returnUrl = returnUrl + '&address-city=' + Session.get('MainSearch.city');
     }
-    if(Session.get('MainSearch.state')){
+    if(get(Session.get('MainSearch.state'), 'code')){
       returnUrl = returnUrl + '&address-state=' + get(Session.get('MainSearch.state'), 'code');
     }
     if(Session.get('MainSearch.postalCode')){
       returnUrl = returnUrl + '&address-postalcode=' + Session.get('MainSearch.postalCode');
     }
-    if(Session.get('MainSearch.country')){
+    if(get(Session.get('MainSearch.country'), 'code')){
       returnUrl = returnUrl + '&address-country=' + get(Session.get('MainSearch.country'), 'code');
     }
 
-    if(Session.get('MainSearch.practitionerSpecialty')){
+    if(get(Session.get('MainSearch.practitionerSpecialty'), 'code')){
       returnUrl = returnUrl + '&identifier=' + get(Session.get('MainSearch.practitionerSpecialty'), 'code');
     }
     if(onlyShowMatched){
@@ -399,7 +404,7 @@ function MainPage(props){
 
   let endpointUrlWithParams = useTracker(function(){
     let returnUrl = endpointUrl;
-    if(Session.get('MainSearch.endpointType')){
+    if(get(Session.get('MainSearch.endpointType'), 'code')){
       returnUrl = returnUrl + '&connection-type=' + get(Session.get('MainSearch.endpointType'), 'code');
 
       if(onlyShowMatched){
@@ -421,13 +426,13 @@ function MainPage(props){
     if(Session.get('MainSearch.city')){
       returnUrl = returnUrl + '&address-city=' + Session.get('MainSearch.city');
     }
-    if(Session.get('MainSearch.state')){
+    if(get(Session.get('MainSearch.state'), 'code')){
       returnUrl = returnUrl + '&address-state=' + get(Session.get('MainSearch.state'), 'code');
     }
     if(Session.get('MainSearch.postalCode')){
       returnUrl = returnUrl + '&address-postalcode=' + Session.get('MainSearch.postalCode');
     }
-    if(Session.get('MainSearch.country')){
+    if(get(Session.get('MainSearch.country'), 'code')){
       returnUrl = returnUrl + '&address-country=' + get(Session.get('MainSearch.country'), 'code');
     }
     if(onlyShowMatched){
@@ -455,7 +460,7 @@ function MainPage(props){
 
   let healthcareServiceUrlWithParams = useTracker(function(){
     let returnUrl = healthcareServiceUrl;
-    if(Session.get('MainSearch.healthcareService')){
+    if(get(Session.get('MainSearch.healthcareService'), 'code')){
       returnUrl = returnUrl + '&specialty=' + get(Session.get('MainSearch.healthcareService'), 'code');
     }
     if(onlyShowMatched){
@@ -547,6 +552,24 @@ function MainPage(props){
     pageStyle.marginRight = '0px';
   }
 
+
+  let httpHeaders = { "headers": {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+  }};
+
+  if(get(Meteor, 'settings.public.basicAuthToken')){
+      httpHeaders["Authorization"] = "Basic " + base64url.encode(get(Meteor, 'settings.public.basicAuthToken')) + "==";
+  } else {
+
+      // TODO:  add OAuthClients SMART on FHIR connectivity
+
+      // TODO:  add JWT access
+
+      // TODO:  add UDAP connection
+  }
+
+
   
   function handleExactMatchSearch(){
     console.log('Conducting exact match search...');
@@ -578,13 +601,10 @@ function MainPage(props){
       // setShowNoResults(true);
     }
 
-
-    
-
-
-
     console.log('organizationUrlWithParams', organizationUrlWithParams);
-    HTTP.get(organizationUrlWithParams, function(error, result){
+    HTTP.get(organizationUrlWithParams, {
+      headers: httpHeaders
+    }, function(error, result){
       if(error){
         console.error('error', error)
       }
@@ -611,7 +631,9 @@ function MainPage(props){
 
 
     console.log('practitionerUrlWithParams', practitionerUrlWithParams);
-    HTTP.get(practitionerUrlWithParams, function(error, result){
+    HTTP.get(practitionerUrlWithParams, {
+      headers: httpHeaders
+    }, function(error, result){
       if(error){
         console.error('error', error) 
       }
@@ -637,7 +659,9 @@ function MainPage(props){
     })
 
     // console.log('endpointUrlWithParams', endpointUrlWithParams);
-    // HTTP.get(endpointUrlWithParams, function(error, result){
+    // HTTP.get(endpointUrlWithParams, {
+    //    headers: httpHeaders
+    //  }, function(error, result){
     //   if(error){
     //     console.error('error', error)
     //   }
@@ -663,7 +687,9 @@ function MainPage(props){
     // })
 
     console.log('locationUrlWithParams', locationUrlWithParams);
-    HTTP.get(locationUrlWithParams, function(error, result){
+    HTTP.get(locationUrlWithParams, {
+      headers: httpHeaders
+    }, function(error, result){
       if(error){
         console.error('error', error)
       }
@@ -689,7 +715,9 @@ function MainPage(props){
     })
 
     // console.log('insurancePlanUrlWithParams', insurancePlanUrlWithParams);
-    // HTTP.get(insurancePlanUrlWithParams, function(error, result){
+    // HTTP.get(insurancePlanUrlWithParams, {
+    //   headers: httpHeaders
+    // }, function(error, result){
     //   if(error){
     //     console.error('error', error)
     //   }
@@ -715,7 +743,9 @@ function MainPage(props){
     // })
 
     console.log('healthcareServiceUrlWithParams', healthcareServiceUrlWithParams);
-    HTTP.get(healthcareServiceUrlWithParams, function(error, result){
+    HTTP.get(healthcareServiceUrlWithParams, {
+      headers: httpHeaders
+    }, function(error, result){
       if(error){
         console.error('error', error)
       }

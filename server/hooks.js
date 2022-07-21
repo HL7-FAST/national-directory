@@ -48,7 +48,7 @@ import base64url from 'base64-url';
         }};
 
         if(get(Meteor, 'settings.private.fhir.backendServices.basicAuthToken')){
-            httpHeaders["Authorization"] = "Basic " + base64url.encode(get(Meteor, 'settings.private.fhir.backendServices.basicAuthToken'));
+            httpHeaders["Authorization"] = "Basic " + base64url.encode(get(Meteor, 'settings.private.fhir.backendServices.basicAuthToken')) + "==";
         } else {
 
             // TODO:  add OAuthClients SMART on FHIR connectivity
@@ -60,7 +60,9 @@ import base64url from 'base64-url';
 
         if(get(doc, 'id')){
             let observationURL = get(Meteor, 'settings.public.interfaces.fhirRelay.channel.endpoint', Meteor.absoluteUrl()) + '/Observation/' + get(doc, 'id');
-            process.env.DEBUG && console.log('Hooks.Organizations.after.observationURL', observationURL);
+            process.env.DEBUG && console.log('Hooks.Organizations.after.observationURL', 'PUT ' + observationURL);
+            process.env.DEBUG && console.log('Hooks.Organizations.after.subscriptionUrls', subscriptionUrls);
+            process.env.DEBUG && console.log('httpHeaders', httpHeaders);
 
             if(Array.isArray(subscriptionUrls)){
                 subscriptionUrls.forEach(function(url){

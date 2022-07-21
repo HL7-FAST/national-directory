@@ -208,6 +208,9 @@
       "autopublishSubscriptions": false,
       "autoGenerateSubscriptions": true,
       "publicationLimit": 1000,
+      "backendServices": {
+        "basicAuthToken": "test:12345"
+      },  
       "rest": {
         "AuditEvent": {
           "disableOauth": true,
