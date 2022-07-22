@@ -280,6 +280,7 @@ Package.onUse(function(api) {
   api.addAssets('data/vhdir-definitions/ValueSet-validationprocess.json', 'server');
 
   api.addFiles('assets/SocialMedia.jpg', "client", {isAsset: true});
+  api.addFiles('assets/SocialMedia-WomensShelters.jpg', "client", {isAsset: true});
 
   api.mainModule('index.jsx', 'client');
 });

@@ -55,6 +55,7 @@
     },
     "loggingThreshold": "debug",
     "fhirAutoSubscribe": true,
+    "basicAuthToken": "test:12345",
     "defaults": {
       "route": "/project-page",
       "landingPage": "/project-page",
@@ -206,9 +207,6 @@
       "autopublishSubscriptions": false,
       "autoGenerateSubscriptions": true,
       "publicationLimit": 1000,
-      "backendServices": {
-        "basicAuthToken": "test:12345"
-      },
       "rest": {
         "AuditEvent": {
           "disableOauth": true,
