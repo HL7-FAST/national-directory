@@ -61,4 +61,5 @@ meteor add symptomatic:data-relay
 
 #### References  
 
-[UDAP Ecosystem Participation Agreement](https://docs.google.com/document/d/1OHn8reHU10-9RI9UeJlGkgMFoeD0F30rmZWvS-L3gf4/edit)  
+- [Improving Health Plan Provider Directories](https://www.ama-assn.org/system/files/improving-health-plan-provider-directories.pdf)  
+- [UDAP Ecosystem Participation Agreement](https://docs.google.com/document/d/1OHn8reHU10-9RI9UeJlGkgMFoeD0F30rmZWvS-L3gf4/edit)  
