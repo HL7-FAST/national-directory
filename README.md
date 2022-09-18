@@ -7,6 +7,11 @@
 # fetch boilerplate
 git clone https://github.com/clinical-meteor/node-on-fhir
 
+# check that you can install the base boilerplate
+cd node-on-fhir
+meteor npm install
+yarn install
+
 cd packages
 git clone https://github.com/clinical-meteor/national-directory
 cd ..
@@ -28,6 +33,11 @@ curl http://localhost:3000/baseR4/Patient
 # run the app with custom settings file
 meteor add mitre:national-directory   
 meteor run --settings packages/national-directory/configs/settings.vhdir.json
+
+
+# add extra data import packages (as needed)
+meteor add symptomatic:data-importer
+meteor add symptomatic:data-relay
 ```
 
 #### Data Load-In  
@@ -51,4 +61,5 @@ meteor run --settings packages/national-directory/configs/settings.vhdir.json
 
 #### References  
 
-[UDAP Ecosystem Participation Agreement](https://docs.google.com/document/d/1OHn8reHU10-9RI9UeJlGkgMFoeD0F30rmZWvS-L3gf4/edit)  
+- [Improving Health Plan Provider Directories](https://www.ama-assn.org/system/files/improving-health-plan-provider-directories.pdf)  
+- [UDAP Ecosystem Participation Agreement](https://docs.google.com/document/d/1OHn8reHU10-9RI9UeJlGkgMFoeD0F30rmZWvS-L3gf4/edit)  
