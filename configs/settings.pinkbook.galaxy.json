@@ -10,6 +10,15 @@
       "redirect_uri": "./patient-quickchart",
       "iss": "https://launch.smarthealthit.org/v/r3/sim/eyJoIjoiMSIsImIiOiJmMDQ2MjkzNi1lYjRiLTRkYTEtYjQ1YS1mYmQ5NmViZjhjY2IiLCJlIjoic21hcnQtUHJhY3RpdGlvbmVyLTcxNjE0NTAyIn0/fhir"
     }],
+    "socialmedia": {
+      "title": "PinkBook - Protected Womens Services",
+      "type": "article",
+      "url": "https://federated-dir.meteorapp.com",
+      "image": "https://federated-dir.meteorapp.com/packages/mitre_national-directory/assets/SocialMedia-WomensShelters.jpg",
+      "description": "PinkBook - a directory of women's health services.",
+      "site_name": "PinkBook - Protected Womens Services",
+      "app_id": "pinkbook.mitre.us"
+    },
     "theme": {
       "showVideoBackground": false,
       "defaultVideo": "/VideoBackgrounds/GrayWaves.mp4",

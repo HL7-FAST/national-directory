@@ -326,48 +326,49 @@ Meteor.methods({
     initCodeSystems: function(){
         console.log("Initializing code systems....");
 
-        let accessibility = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-accessibility.json'));
-        let consent = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-consent.json'));
-        let credentialstatus = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-credentialstatus.json'));
-        let digitalcertificate = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-digitalcertificate.json'));
-        let ehrcharacteristics = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-ehrcharacteristics.json'));
-        let healthcareServiceCharacteristic = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-healthcareservice-characteristic.json'));
-        let healthcareServiceEligibility = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-healthcareservice-eligibility.json'));
-        let insuranceplan = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-insuranceplan.json'));
-        let languageproficiency = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-languageproficiency.json'));
-        let networkType = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-network-type.json'));
-        let organizationDemographics = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-organizationdemographics.json'));
-        let payerCharacteristics = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-payercharacteristics.json'));
-        let primarySource = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-primarysource.json'));
-        let usecase = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-usecase.json'));
-        let validation = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-validation.json'));
-        
-        let codeSystemsArray = [
-            accessibility,
-            consent,
-            credentialstatus,
-            digitalcertificate,
-            ehrcharacteristics,
-            healthcareServiceCharacteristic,
-            healthcareServiceEligibility,
-            insuranceplan,
-            languageproficiency,
-            networkType,
-            organizationDemographics,
-            payerCharacteristics,
-            primarySource,
-            usecase,
-            validation
-        ];
-
-        codeSystemsArray.forEach(function(codeSystem){
-            if(get(codeSystem, 'resourceType') === "CodeSystem"){
-                if(!CodeSystems.findOne({id: get(codeSystem, 'id')})){
-                    CodeSystems.insert(codeSystem)
+        if(get(Meteor, 'settings.allowInitOfData')){
+            let accessibility = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-accessibility.json'));
+            let consent = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-consent.json'));
+            let credentialstatus = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-credentialstatus.json'));
+            let digitalcertificate = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-digitalcertificate.json'));
+            let ehrcharacteristics = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-ehrcharacteristics.json'));
+            let healthcareServiceCharacteristic = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-healthcareservice-characteristic.json'));
+            let healthcareServiceEligibility = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-healthcareservice-eligibility.json'));
+            let insuranceplan = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-insuranceplan.json'));
+            let languageproficiency = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-languageproficiency.json'));
+            let networkType = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-network-type.json'));
+            let organizationDemographics = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-organizationdemographics.json'));
+            let payerCharacteristics = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-payercharacteristics.json'));
+            let primarySource = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-primarysource.json'));
+            let usecase = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-usecase.json'));
+            let validation = JSON.parse(Assets.getText('data/vhdir-definitions/CodeSystem-validation.json'));
+            
+            let codeSystemsArray = [
+                accessibility,
+                consent,
+                credentialstatus,
+                digitalcertificate,
+                ehrcharacteristics,
+                healthcareServiceCharacteristic,
+                healthcareServiceEligibility,
+                insuranceplan,
+                languageproficiency,
+                networkType,
+                organizationDemographics,
+                payerCharacteristics,
+                primarySource,
+                usecase,
+                validation
+            ];
+    
+            codeSystemsArray.forEach(function(codeSystem){
+                if(get(codeSystem, 'resourceType') === "CodeSystem"){
+                    if(!CodeSystems.findOne({id: get(codeSystem, 'id')})){
+                        CodeSystems.insert(codeSystem)
+                    }
                 }
-            }
-        })
-
+            })
+        }
     },
     initSearchParameters: function(){
         console.log("Init search parameters....");

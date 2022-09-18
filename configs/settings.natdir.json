@@ -155,27 +155,27 @@
         "name": "FHIR Relay",
         "status": "inactive",
         "channel": {
-          "endpoint": "https://national-directory.meteorapp.com/baseR4"
+          "endpoint": "http://localhost:3000/baseR4"
         }
       },
       "symptomaticFhirServer": {
         "name": "FHIR Server",
         "status": "active",
         "channel": {
-          "endpoint": "https://national-directory.meteorapp.com/baseR4"
+          "endpoint": "http://localhost:3000/baseR4"
         }
       },
       "oauthServer": {
         "name": "OAuth Server",
         "status": "active",
         "channel": {
-          "endpoint": "https://national-directory.meteorapp.com/"
+          "endpoint": "http://localhost:3000/"
         }
       },
       "accountsServer": {      
         "name": "Accounts Server",
         "database": "meteor",
-        "host": "https://national-directory.meteorapp.com",
+        "host": "http://localhost:3000",
         "port": 443
       }
     }
