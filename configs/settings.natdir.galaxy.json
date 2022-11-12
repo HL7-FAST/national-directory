@@ -185,6 +185,7 @@
       "trace": true,   
       "invitationCode": "MITRE",
       "clinicianInvitationCode": "MitreClinician",
+      "enableBasicAuth": true,
       "enableCronAutomation": true,
       "enableServerStats": true,
       "recordVersioningEnabled": true,

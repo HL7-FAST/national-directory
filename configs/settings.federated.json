@@ -128,7 +128,6 @@
           "/related-person",
           "/risk-assessments",
           "/service-requests",
-          "/subscriptions",
           "/vitals-tracking"
         ],
         "hiddenWorkflow": [
@@ -178,6 +177,7 @@
 "trace": true,
     "invitationCode": "MITRE",
     "clinicianInvitationCode": "MitreClinician",
+    "enableBasicAuth": true,
     "enableCronAutomation": true,
     "enableServerStats": true,
     "x509": {
@@ -193,7 +193,7 @@
       },
       "fhirPath": "baseR4",
       "autopublishSubscriptions": false,
-      "autoGenerateSubscriptions": true,
+      "autoGenerateSubscriptions": false,
       "publicationLimit": 1000,
       "rest": {
         "AuditEvent": {

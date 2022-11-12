@@ -160,10 +160,11 @@
     }
   },
   "private": {    
-"debug": true,
-"trace": true,
+    "debug": true,
+    "trace": true,
     "invitationCode": "MITRE",
     "clinicianInvitationCode": "MitreClinician",
+    "enableBasicAuth": true,
     "enableCronAutomation": true,
     "enableServerStats": true,
     "x509": {
