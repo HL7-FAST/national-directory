@@ -46,4 +46,5 @@ WORKDIR /app
 COPY --chown=nonroot:nonroot --from=build-distroless /app /app
 COPY --chown=nonroot:nonroot --from=build-hapi /tmp/hapi-fhir-jpaserver-starter/opentelemetry-javaagent.jar /app
 
+# Listens on port 8080 by default.
 CMD ["/app/main.war"]
