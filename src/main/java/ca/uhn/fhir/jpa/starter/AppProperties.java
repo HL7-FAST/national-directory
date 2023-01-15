@@ -72,6 +72,8 @@ public class AppProperties {
   private Boolean install_transitive_ig_dependencies = true;
   private Map<String, ImplementationGuide> implementationGuides = null;
 
+	private String staticLocation = null;
+
   private Boolean lastn_enabled = false;
   private boolean store_resource_in_lucene_index_enabled = false;
   private NormalizedQuantitySearchLevel normalized_quantity_search_level = NormalizedQuantitySearchLevel.NORMALIZED_QUANTITY_SEARCH_NOT_SUPPORTED;
@@ -82,6 +84,22 @@ public class AppProperties {
   private Integer bundle_batch_pool_size = 20;
   private Integer bundle_batch_pool_max_size = 100;
   private final List<String> local_base_urls = new ArrayList<>();
+  
+  private final List<String> custom_interceptor_classes = new ArrayList<>();
+
+  public List<String> getCustomInterceptorClasses() {
+    return custom_interceptor_classes;
+  }
+
+
+	public String getStaticLocation() {
+		return staticLocation;
+	}
+
+	public void setStaticLocation(String staticLocation) {
+		this.staticLocation = staticLocation;
+	}
+
 
 	public Boolean getOpenapi_enabled() {
 		return openapi_enabled;
