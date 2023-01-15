@@ -29,7 +29,9 @@ import ca.uhn.fhir.jpa.dao.search.IHSearchSortHelper;
 import ca.uhn.fhir.jpa.delete.ThreadSafeResourceDeleterSvc;
 import ca.uhn.fhir.jpa.graphql.GraphQLProvider;
 import ca.uhn.fhir.jpa.interceptor.CascadingDeleteInterceptor;
+import ca.uhn.fhir.jpa.interceptor.validation.IRepositoryValidatingRule;
 import ca.uhn.fhir.jpa.interceptor.validation.RepositoryValidatingInterceptor;
+import ca.uhn.fhir.jpa.interceptor.validation.RepositoryValidatingRuleBuilder;
 import ca.uhn.fhir.jpa.packages.IPackageInstallerSvc;
 import ca.uhn.fhir.jpa.packages.PackageInstallationSpec;
 import ca.uhn.fhir.jpa.partition.PartitionManagementProvider;
@@ -38,6 +40,7 @@ import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.jpa.search.IStaleSearchDeletingSvc;
 import ca.uhn.fhir.jpa.search.StaleSearchDeletingSvcImpl;
+import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.jpa.starter.AppProperties;
 import ca.uhn.fhir.jpa.starter.annotations.OnCorsPresent;
 import ca.uhn.fhir.jpa.starter.annotations.OnImplementationGuidesPresent;
@@ -51,7 +54,9 @@ import ca.uhn.fhir.mdm.provider.MdmProviderLoader;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.narrative2.NullNarrativeGenerator;
 import ca.uhn.fhir.rest.api.IResourceSupportedSvc;
+import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.openapi.OpenApiInterceptor;
+import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.*;
 import ca.uhn.fhir.rest.server.interceptor.*;
 import ca.uhn.fhir.rest.server.interceptor.partition.RequestTenantPartitionInterceptor;
@@ -63,6 +68,7 @@ import ca.uhn.fhir.validation.ResultSeverityEnum;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import org.hl7.fhir.common.hapi.validation.support.CachingValidationSupport;
+import org.hl7.fhir.r4.model.StructureDefinition;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -79,6 +85,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static ca.uhn.fhir.jpa.starter.common.validation.IRepositoryValidationInterceptorFactory.ENABLE_REPOSITORY_VALIDATING_INTERCEPTOR;
 
@@ -163,11 +170,37 @@ public class StarterJpaConfig {
 		return new HSearchSortHelperImpl(mySearchParamRegistry);
 	}
 
-
 	@Bean
-	@ConditionalOnProperty(prefix = "hapi.fhir", name = ENABLE_REPOSITORY_VALIDATING_INTERCEPTOR, havingValue = "true")
-	public RepositoryValidatingInterceptor repositoryValidatingInterceptor(IRepositoryValidationInterceptorFactory factory) {
-		return factory.buildUsingStoredStructureDefinitions();
+	public RepositoryValidatingInterceptor repositoryValidatingInterceptor(IValidationSupport validationSupport, FhirContext theFhirContext, RepositoryValidatingRuleBuilder ruleBuilder) {
+		Hashtable<String, String> resourceTypeProfiles = new Hashtable<>();
+		resourceTypeProfiles.put("CareTeam", "http://hl7.org/fhir/us/ndh/StructureDefinition/ndh-CareTeam");
+		resourceTypeProfiles.put("Endpoint", "http://hl7.org/fhir/us/ndh/StructureDefinition/ndh-Endpoint");
+		resourceTypeProfiles.put("HealthcareService", "http://hl7.org/fhir/us/ndh/StructureDefinition/ndh-HealthcareService");
+		resourceTypeProfiles.put("InsurancePlan", "http://hl7.org/fhir/us/ndh/StructureDefinition/ndh-InsurancePlan");
+		resourceTypeProfiles.put("Location", "http://hl7.org/fhir/us/ndh/StructureDefinition/ndh-Location");
+		resourceTypeProfiles.put("OrganizationAffiliation", "http://hl7.org/fhir/us/ndh/StructureDefinition/ndh-OrganizationAffiliation");
+		resourceTypeProfiles.put("Practitioner", "http://hl7.org/fhir/us/ndh/StructureDefinition/ndh-Practitioner");
+		resourceTypeProfiles.put("PractitionerRole", "http://hl7.org/fhir/us/ndh/StructureDefinition/ndh-PractitionerRole");
+		resourceTypeProfiles.put("Consent", "http://hl7.org/fhir/us/ndh/StructureDefinition/ndh-Restriction");
+		resourceTypeProfiles.put("VerificationResult", "http://hl7.org/fhir/us/ndh/StructureDefinition/ndh-Verification");
+
+		for (String key :	resourceTypeProfiles.keySet()) {
+			String profileUrl = resourceTypeProfiles.get(key);
+			ruleBuilder
+				.forResourcesOfType(key)
+				.requireAtLeastProfile(profileUrl)
+				.and()
+				.requireValidationToDeclaredProfiles();
+		}
+
+		ruleBuilder
+			.forResourcesOfType("Organization")
+			.requireAtLeastOneProfileOf("http://hl7.org/fhir/us/ndh/StructureDefinition/ndh-Organization", "http://hl7.org/fhir/us/ndh/StructureDefinition/ndh-Network")
+			.and()
+			.requireValidationToDeclaredProfiles();
+
+		List<IRepositoryValidatingRule> rules = ruleBuilder.build();
+		return new RepositoryValidatingInterceptor(theFhirContext, rules);
 	}
 
 	@Bean
