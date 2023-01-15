@@ -99,7 +99,7 @@ hapi:
     #    default_page_size: 20
     #    delete_expunge_enabled: true
     #    enable_repository_validating_interceptor: true
-    #    enable_index_missing_fields: false
+    enable_index_missing_fields: true
     #    enable_index_of_type: true
     #    enable_index_contained_resource: false
     ###  !!Extended Lucene/Elasticsearch Indexing is still a experimental feature, expect some features (e.g. _total=accurate) to not work as expected!!
@@ -177,7 +177,6 @@ hapi:
     #      responses_enabled: true
     #    binary_storage_enabled: true
     inline_resource_storage_below_size: 4000
-#    bulk_export_enabled: true
 #    subscription:
 #      resthook_enabled: true
 #      websocket_enabled: false
