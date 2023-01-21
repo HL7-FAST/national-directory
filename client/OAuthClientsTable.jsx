@@ -78,9 +78,13 @@ let styles = {
 
 
 function OAuthClientsTable(props){
-  logger.info('Rendering the OAuthClientsTable');
-  logger.verbose('clinical:hl7-fhir-data-infrastructure.client.OAuthClientsTable');
-  logger.data('OAuthClientsTable.props', {data: props}, {source: "OAuthClientsTable.jsx"});
+  // logger.info('Rendering the OAuthClientsTable');
+  // logger.verbose('clinical:hl7-fhir-data-infrastructure.client.OAuthClientsTable');
+  // logger.data('OAuthClientsTable.props', {data: props}, {source: "OAuthClientsTable.jsx"});
+
+  console.info('Rendering the OAuthClientsTable');
+  console.debug('clinical:hl7-fhir-data-infrastructure.client.OAuthClientsTable');
+  // console.data('OAuthClientsTable.props', {data: props}, {source: "OAuthClientsTable.jsx"});
 
   const classes = useStyles();
 

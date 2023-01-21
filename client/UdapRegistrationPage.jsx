@@ -179,7 +179,7 @@ function UdapRegistrationPage(props){
         data: jwtPayload
       }, function(error, signResult){
         if(error){
-          console.log('error', error);
+          console.error('error', error);
         }
         if(signResult){
           console.log('signResult', signResult);
@@ -194,7 +194,7 @@ function UdapRegistrationPage(props){
 
       // Meteor.call('generateAndSignJwt', jwtPayload, function(error, signResult){
       //   if(error){
-      //     console.log('error', error);
+      //     console.error('error', error);
       //   }
       //   if(signResult){
       //     console.log('signResult', signResult);

@@ -168,7 +168,7 @@ Meteor.methods({
             algorithm: 'RS256',
         }, function(error, token){
             if(error){
-                console.log('error', error)
+                console.error('error', error)
             }
             if(token){
                 console.log('token', token)
@@ -285,7 +285,7 @@ Meteor.methods({
         HTTP.put(subscriptionUrl , {
             data: payload
         }, function(error, result){
-            if(error) { console.log('error', error)}
+            if(error) { console.error('error', error)}
             if(result) { console.log('result', result)}
         })
         

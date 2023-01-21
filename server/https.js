@@ -45,7 +45,7 @@ JsonRoutes.add("post", "/generateAndSignJwt", function (req, res, next) {
 
   Meteor.call('generateAndSignJwt', req.body, function(error, signResult){
     if(error){
-      console.log('error', error);
+      console.error('error', error);
     }
     if(signResult){
       let returnPayload = {

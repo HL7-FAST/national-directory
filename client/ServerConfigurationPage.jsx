@@ -116,7 +116,7 @@ function ServerConfigurationPage(props){
     if(Meteor.isClient){
       Meteor.call('hasServerKeys', function(error, result){
         if(result){
-          console.log('.ServerConfigurationPage.useEffect', result);
+          // console.log('.ServerConfigurationPage.useEffect', result);
           setServerHasPublicKey(get(result, 'x509.publicKey'));
           setServerHasPrivateKey(get(result, 'x509.privateKey'));
           setServerHasPublicCert(get(result, 'x509.publicCertPem'))
@@ -219,7 +219,7 @@ function ServerConfigurationPage(props){
 
     Meteor.call('generateCertificate', function(error, certificatePem){
       if(error){
-        console.log('error', error)
+        console.error('error', error)
       }
       if(certificatePem){
         console.log('certificatePem', certificatePem)
@@ -233,7 +233,7 @@ function ServerConfigurationPage(props){
 
     Meteor.call('syncLantern', function(error, result){
       if(error){
-        console.log('error', error)
+        console.error('error', error)
       }
       if(result){
         console.log('result', result)
@@ -245,7 +245,7 @@ function ServerConfigurationPage(props){
 
     Meteor.call('syncProviderDirectory', function(error, result){
       if(error){
-        console.log('error', error)
+        console.error('error', error)
       }
       if(result){
         console.log('result', result)
@@ -267,7 +267,7 @@ function ServerConfigurationPage(props){
 
     Meteor.call('syncUpstreamDirectory', options, function(error, result){
       if(error){
-        console.log('error', error)
+        console.error('error', error)
       }
       if(result){
         console.log('result', result)
@@ -279,7 +279,7 @@ function ServerConfigurationPage(props){
 
     Meteor.call('initCodeSystems', function(error, result){
       if(error){
-        console.log('error', error)
+        console.error('error', error)
       }
       if(result){
         console.log('result', result)
@@ -291,7 +291,7 @@ function ServerConfigurationPage(props){
 
     Meteor.call('initUsCore', function(error, result){
       if(error){
-        console.log('error', error)
+        console.error('error', error)
       }
       if(result){
         console.log('result', result)
@@ -303,7 +303,7 @@ function ServerConfigurationPage(props){
 
     Meteor.call('initSearchParameters', function(error, result){
       if(error){
-        console.log('error', error)
+        console.error('error', error)
       }
       if(result){
         console.log('result', result)
@@ -315,7 +315,7 @@ function ServerConfigurationPage(props){
 
     Meteor.call('initStructureDefinitions', function(error, result){
       if(error){
-        console.log('error', error)
+        console.error('error', error)
       }
       if(result){
         console.log('result', result)
@@ -327,7 +327,7 @@ function ServerConfigurationPage(props){
 
     Meteor.call('initValueSets', function(error, result){
       if(error){
-        console.log('error', error)
+        console.error('error', error)
       }
       if(result){
         console.log('result', result)

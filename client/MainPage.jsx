@@ -242,7 +242,7 @@ function MainPage(props){
   }, function(error, result){
       if(result){
         let parsedContent = JSON.parse(result.content);
-        console.log(parsedContent);
+        // console.log(parsedContent);
 
         setServerStats({
           Organizations: get(parsedContent, 'collections.organizations'),
