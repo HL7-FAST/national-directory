@@ -1,33 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTracker } from 'meteor/react-meteor-data';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+// import { makeStyles, withStyles } from '@material-ui/core/styles';
 
 import { 
-  Card,
-  CardHeader,
-  CardContent,
-  Button,
-  Tab, 
-  Tabs,
-  Typography,
-  Box,
+  // Card,
+  // CardHeader,
+  // CardContent,
+  // Button,
+  // Tab, 
+  // Tabs,
+  // Typography,
+  // Box,
   TextField
 } from '@material-ui/core';
 
-import DialogActions from '@material-ui/core/DialogActions';
+// import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-
-
+// import DialogContentText from '@material-ui/core/DialogContentText';
+// import DialogTitle from '@material-ui/core/DialogTitle';
 
 
 import { get, has } from 'lodash';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import { HTTP } from 'meteor/http';
-import JSON5 from 'json5';
+// import { HTTP } from 'meteor/http';
+// import JSON5 from 'json5';
 
 import { FhirUtilities, DynamicSpacer, ValueSets, ValueSetDetail } from 'meteor/clinical:hl7-fhir-data-infrastructure';
 

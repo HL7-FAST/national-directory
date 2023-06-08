@@ -1,3 +1,6 @@
+import React, { useState } from 'react';
+import { useTracker } from 'meteor/react-meteor-data';
+
 import { 
   Grid, 
   Container,
@@ -20,8 +23,6 @@ import {
 } from '@material-ui/core';
 
 
-import React, { useState } from 'react';
-import { useTracker } from 'meteor/react-meteor-data';
 
 import PropTypes from 'prop-types';
 

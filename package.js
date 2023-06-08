@@ -1,6 +1,6 @@
 Package.describe({
   name: 'mitre:national-directory',
-  version: '0.13.10',
+  version: '0.14.2',
   summary: 'Validated Care Coordination Directory',
   // git: 'http://github.com/mitre/vhdir-core',
   documentation: 'README.md'
@@ -9,26 +9,31 @@ Package.describe({
 Package.onUse(function(api) {
   api.versionsFrom('1.4');
 
-  api.use('meteor@1.9.3');
-  api.use('webapp@1.10.0');
+  // api.use('webapp@1.10.0');
+  // api.use('ddp@1.4.0');
+  // api.use('livedata@1.0.18');
+  // api.use('es5-shim@4.8.0');
+  // api.use('meteor-base@1.5.1');
+
+  api.use('meteor@1.10.4');
   api.use('ddp@1.4.0');
   api.use('livedata@1.0.18');
-  api.use('es5-shim@4.8.0');
-  api.use('ecmascript@0.15.0');
+  api.use('ecmascript@0.16.0');
+  api.use('react-meteor-data@2.5.1');
 
   api.use('session');
-  api.use('react-meteor-data@2.1.2');
   api.use('simple:json-routes@2.3.1');
 
-  api.use('clinical:hl7-resource-datatypes');
-  api.use('clinical:hl7-fhir-data-infrastructure');
-  api.use('clinical:vault-server');
-  api.use('clinical:uscore');
-
+  api.addFiles('lib/Collections.js');
 
   api.addFiles('server/methods.js', 'server');
   api.addFiles('server/https.js', 'server');
   api.addFiles('server/hooks.js', 'server');
+
+  // api.use('clinical:hl7-resource-datatypes');
+  api.use('clinical:vault-server');
+  api.use('clinical:uscore');
+  api.use('clinical:hl7-fhir-data-infrastructure');
 
   api.addAssets('data/nppes/parsed-npi-records-100k.ndjson', 'server');
   api.addAssets('data/lantern/lantern_out.ndjson', 'server');
@@ -281,6 +286,7 @@ Package.onUse(function(api) {
 
   api.addFiles('assets/SocialMedia.jpg', "client", {isAsset: true});
   api.addFiles('assets/SocialMedia-WomensShelters.jpg', "client", {isAsset: true});
+  api.addFiles('assets/Phonebook.jpg', "client", {isAsset: true});
 
   api.mainModule('index.jsx', 'client');
 });
@@ -288,7 +294,7 @@ Package.onUse(function(api) {
 
 Npm.depends({
   "ndjson-parse": "1.0.4",
-  "react-router-dom": "6.3.0"
+  // "react-router-dom": "6.3.0"
   // "ipfs-daemon": "0.12.3",
   // "ipfs-http-client": "56.0.3"
 })

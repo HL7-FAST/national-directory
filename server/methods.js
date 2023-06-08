@@ -101,83 +101,83 @@ Meteor.methods({
         console.log("Initializing US Core...");
         UsCoreMethods.initializeValueSets();
     },
-    generateCertificate: function(){
-        console.log("Generate certificate...")
+    // generateCertificate: function(){
+    //     console.log("Generate certificate...")
 
-        let privateKeyPem = get(Meteor, 'settings.private.x509.privateKey');
-        let publicKeyPem = get(Meteor, 'settings.private.x509.publicKey');
+    //     let privateKeyPem = get(Meteor, 'settings.private.x509.privateKey');
+    //     let publicKeyPem = get(Meteor, 'settings.private.x509.publicKey');
 
-        let privateKey = pki.privateKeyFromPem(privateKeyPem)
-        let publicKey = pki.publicKeyFromPem(publicKeyPem)
+    //     let privateKey = pki.privateKeyFromPem(privateKeyPem)
+    //     let publicKey = pki.publicKeyFromPem(publicKeyPem)
 
-        var certificatePem = "";
+    //     var certificatePem = "";
 
-        if(privateKey){
-            console.log('privateKey', privateKey)
-            console.log('publicKey', publicKey)
+    //     if(privateKey){
+    //         console.log('privateKey', privateKey)
+    //         console.log('publicKey', publicKey)
 
-            let cert = pki.createCertificate();
+    //         let cert = pki.createCertificate();
 
-            cert.publicKey = publicKey;
-            cert.serialNumber = '01';
-            cert.validity.notBefore = new Date();
-            cert.validity.notAfter.setFullYear(cert.validity.notBefore.getFullYear() + 1);
+    //         cert.publicKey = publicKey;
+    //         cert.serialNumber = '01';
+    //         cert.validity.notBefore = new Date();
+    //         cert.validity.notAfter.setFullYear(cert.validity.notBefore.getFullYear() + 1);
 
-            var attrs = [{
-                name: 'commonName',
-                value: 'mitre.org'
-                }, {
-                name: 'countryName',
-                value: 'US'
-                }, {
-                shortName: 'ST',
-                value: 'Illinois'
-                }, {
-                name: 'localityName',
-                value: 'Chicago'
-                }, {
-                name: 'organizationName',
-                value: 'MITRE'
-                }, {
-                shortName: 'OU',
-                value: 'MITRE'
-            }];
-            // cert.setSubject(attrs);
-            cert.setIssuer(attrs);
-            cert.sign(privateKey);
+    //         var attrs = [{
+    //             name: 'commonName',
+    //             value: 'mitre.org'
+    //             }, {
+    //             name: 'countryName',
+    //             value: 'US'
+    //             }, {
+    //             shortName: 'ST',
+    //             value: 'Illinois'
+    //             }, {
+    //             name: 'localityName',
+    //             value: 'Chicago'
+    //             }, {
+    //             name: 'organizationName',
+    //             value: 'MITRE'
+    //             }, {
+    //             shortName: 'OU',
+    //             value: 'MITRE'
+    //         }];
+    //         // cert.setSubject(attrs);
+    //         cert.setIssuer(attrs);
+    //         cert.sign(privateKey);
 
-            console.log('cert', cert);
+    //         console.log('cert', cert);
 
-            certificatePem = pki.certificateToPem(cert);
-            console.log('certificatePem', certificatePem)
-        }
+    //         certificatePem = pki.certificateToPem(cert);
+    //         console.log('certificatePem', certificatePem)
+    //     }
 
-        return certificatePem;
-    },
-    generateAndSignJwt: function(jwtPayload){
-        console.log("Signing certificate...")
-        console.log('jwtPayload', jwtPayload);
+    //     return certificatePem;
+    // },
+    // generateAndSignJwt: function(jwtPayload){
+    //     console.log("Signing certificate...")
+    //     console.log('jwtPayload', jwtPayload);
 
-        let result = {};
+    //     let result = {};
 
-        let privateKeyPem = get(Meteor, 'settings.private.x509.privateKey');
-        console.log('privateKeyPem')   
-        console.log(privateKeyPem)            
+    //     let privateKeyPem = get(Meteor, 'settings.private.x509.privateKey');
+    //     console.log('privateKeyPem')   
+    //     console.log(privateKeyPem)            
 
-        jwt.sign(jwtPayload, privateKeyPem.trim(), {
-            algorithm: 'RS256',
-        }, function(error, token){
-            if(error){
-                console.log('error', error)
-            }
-            if(token){
-                console.log('token', token)
-                result.token = token;
-            }
-        });
+    //     jwt.sign(jwtPayload, privateKeyPem.trim(), {
+    //         algorithm: 'RS256',
+    //     }, function(error, token){
+    //         if(error){
+    //             console.log('error', error)
+    //         }
+    //         if(token){
+    //             console.log('token', token)
+    //             result.token = token;
+    //         }
+    //     });
 
-        return result;
-    },
+    //     return result;
+    // },
     hasServerKeys: function(){
         let result = {
             x509: {
@@ -883,11 +883,11 @@ Meteor.methods({
 
         // return methodResult;
     },
-    fetchWellKnownUdap: async function(wellKnownUdapUrl){
-        console.log('fetchWellKnownUdap', wellKnownUdapUrl);
+    // fetchWellKnownUdap: async function(wellKnownUdapUrl){
+    //     console.log('fetchWellKnownUdap', wellKnownUdapUrl);
 
-        return await HTTP.get(wellKnownUdapUrl)
-    },
+    //     return await HTTP.get(wellKnownUdapUrl)
+    // },
     sendSoftwareStatement: async function(options){
         console.log('fetchWellKnownUdap', options);
 
