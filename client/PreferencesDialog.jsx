@@ -58,6 +58,8 @@ export function PreferencesDialog(props){
   const [showSystemContexts, setShowSystemContexts] = useState(false);
   const [showFhirQueries, setShowFhirQueries] = useState(false);
 
+  let [ searchCount, setSearchCount ] = useState(1000);
+  
   let { 
     children, 
     id,
@@ -141,6 +143,13 @@ export function PreferencesDialog(props){
     window.location.href = url;
   }
 
+
+  function handleChangeCount(event){
+    setSearchCount(event.currentTarget.value);    
+    Session.set('searchCount', event.currentTarget.value)
+  }
+
+
   return(
     <DialogContent id={id} className="PreferencesDialog" style={{width: '100%', userSelect: 'none'}} dividers={scroll === 'paper'}>      
       
@@ -185,6 +194,21 @@ export function PreferencesDialog(props){
         control={<Checkbox checked={showFhirQueries} onChange={handleToggleShowFhirQueries} name="toggleShowPatientName" />}
         label="Show FHIR Queries"
       /><br />
+
+      <br />
+      <hr />
+      <br />
+
+      <TextField 
+        label="Number of Records"
+        placeholder="1000"
+        onChange={handleChangeCount.bind(this)}
+        value={searchCount}
+        InputLabelProps={{
+          shrink: true
+        }}
+        fullWidth
+      />
 
 
       <DynamicSpacer />            

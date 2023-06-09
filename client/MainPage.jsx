@@ -85,6 +85,8 @@ import { useTracker } from 'meteor/react-meteor-data';
 
 import { LayoutHelpers, EndpointsTable, OrganizationsTable, PractitionersTable, LocationsTable, HealthcareServicesTable, InsurancePlansTable, ValueSets } from 'meteor/clinical:hl7-fhir-data-infrastructure';
 
+import { PractitionerDetail } from './PractitionerDetail';
+
 import base64url from 'base64-url';
 
 
@@ -177,6 +179,7 @@ Session.setDefault('onlyShowMatched', false);
 Session.setDefault('showUrlPreview', false);
 Session.setDefault('showServerStats', true);
 Session.setDefault('dialogReturnValue', 'MainSearch.state');
+Session.setDefault('searchCount', 1000)
 
 Session.setDefault('MainSearch.defaultDirectoryQuery', get(Meteor, 'settings.public.interfaces.upstreamDirectory.channel.paths[0]', ""));
 
@@ -193,7 +196,8 @@ function MainPage(props){
   let [ showNoResults, setShowNoResults ] = useState(false);
   
   let [ searchTerm, setSearchTerm ] = useState('');
-  let [ searchCount, setSearchCount ] = useState(1000);
+  // let [ searchCount, setSearchCount ] = useState(1000);
+  let [ searchNpi, setSearchNpi ] = useState('');
 
   let [ defaultDirectoryQuery, setDefaultDirectoryQuery ] = useState(get(Meteor, 'settings.public.interfaces.upstreamDirectory.channel.paths[0]', ""));
   
@@ -265,6 +269,13 @@ function MainPage(props){
     return;
   }, [])
 
+
+
+  let searchCount = useTracker(function(){
+    return Session.get('searchCount');
+  }, [])
+
+
   let showExperimental = useTracker(function(){
     return Session.get('showExperimental');
   }, [])
@@ -321,6 +332,14 @@ function MainPage(props){
   }, [])
   
   
+  let selectedPractitioner = useTracker(function(){
+    return Session.get('selectedPractitioner');
+  }, [])
+  let selectedPractitionerId = useTracker(function(){
+    return Session.get('selectedPractitionerId');
+  }, [])
+
+
   //----------------------------------------------------------------------
   // Custom Styling  
 
@@ -397,6 +416,9 @@ function MainPage(props){
       if(Session.get('MainSearch.name')){
         returnUrl = returnUrl + '&name-text=' + Session.get('MainSearch.name');
       }  
+    }
+    if(Session.get('MainSearch.npi')){
+      returnUrl = returnUrl + '&identifier=' + Session.get('MainSearch.npi');
     }
     return returnUrl;
   }, [])
@@ -590,6 +612,10 @@ function MainPage(props){
     setOrganizationPageIndex(0);
     setPractitionerPageIndex(0);
   }
+
+
+
+
   function handleFuzzySearch(){
     console.log('Conducting fuzzy search...');
 
@@ -841,8 +867,9 @@ function MainPage(props){
     setDefaultDirectoryQuery(event.currentTarget.value); 
     Session.set('MainSearch.defaultDirectoryQuery', event.currentTarget.value);   
   }
-  function handleChangeCount(event){
-    setSearchCount(event.currentTarget.value);    
+  function handleChangeNpi(event){
+    setSearchNpi(event.currentTarget.value);    
+    Session.set('MainSearch.npi', event.currentTarget.value);
   }
   function toggleDetailedSearch(){
     setShowDetailedSearch(!showDetailedSearch);
@@ -971,6 +998,8 @@ function MainPage(props){
     let healthcareServiceResultsCard;
     let insurancePlanResultsCard;
 
+    let selectedRecordCard;
+
     
 
     if(matchedEndpoints.length > 0){
@@ -995,7 +1024,6 @@ function MainPage(props){
       </StyledCard>
     }
 
-    console.log('matchedOrganizations', matchedOrganizations)
     if(matchedOrganizations.length > 0){
       let hideOrgPagination = true;
       if(matchedOrganizations.length > 5){
@@ -1047,10 +1075,26 @@ function MainPage(props){
             onSetPage={function(index){
               setPractitionerPageIndex(index)
             }}
+            onRowClick={function(practitionerId){
+              Session.set('selectedPractitionerId', practitionerId);
+              Session.set('Practitioner.Current', Practitioners.findOne({id: practitionerId}));
+            }}
             specialtyValueSet={specialtyValueSet}
           />
         </CardContent>
       </StyledCard>
+
+      if(selectedPractitioner){
+        selectedRecordCard = <StyledCard>
+          <CardHeader title={get(selectedPractitioner, 'name[0].text')}></CardHeader>
+          <CardContent>
+            <PractitionerDetail 
+              practitioner={selectedPractitioner}
+            />
+          </CardContent>
+          
+        </StyledCard>
+      }
     }
 
 
@@ -1138,6 +1182,7 @@ function MainPage(props){
       </StyledCard>
     }
 
+
     mainContent = <Grid container spacing={1} justify="center" style={{marginBottom: '20px'}}>
       <Grid item xs={12} sm={12} style={{marginTop: '20px', marginBottom: '80px'}} >
         
@@ -1147,6 +1192,9 @@ function MainPage(props){
         { healthcareServiceResultsCard }
         { insurancePlanResultsCard }
         { endpointResultsCard }
+
+
+        { selectedRecordCard }
 
       </Grid>
     </Grid>
@@ -1790,10 +1838,10 @@ function MainPage(props){
                   </Grid>
                   <Grid item xs={2}>
                     <TextField 
-                      label="Number of Records"
-                      placeholder="1000"
-                      onChange={handleChangeCount.bind(this)}
-                      value={searchCount}
+                      label="NPI Number"
+                      placeholder="##########"
+                      onChange={handleChangeNpi.bind(this)}
+                      value={searchNpi}
                       InputLabelProps={{
                         shrink: true
                       }}
