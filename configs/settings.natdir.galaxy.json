@@ -84,8 +84,8 @@
       "sidebar": {
         "menuItems": {
           "HomePage": false,
-          "DynamicModules": true,
           "SidebarWorkflows": false,
+          "FhirModules": true,
           "Theme": false,
           "About": false,
           "ConstructionZone": false,
@@ -94,7 +94,7 @@
           "DataExport": false,
           "SmartLauncher": false,
           "HealthRecords": false,
-          "Profile": false,
+          "Profile": true,
           "Login": false,
           "Logout": true,
           "Registration": true,
@@ -120,6 +120,7 @@
           "/devices",
           "/diagnostic-reports",
           "/document-references",
+          "/document-manifests",
           "/encounters",
           "/example-route",
           "/explanation-of-benefits",
@@ -149,6 +150,25 @@
         ],
         "hiddenWorkflow": [
           "/patient-quickchart"
+        ],
+        "customWorkflows": [
+          {"label": "Practitioners", "link": "/practitioners", "icon": "fire"}, 
+          {"label": "Organizations", "link": "/organizations", "icon": "fire"},
+          {"label": "Locations", "link": "/locations", "icon": "fire"},
+          {"label": "Endpoints", "link": "/endpoints", "icon": "fire"},
+          {"label": "Healthcare Services", "link": "/healthcare-services", "icon": "fire"},
+          {"label": "Insurance Plans", "link": "/insurance-plans", "icon": "fire"}
+        ],
+        "customClinciianWorkflows": [
+          {"label": "Communications", "link": "/communications", "icon": "fire"}, 
+          {"label": "Communication Requests", "link": "/communication-requests", "icon": "fire"}, 
+          {"label": "Communications", "link": "/communications", "icon": "fire"}, 
+          {"label": "Provenances", "link": "/provenances", "icon": "fire"}, 
+          {"label": "PractitionerRoles", "link": "/practitioner-roles", "icon": "fire"}, 
+          {"label": "Restrictions", "link": "/restrictions", "icon": "fire"}, 
+          {"label": "Subscriptions", "link": "/subscriptions", "icon": "fire"}, 
+          {"label": "Tasks", "link": "/tasks", "icon": "fire"}, 
+          {"label": "Verification Results", "link": "/verification-results", "icon": "fire"}
         ],
         "customSettings": [
           {"label": "Server Configuration", "link": "/server-configuration", "icon": "fire"}, 
@@ -209,6 +229,7 @@
     },
     "fhir": {
       "disableOauth": true,
+      "disableAccessControl": true,
       "inboundQueue": true,
       "schemaValidation": {
         "filter": false,
