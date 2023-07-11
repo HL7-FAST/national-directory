@@ -1,6 +1,6 @@
 {
   "public": {
-    "title": "Protected Women's Shelters",
+    "title": "Women's Services",
     "fhirVersion": "4.0.1",
     "smartOnFhir": [{
       "vendor": "SmartHealth IT",
@@ -80,18 +80,17 @@
       "sidebar": {
         "menuItems": {
           "HomePage": false,
-          "FhirResources": false,
-          "DynamicModules": true,
-          "SidebarWorkflows": true,
+          "SidebarWorkflows": false,
+          "FhirModules": true,
           "Theme": false,
-          "About": true,
+          "About": false,
           "ConstructionZone": false,
           "Navbars": false,
-          "DataImport": true,
-          "DataExport": true,
+          "DataImport": false,
+          "DataExport": false,
           "SmartLauncher": false,
           "HealthRecords": false,
-          "Profile": false,
+          "Profile": true,
           "Login": false,
           "Logout": true,
           "Registration": true,
@@ -108,13 +107,16 @@
           "/body-mass-calculator",
           "/body-mass-index",
           "/bundles",
+          "/careteams",
           "/careplans",
           "/conditions",
-          "/consents",
           "/contracts",
+          "/consents",
+          "/compositions",
           "/devices",
           "/diagnostic-reports",
           "/document-references",
+          "/document-manifests",
           "/encounters",
           "/example-route",
           "/explanation-of-benefits",
@@ -130,6 +132,7 @@
           "/medications",
           "/medication-orders",
           "/medication-statements",
+          "/nutrition-intakes",
           "/observations",
           "/patients",
           "/persons",
@@ -143,15 +146,41 @@
         ],
         "hiddenWorkflow": [
           "/patient-quickchart"
-        ]
-      }
-    },
+        ],
+        "customWorkflows": [
+          {"label": "Practitioners", "link": "/practitioners", "icon": "fire"}, 
+          {"label": "Organizations", "link": "/organizations", "icon": "fire"},
+          {"label": "Locations", "link": "/locations", "icon": "fire"},
+          {"label": "Endpoints", "link": "/endpoints", "icon": "fire"},
+          {"label": "Healthcare Services", "link": "/healthcare-services", "icon": "fire"},
+          {"label": "Insurance Plans", "link": "/insurance-plans", "icon": "fire"}
+        ],
+        "customClinciianWorkflows": [
+          {"label": "Communications", "link": "/communications", "icon": "fire"}, 
+          {"label": "Communication Requests", "link": "/communication-requests", "icon": "fire"}, 
+          {"label": "Communications", "link": "/communications", "icon": "fire"}, 
+          {"label": "Provenances", "link": "/provenances", "icon": "fire"}, 
+          {"label": "PractitionerRoles", "link": "/practitioner-roles", "icon": "fire"}, 
+          {"label": "Restrictions", "link": "/restrictions", "icon": "fire"}, 
+          {"label": "Subscriptions", "link": "/subscriptions", "icon": "fire"}, 
+          {"label": "Tasks", "link": "/tasks", "icon": "fire"}, 
+          {"label": "Verification Results", "link": "/verification-results", "icon": "fire"}
+        ],
+        "customSettings": [
+          {"label": "Server Configuration", "link": "/server-configuration", "icon": "fire"}, 
+          {"label": "OAuth Clients", "link": "/oauth-clients", "icon": "fire"},
+          {"label": "UDAP Registration", "link": "/udap-registration", "icon": "fire"}
+        ],
+        "links": {
+          "documentation": ""
+        }
+      }    },
     "interfaces": {
       "upstreamDirectory": {
         "name": "National Directory",
         "status": "active",
         "channel": {
-          "endpoint": "https://national-directory.meteorapp.com/baseR4",
+          "endpoint": "https://modern-nppes.meteorapp.com/baseR4",
           "paths": [
             "/Organization?address-state=RI,CT,MA&specialty=163WW0101X,282NW0100X,363LW0102X,364SW0102X",
             "/Practitioner?address-state=RI,CT,MA&specialty=163WW0101X,363LW0102X,364SW0102X"

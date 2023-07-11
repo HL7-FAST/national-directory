@@ -414,7 +414,8 @@ function MainPage(props){
       returnUrl = returnUrl + '&name'
     } else {
       if(Session.get('MainSearch.name')){
-        returnUrl = returnUrl + '&name-text=' + Session.get('MainSearch.name');
+        // returnUrl = returnUrl + '&name-text=' + Session.get('MainSearch.name');
+        returnUrl = returnUrl + '&name=' + Session.get('MainSearch.name');
       }  
     }
     if(Session.get('MainSearch.npi')){
@@ -1045,6 +1046,38 @@ function MainPage(props){
             onSetPage={function(index){
               setOrganizationPageIndex(index)
             }}
+            onRowClick={function(organizationId){
+              Session.set('selectedOrganizationId', organizationId);
+
+              let organization = Organizations.findOne({id: organizationId});
+
+              if(organization){
+                Session.set('Organization.Current', organization);
+
+                Session.set('selectedOrganizationId', get(organization, 'id'));
+                Session.set('selectedOrganization', organization);
+
+                let showModals = true;
+                if(showModals){
+                  Session.set('mainAppDialogOpen', true);
+                  Session.set('mainAppDialogComponent', "OrganizationDetail");
+                  Session.set('mainAppDialogMaxWidth', "md");
+
+                  if(Meteor.currentUserId()){
+                    Session.set('mainAppDialogTitle', "Edit Organization");
+                  } else {
+                    Session.set('mainAppDialogTitle', "View Organization");
+                  }
+                }      
+
+              } else {
+                console.log('No organization found...')
+              }
+
+              // open MainAppDialog
+
+
+            }}
           />
         </CardContent>
       </StyledCard>
@@ -1077,7 +1110,35 @@ function MainPage(props){
             }}
             onRowClick={function(practitionerId){
               Session.set('selectedPractitionerId', practitionerId);
-              Session.set('Practitioner.Current', Practitioners.findOne({id: practitionerId}));
+
+              let practitioner = Practitioners.findOne({id: practitionerId});
+
+              if(practitioner){
+                Session.set('Practitioner.Current', practitioner);
+
+                Session.set('selectedPractitionerId', get(practitioner, 'id'));
+                Session.set('selectedPractitioner', practitioner);
+
+                let showModals = true;
+                if(showModals){
+                  Session.set('mainAppDialogOpen', true);
+                  Session.set('mainAppDialogComponent', "PractitionerDetail");
+                  Session.set('mainAppDialogMaxWidth', "md");
+
+                  if(Meteor.currentUserId()){
+                    Session.set('mainAppDialogTitle', "Edit Practitioner");
+                  } else {
+                    Session.set('mainAppDialogTitle', "View Practitioner");
+                  }
+                }      
+
+              } else {
+                console.log('No practitioner found...')
+              }
+
+              // open MainAppDialog
+
+
             }}
             specialtyValueSet={specialtyValueSet}
           />
@@ -1857,7 +1918,7 @@ function MainPage(props){
                 <Button
                   variant="contained"
                   onClick={ handleFuzzySearch.bind(this) }
-                >Search</Button>
+                >Run Search</Button>
                 <Button
                   variant="contained"
                   onClick={ handleClearSearch.bind(this) }
@@ -1884,7 +1945,7 @@ function MainPage(props){
           <Grid item xs={12}>
             {detailedSearch}
             <DynamicSpacer />
-            {experimentalSearch}
+            {/* {experimentalSearch} */}
           </Grid>
 
         </Grid>
