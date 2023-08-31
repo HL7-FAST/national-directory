@@ -275,6 +275,10 @@ public class StarterJpaConfig {
 		RestfulServer fhirServer = new RestfulServer(fhirSystemDao.getContext());
 
 		List<String> supportedResourceTypes = appProperties.getSupported_resource_types();
+		// Consider for multi-tenant endpoint
+		//fhirServer.setTenantIdentificationStrategy(new UrlBaseTenantIdentificationStrategy());
+		// in functions can get the ID part by:
+		// String resourceId = theId.getIdPart();
 
 		if (!supportedResourceTypes.isEmpty()) {
 			if (!supportedResourceTypes.contains("SearchParameter")) {
@@ -333,6 +337,10 @@ public class StarterJpaConfig {
 		}
 
 		fhirServer.registerInterceptor(loggingInterceptor);
+
+		fhirServer.registerInterceptor(new CapabilityStatementCustomizer());
+
+		fhirServer.registerInterceptor(new CustomDataMasker());
 
 		/*
 		 * If you are hosting this server at a specific DNS name, the server will try to
