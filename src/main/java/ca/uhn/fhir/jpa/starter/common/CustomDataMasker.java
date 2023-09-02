@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Iterator;
 
 import org.hibernate.annotations.common.reflection.MetadataProvider;
+import org.hl7.fhir.r4.model.DomainResource;
 import org.hl7.fhir.instance.model.api.IBaseConformance;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.CapabilityStatement;
@@ -13,6 +14,7 @@ import org.hl7.fhir.r4.model.DateTimeType;
 //import org.hl7.fhir.r4.model.StringType;
 //import org.springframework.stereotype.Component;
 import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.StringType;
@@ -69,9 +71,12 @@ public class CustomDataMasker {
 		}
 		if (resource instanceof Bundle && !purpose.equals("attestation")) {
 			Bundle bundle = (Bundle) resource;
-			
+			boolean updateTotal = false;
 			int total = bundle.getTotal();
-			
+			if(total != 0)
+			{
+				updateTotal = true;
+			}
 
 			List<BundleEntryComponent> entries = bundle.getEntry();
 			Iterator<BundleEntryComponent> i = entries.iterator();
@@ -80,9 +85,9 @@ public class CustomDataMasker {
 				BundleEntryComponent entry = i.next(); // must be called before you can call i.remove()
 				
 				
-				boolean maskEntry = false;
+				//boolean maskEntry = false;
 
-				
+				/* 
 				for(Coding coding : entry.getResource().getMeta().getSecurity())
 				{
 					myLogger.info("Confidentiality: " + coding.getCode() + " : " + coding.getSystem() + " : " + entry.getFullUrlElement().toString());
@@ -92,19 +97,22 @@ public class CustomDataMasker {
 						break;
 					}
 				}
-				if(maskEntry)
+				*/
+				if(isUnattested((DomainResource)entry.getResource()))
 				{
 					myLogger.info("Removing Masked Resource: " + entry.getFullUrlElement().toString());
 					i.remove();
 					//bundle.getEntryFirstRep().
-					total--;
+					if(updateTotal)
+						total--;
 				}
 				else
 				{
 					myLogger.info("Resource is not masked: " + entry.getFullUrlElement().toString());
 					//bundle.getEntryFirstRep().
 				}
-				bundle.setTotal(total);
+				if(updateTotal)
+					bundle.setTotal(total);
 
 				
 			}
@@ -143,6 +151,60 @@ public class CustomDataMasker {
 			//ext.setUrl("http://some.custom.pkg1/CustomInterceptorPojo");
 			//ext.setValue(new StringType("CustomInterceptorPojo wuz here"));
 		}
+		else if (!(resource instanceof OperationOutcome) && !purpose.equals("attestation")) 
+		{
+			// Single resource request
+			
+			// need to check to see if this is a simple get
+
+			DomainResource dResource = (DomainResource) resource;
+			if(isUnattested(dResource))
+			{
+				myLogger.info("Removing Masked Resource: " + dResource.getResourceType() + "/" + dResource.getIdPart().toString());
+				//OperationOutcome oo = new OperationOutcome();
+				//OperationOutcome error = FhirUtils.buildOutcome(IssueSeverity.ERROR, IssueType.INVALID, REQUIRES_BUNDLE);
+				OperationOutcome error = new OperationOutcome();
+				OperationOutcome.OperationOutcomeIssueComponent issue = error.addIssue();
+				issue.setSeverity(OperationOutcome.IssueSeverity.ERROR);
+				issue.setCode(OperationOutcome.IssueType.PROCESSING);
+				issue.setDiagnostics("HAPI-2001: Resource " + dResource.getResourceType() + "/" + dResource.getIdPart().toString() + " is not known");
+				
+				responseDetails.setResponseResource(error);
+				responseDetails.setResponseCode(HttpServletResponse.SC_NOT_FOUND);
+				httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			}
+
+			/*
+				//that is not accessible, so return 404 and operation outcome
+				OperationOutcome error = FhirUtils.buildOutcome(IssueSeverity.ERROR, IssueType.INVALID, REQUIRES_BUNDLE);
+				formattedData = FhirUtils.getFormattedData(error, requestType);
+				logger.severe("ClaimEndpoint::SubmitOperation:Body is not a Bundle");
+				}
+			} catch (Exception e) {
+				// The submission failed so spectacularly that we need to
+				// catch an exception and send back an error message...
+				OperationOutcome error = FhirUtils.buildOutcome(IssueSeverity.FATAL, IssueType.STRUCTURE, e.getMessage());
+				formattedData = FhirUtils.getFormattedData(error, requestType);
+				auditOutcome = AuditEventOutcome.SERIOUS_FAILURE;
+			/*
+			{
+				"resourceType": "OperationOutcome",
+				"text": {
+					 "status": "generated",
+					 "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><h1>Operation Outcome</h1><table border=\"0\"><tr><td style=\"font-weight: bold;\">ERROR</td><td>[]</td><td><pre>HAPI-2001: Resource Organization/AttestationPharmacyc is not known</pre></td>\n\t\t\t</tr>\n\t\t</table>\n\t</div>"
+				},
+				"issue": [
+					 {
+						  "severity": "error",
+						  "code": "processing",
+						  "diagnostics": "HAPI-2001: Resource Organization/AttestationPharmacyc is not known"
+					 }
+				]
+		  }
+		  */
+		}
+		 
+
 	}
 
 	/* Pointcut.STORAGE_PREACCESS_RESOURCES
@@ -175,6 +237,22 @@ public class CustomDataMasker {
 
 	 // SERVER_INCOMING_REQUEST_PRE_PROCESSED Could use this one to change the request
 
+	public static boolean isUnattested(DomainResource resource)
+	{
+		boolean isResourceUnattested = false;
 
+		for(Coding coding : resource.getMeta().getSecurity())
+		{
+			if(coding.getCode().equals("V") && coding.getSystem().equals("http://terminology.hl7.org/CodeSystem/v3-Confidentiality"))
+			{
+				isResourceUnattested = true;
+				break;
+			}
+		}
+
+		return isResourceUnattested;
+	}
 
 }
+
+
