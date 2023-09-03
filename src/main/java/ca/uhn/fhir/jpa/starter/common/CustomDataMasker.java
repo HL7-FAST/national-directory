@@ -100,10 +100,12 @@ public class CustomDataMasker {
 				*/
 				if(isUnattested((DomainResource)entry.getResource()))
 				{
+					String requestResourceType = httpRequest.getPathInfo().replace("/", "");
 					myLogger.info("Removing Masked Resource: " + entry.getFullUrlElement().toString());
 					i.remove();
 					//bundle.getEntryFirstRep().
-					if(updateTotal)
+					
+					if(updateTotal && ((DomainResource)entry.getResource()).getResourceType().toString().equals(requestResourceType))
 						total--;
 				}
 				else
