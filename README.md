@@ -445,3 +445,12 @@ docker run --rm -it -p 8080:8080 \
 ```
 
 You can configure the agent using environment variables or Java system properties, see <https://opentelemetry.io/docs/instrumentation/java/automatic/agent-config/> for details.
+
+
+## Questions and Contributions
+Questions about the project can be asked in the [US National Directory stream on the FHIR Zulip Chat](https://chat.fhir.org/#narrow/stream/283066-united-states.2Fnational-directory).
+
+This project welcomes Pull Requests. Any issues identified with the RI should be submitted via the [GitHub issue tracker](https://github.com/HL7-FAST/national-directory/issues).
+
+As of October 1, 2022, The Lantana Consulting Group is responsible for the management and maintenance of this Reference Implementation.
+In addition to posting on FHIR Zulip Chat channel mentioned above you can contact [Corey Spears](mailto:corey.spears@lantanagroup.com) for questions or requests.
