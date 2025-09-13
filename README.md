@@ -1,5 +1,11 @@
 # NDH Reference Implementation
 
+## Notice of Deprecation
+
+This repository represented [NDH STU1](https://hl7.org/fhir/us/ndh/STU1). The new repository for the STU2 server is located at https://github.com/HL7-FAST/ndh-server
+
+## Summary
+
 This is a FHIR server reference implementation of the [National Directory IG](https://build.fhir.org/ig/HL7/fhir-us-ndh/).  It is built on the [HAPI FHIR JPA Starter Project](https://github.com/hapifhir/hapi-fhir-jpaserver-starter) project and more detailed configuration information can be found in that repository.
 
 ## Prerequisites
